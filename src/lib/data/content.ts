@@ -58,7 +58,7 @@ export const satelliteInstructors: SatelliteInstructor[] = [
 export const aboutStats: StatRow[] = [
   { label: 'Experience', value: '5+', unit: 'years' },
   { label: 'Publications', value: '3', unit: 'papers' },
-  { label: 'Specialisation', value: 'Marine\nMicrobiomes', align: 'right', smallValue: true },
-  { label: 'Institution', value: 'CSIR–NIO\nGoa, India', align: 'right', smallValue: true },
+  { label: 'Specialisation', value: 'Marine Microbiomes', align: 'right', smallValue: true },
+  { label: 'Institution', value: 'CSIR–NIO Goa, India', align: 'right', smallValue: true },
   { label: 'Timezone', value: 'IST', unit: 'UTC +5:30' },
 ]
