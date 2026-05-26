@@ -25,7 +25,7 @@ export const publications: Publication[] = [
 // ── Satellite Instructors ────────────────────────────────────────────────────
 export const satelliteInstructors: SatelliteInstructor[] = [
   {
-    id: 'shlok',
+    id: 'tbd1',
     name: 'Instructor I',
     expertise: 'Expertise area to be announced',
     photoSrc: '/shlok.png',
