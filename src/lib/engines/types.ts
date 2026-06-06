@@ -40,7 +40,7 @@ export interface MsOption {
   id: string;
   label: string;
   badge?: string;
-  tools: string[];
+  tools?: string[];
   sub?: string;
 }
 
@@ -51,7 +51,7 @@ export interface MatrixRow {
   difficulty: 1 | 2 | 3 | 4 | 5;
   compute: 1 | 2 | 3 | 4 | 5;
   pubPotential: 1 | 2 | 3 | 4 | 5;
-  tools: string[];
+  tools?: string[];
   rationale: string;
 }
 
@@ -117,7 +117,7 @@ export interface RecNode extends BaseNode {
   type: 'rec';
   tagline?: string;
   pts: string[];
-  tools: string[];
+  tools?: string[];
   act?: string;
   next: string;
 }
