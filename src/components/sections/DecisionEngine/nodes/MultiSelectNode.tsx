@@ -48,7 +48,9 @@ export function MultiSelectNodeRenderer({ node, selected, onToggle, onConfirm }:
                   {o.label}
                   {o.badge && <span className="ms-badge">{o.badge}</span>}
                 </div>
+                {o.tools && o.tools.length > 0 && (
                 <div className="ms-ot">{o.tools.join(' · ')}</div>
+                )}
               </div>
               <div className="chk">
                 <span className="chk-t">✓</span>
