@@ -227,7 +227,9 @@ export function MatrixNodeRenderer({ node, onContinue }: MatrixProps) {
                 {i === 0 && <span className="mx-top-badge">Top Pick</span>}
                 {row.label}
               </div>
+              {row.tools && row.tools.length > 0 && (
               <div className="mx-tools">{row.tools.join(' · ')}</div>
+              )}
               <div className="mx-rationale">{row.rationale}</div>
             </div>
             <div className="mx-col-score"><ScoreDots score={row.novelty} /></div>
