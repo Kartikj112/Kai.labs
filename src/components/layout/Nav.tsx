@@ -145,6 +145,7 @@ export function Nav({ activeDetail, onBack }: NavProps) {
             ['#workshops', 'Workshops'],
             ['#about', 'About'],
             ['#publications', 'Research'],
+            ['/engine', 'Decision Engine'],
             ['#lecturer-application', 'Become a Lecturer'],
             ['#contact', 'Contact'],
           ].map(([href, label]) => (
