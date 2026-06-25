@@ -102,8 +102,8 @@ export default function KaiLabsHome() {
             title="Kai Exchange"
             description="A free platform where scientists teach scientists. Host or attend community workshops — no payments, no subscriptions."
             href="/exchange"
-            cta="Preview"
-            status="Soon"
+            cta="Browse"
+            status="Preview"
             delay={0.08}
           />
           <FeatureCard
