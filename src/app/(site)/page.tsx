@@ -111,8 +111,8 @@ export default function KaiLabsHome() {
             title="Research"
             description="Scientific projects, publications, and open questions across genomics, origin-of-life, and natural-product discovery."
             href="/research"
-            cta="Preview"
-            status="Soon"
+            cta="Explore"
+            status="Live"
             delay={0.16}
           />
           <FeatureCard
