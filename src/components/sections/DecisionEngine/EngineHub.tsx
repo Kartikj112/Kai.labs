@@ -32,8 +32,14 @@ export function EngineHub({ modules }: Props) {
 
   return (
     <div className="engine-hub">
+      {/* Ambient backdrop — paused under prefers-reduced-motion */}
+      <div className="aurora-field" aria-hidden>
+        <span className="aurora-blob aurora-blob--a" />
+        <span className="aurora-blob aurora-blob--b" />
+      </div>
+
       {/* Hero */}
-      <div className="hub-hero">
+      <div className="hub-hero" style={{ position: 'relative', zIndex: 1 }}>
         <div className="tag cat-tag--default" style={{ marginBottom: 20 }}>KAI DECISION ENGINE</div>
         <h1 className="hub-title">Research Decision Support</h1>
         <p className="hub-subtitle italic">for genomics, metagenomics &amp; bioinformatics</p>

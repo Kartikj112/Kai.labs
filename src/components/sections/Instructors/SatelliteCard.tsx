@@ -41,11 +41,14 @@ interface SatelliteCardProps {
 
 export function SatelliteCard({ instructor, revealDelay = 1 }: SatelliteCardProps) {
   const [open, setOpen] = useState(false)
+  const [imgFailed, setImgFailed] = useState(false)
 
   const toggle = () => {
     if (instructor.isTbd) return
     setOpen((v) => !v)
   }
+
+  const showPhoto = !!instructor.photoSrc && !imgFailed
 
   return (
     <div
@@ -80,12 +83,14 @@ export function SatelliteCard({ instructor, revealDelay = 1 }: SatelliteCardProp
         borderRadius: '50%', overflow: 'hidden',
         position: 'relative', border: '1px solid var(--border-color)',
       }}>
-        {instructor.photoSrc ? (
+        {showPhoto ? (
           <Image
-            src={instructor.photoSrc}
+            src={instructor.photoSrc as string}
             alt={instructor.name}
             fill
+            sizes="90px"
             style={{ objectFit: 'cover' }}
+            onError={() => setImgFailed(true)}
           />
         ) : (
           <div style={{
@@ -117,6 +122,16 @@ export function SatelliteCard({ instructor, revealDelay = 1 }: SatelliteCardProp
       }}>
         {instructor.expertise}
       </p>
+
+      {/* Expand affordance (clickable cards only) */}
+      {!instructor.isTbd && (
+        <svg
+          className="satellite-chevron"
+          width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden
+        >
+          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
 
       {/* Expandable dropdown */}
       {!instructor.isTbd && (

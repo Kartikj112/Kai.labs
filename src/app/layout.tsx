@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Cormorant_Garamond, DM_Mono, Syne } from 'next/font/google'
 import { ThemeProvider } from '@/providers/ThemeProvider'
+import { CustomCursor } from '@/components/ui/CustomCursor'
 import '@/app/globals.css'
 
 // ── Font Definitions ─────────────────────────────────────────────────────────
@@ -87,6 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ThemeProvider>
+          <CustomCursor />
           {children}
         </ThemeProvider>
       </body>

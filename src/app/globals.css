@@ -75,39 +75,67 @@ button, a, input, textarea, select {
 
 /* ════════════════════════════════════════════════════════
    CUSTOM CURSOR (pointer devices only)
+   The native cursor is hidden ONLY once the JS hook confirms it's
+   running and adds .custom-cursor-active to <html>. If the script
+   never runs, the real cursor stays — so the mouse is never lost.
    ════════════════════════════════════════════════════════ */
 @media (pointer: fine) {
-  body { cursor: none; }
+  html.custom-cursor-active,
+  html.custom-cursor-active body { cursor: none; }
+
+  html.custom-cursor-active a,
+  html.custom-cursor-active button,
+  html.custom-cursor-active input,
+  html.custom-cursor-active textarea,
+  html.custom-cursor-active select,
+  html.custom-cursor-active label,
+  html.custom-cursor-active [role="button"],
+  html.custom-cursor-active summary { cursor: none; }
 
   .cursor {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     background: var(--accent);
     border-radius: 50%;
     position: fixed;
     top: 0;
     left: 0;
+    opacity: 0;
     pointer-events: none;
     z-index: 9999;
     transform: translate(-50%, -50%);
-    transition: width 0.2s, height 0.2s;
+    transition: opacity 0.25s ease, width 0.2s, height 0.2s;
     mix-blend-mode: difference;
   }
 
   .cursor-ring {
-    width: 32px;
-    height: 32px;
-    border: 1px solid rgba(184, 245, 200, 0.4);
+    width: 30px;
+    height: 30px;
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
     border-radius: 50%;
     position: fixed;
     top: 0;
     left: 0;
+    opacity: 0;
     pointer-events: none;
     z-index: 9998;
     transform: translate(-50%, -50%);
-    transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
-                width 0.3s,
-                height 0.3s;
+    transition: opacity 0.25s ease, width 0.3s ease, height 0.3s ease,
+                border-color 0.3s ease, background-color 0.3s ease;
+  }
+
+  /* Grows over interactive elements */
+  .cursor-ring.cursor-ring--active {
+    width: 46px;
+    height: 46px;
+    border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+
+  /* Pinches on press */
+  .cursor-ring.cursor-ring--down {
+    width: 22px;
+    height: 22px;
   }
 }
 
@@ -375,10 +403,21 @@ button, a, input, textarea, select {
 }
 
 .satellite-card.open .satellite-dropdown {
-  max-height: 600px;
+  max-height: 900px;
   opacity: 1;
   margin-top: 24px;
 }
+
+/* Expand affordance */
+.satellite-chevron {
+  position: absolute;
+  bottom: 28px;
+  right: 24px;
+  color: var(--muted);
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), color 0.3s ease;
+}
+.satellite-card:hover .satellite-chevron { color: var(--accent); }
+.satellite-card.open .satellite-chevron { transform: rotate(180deg); color: var(--accent); }
 
 /* ════════════════════════════════════════════════════════
    FORM ELEMENTS
@@ -610,4 +649,215 @@ button, a, input, textarea, select {
 @media print {
   .cursor, .cursor-ring { display: none !important; }
   nav { position: static !important; }
+}
+
+/* ════════════════════════════════════════════════════════
+   MOBILE NAV — hamburger + slide-down panel
+   Replaces the old dead-end where links simply vanished.
+   ════════════════════════════════════════════════════════ */
+.nav-hamburger { display: none; }
+
+@media (max-width: 900px) {
+  /* Desktop links hide; hamburger appears. */
+  nav ul.nav-main-links { display: none !important; }
+  .nav-hamburger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text);
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+  }
+  /* Keep the theme label visible inside the mobile panel even though
+     the top-bar label is hidden on small screens. */
+  nav > .theme-toggle .theme-toggle-label { display: none; }
+}
+
+/* Hamburger icon lines */
+.hb-lines { position: relative; width: 18px; height: 12px; }
+.hb-lines span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.3s cubic-bezier(0.23,1,0.32,1), opacity 0.2s ease, top 0.3s ease;
+}
+.hb-lines span:nth-child(1) { top: 0; }
+.hb-lines span:nth-child(2) { top: 5px; }
+.hb-lines span:nth-child(3) { top: 10px; }
+.nav-hamburger[aria-expanded="true"] .hb-lines span:nth-child(1) { top: 5px; transform: rotate(45deg); }
+.nav-hamburger[aria-expanded="true"] .hb-lines span:nth-child(2) { opacity: 0; }
+.nav-hamburger[aria-expanded="true"] .hb-lines span:nth-child(3) { top: 5px; transform: rotate(-45deg); }
+
+/* Slide-down mobile menu panel */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 190;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border-color);
+  padding: 96px 28px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.45s cubic-bezier(0.23,1,0.32,1), opacity 0.35s ease;
+}
+.mobile-menu.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.mobile-menu a {
+  font-family: var(--font-display), 'Cormorant Garamond', Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  text-decoration: none;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  transition: color 0.25s ease, padding-left 0.3s ease;
+}
+.mobile-menu a:hover,
+.mobile-menu a:focus-visible { color: var(--accent); padding-left: 8px; }
+.mobile-menu a .mm-idx {
+  font-family: var(--font-mono), 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+}
+.mobile-menu-footer {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.mobile-menu-footer .mm-label {
+  font-family: var(--font-mono), 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ════════════════════════════════════════════════════════
+   ENGINE HEADER (slim top bar on /engine pages)
+   ════════════════════════════════════════════════════════ */
+.engine-header {
+  position: sticky;
+  top: 0;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 28px;
+  background: linear-gradient(to bottom, var(--nav-fade) 0%, transparent 100%);
+  backdrop-filter: blur(6px);
+}
+.engine-header-logo {
+  font-family: var(--font-sans), Syne, sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.engine-header-logo .eh-back {
+  font-family: var(--font-mono), 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  transition: color 0.25s ease;
+}
+.engine-header-logo:hover .eh-back { color: var(--accent); }
+
+/* ════════════════════════════════════════════════════════
+   AMBIENT MOTION — used sparingly (engine hero, accents)
+   ════════════════════════════════════════════════════════ */
+@keyframes auroraDrift {
+  0%   { transform: translate3d(-6%, -4%, 0) scale(1);    }
+  50%  { transform: translate3d(6%, 4%, 0)  scale(1.12);  }
+  100% { transform: translate3d(-6%, -4%, 0) scale(1);    }
+}
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+@keyframes shimmerLine {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0;  }
+}
+
+.aurora-field {
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 420px;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.5;
+  will-change: transform;
+}
+.aurora-blob--a {
+  width: 360px; height: 360px;
+  left: 8%; top: 0;
+  background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--accent) 38%, transparent), transparent 70%);
+  animation: auroraDrift 16s ease-in-out infinite;
+}
+.aurora-blob--b {
+  width: 300px; height: 300px;
+  right: 12%; top: 40px;
+  background: radial-gradient(circle at 70% 40%, color-mix(in srgb, var(--accent2) 30%, transparent), transparent 70%);
+  animation: auroraDrift 22s ease-in-out infinite reverse;
+}
+
+/* ════════════════════════════════════════════════════════
+   REDUCED MOTION — honor the OS setting everywhere
+   ════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .aurora-field { display: none; }
+}
+
+/* ════════════════════════════════════════════════════════
+   FOCUS VISIBILITY — keyboard users
+   ════════════════════════════════════════════════════════ */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
 }

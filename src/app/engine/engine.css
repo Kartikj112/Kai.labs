@@ -874,3 +874,24 @@
   .matrix-hdr .mx-col-score:first-of-type,
   .matrix-row .mx-col-score:last-of-type { display: flex; }
 }
+
+/* ── Engine hub: anchor the ambient backdrop + entrance ──── */
+.engine-hub { position: relative; }
+
+.module-card {
+  animation: revealUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+.module-grid .module-card:nth-child(2) { animation-delay: 0.06s; }
+.module-grid .module-card:nth-child(3) { animation-delay: 0.12s; }
+.module-grid .module-card:nth-child(4) { animation-delay: 0.18s; }
+.module-grid .module-card:nth-child(5) { animation-delay: 0.24s; }
+.module-grid .module-card:nth-child(6) { animation-delay: 0.30s; }
+
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .module-card { animation: none !important; }
+}

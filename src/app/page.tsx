@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { Nav } from '@/components/layout/Nav'
 import { Footer } from '@/components/layout/Footer'
-import { CustomCursor } from '@/components/ui/CustomCursor'
 import { Hero } from '@/components/sections/Hero/Hero'
 import { Workshops } from '@/components/sections/Workshops/Workshops'
 import { WorkshopDetail } from '@/components/sections/Workshops/WorkshopDetail'
@@ -41,7 +40,6 @@ export default function Home() {
 
   return (
     <>
-      <CustomCursor />
       <Nav activeDetail={activeWorkshop} onBack={closeWorkshop} />
 
       {/* ── Detail overlay ─────────────────────────────────────────────────── */}

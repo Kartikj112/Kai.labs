@@ -5,17 +5,21 @@ import { useRef, useState } from 'react'
 const FORM_ACTION =
   'https://docs.google.com/forms/d/e/1FAIpQLSfKaREgG42EZN1LNpkXbfy6Zw_gVchghcFqUU3M071usB5qRg/formResponse'
 
+const FALLBACK_EMAIL = 'kartikjuyal66@gmail.com'
+
 export function ApplicationForm() {
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess]       = useState(false)
   const [error, setError]           = useState(false)
   const formRef                     = useRef<HTMLFormElement>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    // Let native POST to hidden iframe proceed — do NOT preventDefault
-    if (!formRef.current?.checkValidity()) {
-      e.preventDefault()
-      formRef.current?.reportValidity()
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const form = formRef.current
+    if (!form) return
+
+    if (!form.checkValidity()) {
+      form.reportValidity()
       return
     }
 
@@ -23,12 +27,28 @@ export function ApplicationForm() {
     setError(false)
     setSubmitting(true)
 
-    // Show success after 1.5 s (cross-origin iframe fires but is unreadable)
-    setTimeout(() => {
+    // Google Forms accepts a urlencoded POST. We can't read the opaque
+    // (no-cors) response, but a resolved fetch means the request was sent;
+    // a rejected one means the network failed, which we surface honestly.
+    try {
+      const data = new FormData(form)
+      const body = new URLSearchParams()
+      data.forEach((value, key) => body.append(key, value.toString()))
+
+      await fetch(FORM_ACTION, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString(),
+      })
+
       setSuccess(true)
+      form.reset()
+    } catch {
+      setError(true)
+    } finally {
       setSubmitting(false)
-      formRef.current?.reset()
-    }, 1500)
+    }
   }
 
   const inputStyle: React.CSSProperties = {
@@ -69,15 +89,10 @@ export function ApplicationForm() {
 
   return (
     <>
-      {/* Hidden iframe target for Google Forms POST */}
-      <iframe name="hidden_iframe" id="hidden_iframe" style={{ display: 'none' }} aria-hidden="true" />
-
       <form
         ref={formRef}
-        action={FORM_ACTION}
-        method="POST"
-        target="hidden_iframe"
         onSubmit={handleSubmit}
+        noValidate
         style={{ display: 'flex', flexDirection: 'column', gap: 24 }}
       >
         {/* Full Name */}
@@ -262,6 +277,24 @@ export function ApplicationForm() {
         >
           {submitting ? 'Submitting…' : 'Submit Application'}
         </button>
+
+        {/* Always-available fallback so no applicant is ever stuck */}
+        {!success && (
+          <p style={{
+            fontFamily: 'var(--font-mono), DM Mono, monospace',
+            fontSize: 10, lineHeight: 1.7, color: 'var(--muted)', textAlign: 'center',
+            marginTop: -4,
+          }}>
+            Prefer email? Write to{' '}
+            <a
+              href={`mailto:${FALLBACK_EMAIL}?subject=Satellite%20Lecturer%20Application`}
+              onClick={(e) => e.stopPropagation()}
+              style={{ color: 'var(--accent)', textDecoration: 'none' }}
+            >
+              {FALLBACK_EMAIL}
+            </a>
+          </p>
+        )}
 
         {/* Success */}
         {success && (
