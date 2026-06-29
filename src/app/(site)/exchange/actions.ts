@@ -26,12 +26,16 @@ export async function submitWorkshopAction(
   const title = str(fd, 'title')
   const description = str(fd, 'description')
   const hostName = str(fd, 'hostName')
+  const hostEmail = str(fd, 'hostEmail')
   const startsAt = toIso(str(fd, 'startsAt'))
   const durationMin = parseInt(str(fd, 'durationMin') || '60', 10)
   const maxAttendees = parseInt(str(fd, 'maxAttendees') || '30', 10)
 
-  if (!title || !description || !hostName || !startsAt) {
-    return { ok: false, reason: 'invalid', message: 'Please fill in your name, the title, a description, and a date/time.' }
+  if (!title || !description || !hostName || !hostEmail || !startsAt) {
+    return { ok: false, reason: 'invalid', message: 'Please fill in your name, email, the title, a description, and a date/time.' }
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(hostEmail)) {
+    return { ok: false, reason: 'invalid', message: 'Please enter a valid email address.' }
   }
   if (new Date(startsAt).getTime() < Date.now()) {
     return { ok: false, reason: 'invalid', message: 'Please choose a date and time in the future.' }
@@ -39,6 +43,7 @@ export async function submitWorkshopAction(
 
   return createWorkshopSubmission({
     hostName,
+    hostEmail,
     institution: str(fd, 'institution'),
     hostBio: str(fd, 'hostBio'),
     title,

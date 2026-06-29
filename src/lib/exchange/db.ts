@@ -120,6 +120,7 @@ export async function createWorkshopSubmission(input: HostInput): Promise<Submit
     const body = {
       slug: slugify(input.title),
       host_name: input.hostName,
+      host_email: input.hostEmail || null,
       host_institution: input.institution || null,
       host_bio: input.hostBio || null,
       title: input.title,

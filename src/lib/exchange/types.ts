@@ -29,6 +29,7 @@ export interface WorkshopFull extends WorkshopCard {
 
 export interface HostInput {
   hostName: string
+  hostEmail: string
   institution: string
   hostBio: string
   title: string

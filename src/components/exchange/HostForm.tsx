@@ -34,8 +34,10 @@ export function HostForm() {
     <form action={action}>
       <div className="kx-row">
         <Field label="Your name" name="hostName" required placeholder="Jane Doe" />
-        <Field label="Institution" name="institution" placeholder="University / Lab" />
+        <Field label="Email" name="hostEmail" type="email" required placeholder="you@example.com" />
       </div>
+
+      <Field label="Institution" name="institution" placeholder="University / Lab" />
 
       <Field label="Workshop title" name="title" required placeholder="e.g. Intro to Metagenomic Assembly" />
       <TextAreaField label="Description" name="description" required rows={5} placeholder="What will attendees learn? What should they bring or know beforehand?" />
