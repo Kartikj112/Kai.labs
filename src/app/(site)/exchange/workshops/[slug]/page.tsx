@@ -54,7 +54,7 @@ export default async function WorkshopEventPage({ params }: Props) {
   const full = w.seatsRemaining !== null && w.seatsRemaining <= 0
 
   return (
-    <main style={{ paddingTop: 64 }}>
+    <main style={{ paddingTop: 96 }}>
       <section style={{ padding: '110px 40px 120px', maxWidth: 880, margin: '0 auto' }}>
         <Link href="/exchange" style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 11, letterSpacing: '0.1em', color: 'var(--muted)', textDecoration: 'none' }}>
           ← Kai Exchange

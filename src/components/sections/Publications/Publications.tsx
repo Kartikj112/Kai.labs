@@ -26,8 +26,7 @@ export function Publications() {
 
       {/* Publication list */}
       <div style={{
-        display: 'flex', flexDirection: 'column', gap: 1,
-        background: 'var(--border-color)',
+        display: 'flex', flexDirection: 'column', gap: 18,
       }}>
         {publications.map((pub, i) => (
           <a
@@ -64,14 +63,14 @@ export function Publications() {
           margin: '80px 0 40px', display: 'flex', alignItems: 'center', gap: 14,
         }}
       >
-        <span style={{ width: 20, height: 1, background: 'var(--accent)', display: 'inline-block', flexShrink: 0 }} />
+        <span style={{ width: 20, height: 3, borderRadius: 999, background: 'var(--accent)', boxShadow: '0 0 10px var(--accent-glow)', display: 'inline-block', flexShrink: 0 }} />
         Satellite Instructors
       </div>
 
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-        gap: 20,
+        gap: 24,
       }}>
         {satelliteInstructors.map((inst, i) => (
           <SatelliteCard

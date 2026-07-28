@@ -22,7 +22,7 @@ export default async function ApplyPage({ params }: Props) {
   if (!w) notFound()
 
   return (
-    <main style={{ paddingTop: 64, minHeight: '100vh' }}>
+    <main style={{ paddingTop: 96, minHeight: '100vh' }}>
       <section style={{ padding: '120px 40px 120px', maxWidth: 720, margin: '0 auto' }}>
         <Link href={`/exchange/workshops/${w.slug}`} style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 11, letterSpacing: '0.1em', color: 'var(--muted)', textDecoration: 'none' }}>
           ← {w.title}

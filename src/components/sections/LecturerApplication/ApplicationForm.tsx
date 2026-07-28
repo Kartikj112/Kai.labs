@@ -54,13 +54,15 @@ export function ApplicationForm() {
   const inputStyle: React.CSSProperties = {
     width: '100%',
     background: 'var(--surface)',
-    border: '1px solid var(--border-color)',
+    border: '1px solid transparent',
+    borderRadius: 18,
     color: 'var(--text)',
     fontFamily: 'var(--font-mono), DM Mono, monospace',
     fontSize: 13,
     padding: '14px 16px',
     outline: 'none',
-    transition: 'border-color 0.3s, background 0.3s',
+    boxShadow: 'inset 5px 6px 12px var(--shadow-um), inset -4px -4px 10px var(--shadow-lu)',
+    transition: 'border-color 0.3s, background 0.3s, box-shadow 0.3s',
     appearance: 'none' as const,
   }
 
@@ -78,12 +80,14 @@ export function ApplicationForm() {
 
   const focusStyle = {
     onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-      e.target.style.borderColor = 'rgba(192, 90, 93,.4)'
+      e.target.style.borderColor = 'color-mix(in srgb, var(--accent) 45%, transparent)'
       e.target.style.background  = 'var(--hover)'
+      e.target.style.boxShadow   = 'inset 4px 5px 10px var(--shadow-um), inset -3px -3px 8px var(--shadow-lu), 0 0 0 3px var(--accent-glow)'
     },
     onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-      e.target.style.borderColor = 'var(--border-color)'
+      e.target.style.borderColor = 'transparent'
       e.target.style.background  = 'var(--surface)'
+      e.target.style.boxShadow   = 'inset 5px 6px 12px var(--shadow-um), inset -4px -4px 10px var(--shadow-lu)'
     },
   }
 
@@ -258,21 +262,24 @@ export function ApplicationForm() {
             color: '#050507',
             fontFamily: 'var(--font-mono), DM Mono, monospace',
             fontSize: 11, letterSpacing: '0.15em',
-            textTransform: 'uppercase', padding: '16px 40px',
-            border: 'none', cursor: submitting ? 'not-allowed' : 'pointer',
-            transition: 'background 0.3s, transform 0.2s',
+            textTransform: 'uppercase', padding: '17px 40px',
+            border: 'none', borderRadius: 999, cursor: submitting ? 'not-allowed' : 'pointer',
+            boxShadow: submitting ? 'none' : '6px 8px 20px var(--accent-glow), -4px -4px 12px var(--shadow-lu)',
+            transition: 'background 0.3s, transform 0.3s cubic-bezier(0.23,1,0.32,1), box-shadow 0.3s',
             width: '100%', marginTop: 16,
             opacity: submitting ? 0.4 : 1,
           }}
           onMouseEnter={e => {
             if (!submitting) {
               e.currentTarget.style.background = 'var(--accent2)'
-              e.currentTarget.style.transform  = 'translateY(-2px)'
+              e.currentTarget.style.transform  = 'translateY(-3px)'
+              e.currentTarget.style.boxShadow  = '10px 14px 28px var(--accent-glow), -5px -5px 14px var(--shadow-lu)'
             }
           }}
           onMouseLeave={e => {
             e.currentTarget.style.background = 'var(--accent)'
             e.currentTarget.style.transform  = 'translateY(0)'
+            e.currentTarget.style.boxShadow  = submitting ? 'none' : '6px 8px 20px var(--accent-glow), -4px -4px 12px var(--shadow-lu)'
           }}
         >
           {submitting ? 'Submitting…' : 'Submit Application'}
@@ -299,7 +306,7 @@ export function ApplicationForm() {
         {/* Success */}
         {success && (
           <div style={{
-            padding: '20px 24px', borderRadius: 4,
+            padding: '20px 24px', borderRadius: 18,
             background: 'rgba(192, 90, 93,.08)',
             border: '1px solid rgba(192, 90, 93,.2)',
             fontFamily: 'var(--font-mono), DM Mono, monospace',
@@ -312,7 +319,7 @@ export function ApplicationForm() {
         {/* Error */}
         {error && (
           <div style={{
-            padding: '20px 24px', borderRadius: 4,
+            padding: '20px 24px', borderRadius: 18,
             background: 'rgba(255,106,42,.08)',
             border: '1px solid rgba(255,106,42,.2)',
             fontFamily: 'var(--font-mono), DM Mono, monospace',

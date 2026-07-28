@@ -26,7 +26,8 @@ export function WorkshopDetail({ workshop }: WorkshopDetailProps) {
           padding: '140px 40px 64px',
           position: 'relative',
           overflow: 'hidden',
-          borderBottom: '1px solid var(--border-color)',
+          borderBottom: 'none',
+          boxShadow: 'inset 0 -1px 0 var(--shadow-lu), inset 0 -8px 16px -14px var(--shadow-um)',
         }}
       >
         {/* Subtle radial bg */}
@@ -92,13 +93,15 @@ export function WorkshopDetail({ workshop }: WorkshopDetailProps) {
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'minmax(0,1fr) 380px',
-        gap: 1,
-        background: 'var(--border-color)',
+        gap: 40,
+        padding: '0 40px',
+        maxWidth: 1400,
+        margin: '0 auto',
       }}
         className="detail-body-grid"
       >
         {/* Left: content */}
-        <div style={{ padding: '64px 40px', background: 'var(--bg)' }}>
+        <div style={{ padding: '64px 0' }}>
 
           {/* Overview */}
           <p className="detail-section-title">Overview</p>
@@ -112,10 +115,10 @@ export function WorkshopDetail({ workshop }: WorkshopDetailProps) {
           {/* Prerequisites */}
           <div style={{ marginBottom: 56 }}>
             <p className="detail-section-title">Prerequisites</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 1, background: 'var(--border-color)', marginTop: 20 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 20 }}>
               {workshop.prerequisites.map((p, i) => (
-                <div key={i} style={{
-                  background: 'var(--bg)', padding: '20px 24px',
+                <div key={i} className="neo-sm" style={{
+                  background: 'var(--surface)', padding: '20px 24px',
                   display: 'flex', alignItems: 'flex-start', gap: 16,
                 }}>
                   <CheckIcon />
@@ -130,17 +133,17 @@ export function WorkshopDetail({ workshop }: WorkshopDetailProps) {
 
           {/* Modules */}
           <p className="detail-section-title">Curriculum</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 1, background: 'var(--border-color)', marginBottom: 56 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 56 }}>
             {workshop.modules.map((m) => (
               <div
                 key={m.num}
+                className="neo"
                 style={{
-                  background: 'var(--bg)', padding: '24px 28px',
+                  background: 'var(--surface)', padding: '24px 28px',
                   display: 'flex', gap: 20, alignItems: 'flex-start',
-                  transition: 'background 0.3s',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'var(--hover)' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface)' }}
               >
                 <span style={{
                   fontFamily: 'var(--font-mono), DM Mono, monospace',
@@ -173,12 +176,15 @@ export function WorkshopDetail({ workshop }: WorkshopDetailProps) {
         </div>
 
         {/* Right: sticky sidebar */}
-        <div style={{
+        <div className="neo-elevated" style={{
           background: 'var(--surface)',
+          borderRadius: 'var(--r-lg)',
           padding: '48px 36px',
           position: 'sticky',
-          top: 88,
+          top: 108,
           alignSelf: 'start',
+          marginTop: 64,
+          marginBottom: 40,
         }}>
           {/* Register label */}
           <p style={{
@@ -195,8 +201,9 @@ export function WorkshopDetail({ workshop }: WorkshopDetailProps) {
 
           {/* Registration placeholder */}
           <div style={{
-            border: '1px dashed rgba(192, 90, 93,.2)',
+            border: '1px dashed rgba(192, 90, 93,.25)',
             background: 'rgba(192, 90, 93,.02)',
+            borderRadius: 'var(--r-md)',
             padding: '40px 28px',
             textAlign: 'center',
             marginBottom: 20,

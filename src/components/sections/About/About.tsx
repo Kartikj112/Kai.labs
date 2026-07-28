@@ -18,33 +18,34 @@ export function About() {
     >
       {/* ── Left: bio ── */}
       <div>
-        {/* Instructor photo */}
+        {/* Instructor photo — a raised neomorphic disc frame nested around
+            the photo. Both circles get an explicit, equal width/height and
+            are centered with flexbox rather than an absolutely-positioned
+            sibling ring, so the frame can never stretch into an ellipse
+            regardless of the grid/flex context it sits in. */}
         <div
           className="reveal"
-          style={{ marginBottom: 40, position: 'relative', display: 'inline-block' }}
+          style={{ marginBottom: 44, display: 'inline-flex' }}
         >
           <div
+            className="neo"
             style={{
-              width: 100, height: 100, borderRadius: '50%',
-              overflow: 'hidden', border: '1px solid var(--border-color)',
-              position: 'relative',
+              width: 148, height: 148, borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'var(--bg)', flexShrink: 0,
             }}
           >
-            {/* Fallback avatar if image not present */}
-            <Image src="/Kartik.jpg" alt="Kartik Juyal" fill style={{ objectFit: 'cover' }} />
+            <div
+              style={{
+                width: 116, height: 116, borderRadius: '50%',
+                overflow: 'hidden', position: 'relative',
+                border: '1.5px solid var(--accent-soft)',
+                boxShadow: 'inset 0 0 0 1px var(--shadow-um)',
+              }}
+            >
+              <Image src="/Kartik.jpg" alt="Kartik Juyal" fill sizes="116px" style={{ objectFit: 'cover' }} />
+            </div>
           </div>
-          {/* Accent ring */}
-          <span
-            aria-hidden
-            style={{
-              position: 'absolute',
-              inset: -5,
-              borderRadius: '50%',
-              border: '1px solid rgba(192, 90, 93,.18)',
-              pointerEvents: 'none',
-              display: 'block',
-            }}
-          />
         </div>
 
         <SectionLabel>Instructor</SectionLabel>
@@ -86,18 +87,17 @@ export function About() {
       </div>
 
       {/* ── Right: stats ── */}
-      <div style={{ paddingTop: 60 }}>
+      <div style={{ paddingTop: 60, display: 'flex', flexDirection: 'column', gap: 14 }}>
         {aboutStats.map((stat, i) => (
           <div
             key={stat.label}
-            className={`reveal${i > 0 ? ` reveal-delay-${i}` : ''}`}
+            className={`neo reveal${i > 0 ? ` reveal-delay-${i}` : ''}`}
             style={{
-              borderTop: '1px solid var(--border-color)',
-              padding: '24px 0',
+              padding: '20px 26px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'baseline',
-              ...(i === aboutStats.length - 1 ? { borderBottom: '1px solid var(--border-color)' } : {}),
+              background: 'var(--surface)',
             }}
           >
             <span style={{

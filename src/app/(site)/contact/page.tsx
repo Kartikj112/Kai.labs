@@ -6,7 +6,7 @@ import { useScrollReveal } from '@/lib/hooks/useScrollReveal'
 export default function ContactPage() {
   useScrollReveal()
   return (
-    <main style={{ paddingTop: 64 }}>
+    <main style={{ paddingTop: 96 }}>
       <Contact />
     </main>
   )

@@ -69,7 +69,7 @@ export function InterestPanel({ workshopId }: InterestPanelProps) {
           }}>
             Let us know if you'd join
           </p>
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 12 }}>
             {(['yes', 'no'] as const).map((v) => (
               <button
                 key={v}
@@ -78,23 +78,24 @@ export function InterestPanel({ workshopId }: InterestPanelProps) {
                   flex: 1,
                   fontFamily: 'var(--font-mono), DM Mono, monospace',
                   fontSize: 11, letterSpacing: '0.2em',
-                  textTransform: 'uppercase', padding: '14px 0',
-                  border: '1px solid var(--border-color)',
-                  background: 'none', color: 'var(--muted)',
+                  textTransform: 'uppercase', padding: '15px 0',
+                  border: 'none', borderRadius: 999,
+                  background: 'var(--bg)', color: 'var(--muted)',
+                  boxShadow: '5px 6px 12px var(--shadow-um), -4px -4px 10px var(--shadow-lu)',
                   cursor: 'pointer',
-                  transition: 'background 0.25s, color 0.25s, border-color 0.25s, transform 0.2s',
+                  transition: 'background 0.25s, color 0.25s, box-shadow 0.3s, transform 0.3s cubic-bezier(0.23,1,0.32,1)',
                 }}
                 onMouseEnter={e => {
                   const el = e.currentTarget
-                  el.style.color = v === 'yes' ? 'var(--text)' : 'rgba(255,100,100,.8)'
-                  el.style.borderColor = v === 'yes' ? 'var(--accent)' : 'rgba(255,100,100,.5)'
-                  el.style.transform = 'translateY(-2px)'
+                  el.style.color = v === 'yes' ? 'var(--accent)' : 'rgba(255,100,100,.8)'
+                  el.style.transform = 'translateY(-3px)'
+                  el.style.boxShadow = '8px 10px 18px var(--shadow-um-2), -5px -5px 12px var(--shadow-lu-2)'
                 }}
                 onMouseLeave={e => {
                   const el = e.currentTarget
                   el.style.color = 'var(--muted)'
-                  el.style.borderColor = 'var(--border-color)'
                   el.style.transform = 'translateY(0)'
+                  el.style.boxShadow = '5px 6px 12px var(--shadow-um), -4px -4px 10px var(--shadow-lu)'
                 }}
               >
                 {v === 'yes' ? 'Yes, I\'d Join' : 'Not Right Now'}
@@ -122,7 +123,7 @@ export function InterestPanel({ workshopId }: InterestPanelProps) {
           {isVotedYes && (
             <>
               {/* Progress bar */}
-              <div style={{ background: 'var(--border-color)', height: 2, width: '100%', marginBottom: 14, overflow: 'hidden' }}>
+              <div style={{ background: 'var(--bg)', borderRadius: 999, height: 6, width: '100%', marginBottom: 14, overflow: 'hidden', boxShadow: 'inset 2px 2px 5px var(--shadow-um), inset -1px -1px 3px var(--shadow-lu)' }}>
                 <div className="interest-bar-fill" style={{ width: `${barWidth}%` }} />
               </div>
               <p style={{

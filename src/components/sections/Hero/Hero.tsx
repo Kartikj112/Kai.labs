@@ -17,6 +17,11 @@ export function Hero() {
     >
       <DnaCanvas />
 
+      <div className="aurora-field" aria-hidden="true" style={{ zIndex: 0 }}>
+        <span className="aurora-blob aurora-blob--a" />
+        <span className="aurora-blob aurora-blob--b" />
+      </div>
+
       {/* Sub-brand badge */}
       <div
         className="animate-fade-up"

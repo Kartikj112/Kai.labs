@@ -13,6 +13,7 @@ const config: Config = {
       colors: {
         bg:       'var(--bg)',
         surface:  'var(--surface)',
+        surface2: 'var(--surface-2)',
         hover:    'var(--hover)',
         border:   'var(--border-color)',
         text:     'var(--text)',
@@ -20,6 +21,22 @@ const config: Config = {
         accent:   'var(--accent)',
         accent2:  'var(--accent2)',
         warning:  '#ff6a2a',
+      },
+
+      // ── Spatiomorphic / neomorphic shape system ────────────────────────────
+      borderRadius: {
+        sm:  'var(--r-sm)',
+        md:  'var(--r-md)',
+        lg:  'var(--r-lg)',
+        xl:  'var(--r-xl)',
+        pill:'var(--r-pill)',
+      },
+      boxShadow: {
+        'neo':        '12px 14px 30px var(--shadow-um), -9px -9px 22px var(--shadow-lu)',
+        'neo-sm':     '7px 8px 18px var(--shadow-um), -6px -6px 14px var(--shadow-lu)',
+        'neo-lift':   '20px 24px 44px var(--shadow-um-2), -10px -10px 28px var(--shadow-lu-2)',
+        'neo-inset':  'inset 6px 6px 14px var(--shadow-um), inset -5px -5px 11px var(--shadow-lu)',
+        'neo-elevated': '0 22px 48px var(--shadow-um-2), 0 2px 0 var(--shadow-lu) inset',
       },
 
       // ── Typography ────────────────────────────────────────────────────────

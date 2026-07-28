@@ -12,8 +12,8 @@ export function InitiativeBadge({ href = '/' }: { href?: string }) {
         display: 'inline-flex',
         alignItems: 'center',
         gap: 8,
-        padding: '5px 12px',
-        border: '1px solid var(--border-color)',
+        padding: '6px 14px',
+        border: 'none',
         borderRadius: 999,
         textDecoration: 'none',
         fontFamily: 'var(--font-mono), DM Mono, monospace',
@@ -22,7 +22,8 @@ export function InitiativeBadge({ href = '/' }: { href?: string }) {
         textTransform: 'uppercase',
         color: 'var(--muted)',
         background: 'var(--accent-soft)',
-        transition: 'color 0.3s, border-color 0.3s',
+        boxShadow: '4px 5px 10px var(--shadow-um), -3px -3px 8px var(--shadow-lu)',
+        transition: 'color 0.3s, box-shadow 0.3s, transform 0.3s',
       }}
       className="initiative-badge"
     >

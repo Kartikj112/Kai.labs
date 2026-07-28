@@ -22,6 +22,10 @@ export default function KaiLabsHome() {
             background: 'radial-gradient(ellipse 70% 50% at 75% 30%, var(--accent-soft) 0%, transparent 60%)',
           }}
         />
+        <div className="aurora-field" aria-hidden="true" style={{ zIndex: 0 }}>
+          <span className="aurora-blob aurora-blob--a" />
+          <span className="aurora-blob aurora-blob--b" />
+        </div>
 
         <span
           className="animate-fade-up"
@@ -85,7 +89,7 @@ export default function KaiLabsHome() {
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-            gap: 20,
+            gap: 24,
           }}
         >
           <FeatureCard

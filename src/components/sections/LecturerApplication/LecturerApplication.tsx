@@ -107,11 +107,11 @@ export function LecturerApplication() {
             className="reveal reveal-delay-4"
             style={{
               display: 'flex', flexDirection: 'column',
-              gap: 1, background: 'var(--border-color)', marginBottom: 32,
+              gap: 14, marginBottom: 32,
             }}
           >
             {benefits.map(({ icon, title, desc }) => (
-              <div key={title} style={{
+              <div key={title} className="neo" style={{
                 background: 'var(--surface)',
                 padding: '24px 28px',
                 display: 'flex', alignItems: 'flex-start', gap: 20,
@@ -136,10 +136,10 @@ export function LecturerApplication() {
 
         {/* Right: form */}
         <div
-          className="reveal reveal-delay-5"
+          className="reveal reveal-delay-5 neo"
           style={{
             background: 'var(--bg)',
-            border: '1px solid var(--border-color)',
+            border: '1px solid transparent',
             padding: '48px 40px',
           }}
         >
@@ -149,7 +149,7 @@ export function LecturerApplication() {
             textTransform: 'uppercase', color: 'var(--accent)',
             marginBottom: 32, display: 'flex', alignItems: 'center', gap: 14,
           }}>
-            <span style={{ width: 20, height: 1, background: 'var(--accent)', display: 'inline-block', flexShrink: 0 }} />
+            <span style={{ width: 20, height: 3, borderRadius: 999, background: 'var(--accent)', boxShadow: '0 0 10px var(--accent-glow)', display: 'inline-block', flexShrink: 0 }} />
             Application Form
           </div>
 
