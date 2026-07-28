@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main style={{ paddingTop: 96 }}>
+    <main style={{ paddingTop: 64 }}>
       {/* ── Hero / lede ──────────────────────────────────────── */}
       <section style={{ padding: '120px 40px 72px', maxWidth: 1000, margin: '0 auto' }}>
         <span
@@ -39,14 +39,8 @@ export default function AboutPage() {
       </section>
 
       {/* ── Mission ──────────────────────────────────────────── */}
-      <section style={{ padding: '20px 40px 60px' }}>
-        <div
-          className="neo"
-          style={{
-            maxWidth: 1000, margin: '0 auto', padding: '48px 56px',
-            background: 'var(--surface)', display: 'grid', gridTemplateColumns: 'minmax(0,1fr)', gap: 0,
-          }}
-        >
+      <section style={{ padding: '40px 40px', borderTop: '1px solid var(--border-color)' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(0,1fr)', gap: 0 }}>
           <span
             style={{
               fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 11,
@@ -84,9 +78,9 @@ export default function AboutPage() {
               href={p.href}
               className="feature-card"
               style={{
-                display: 'flex', flexDirection: 'column', gap: 12, padding: '26px 24px',
-                border: '1px solid transparent', borderRadius: 'var(--r-lg)', background: 'var(--surface)',
-                textDecoration: 'none',
+                display: 'flex', flexDirection: 'column', gap: 12, padding: '24px 22px',
+                border: '1px solid var(--border-color)', borderRadius: 14, background: 'var(--surface)',
+                textDecoration: 'none', transition: 'border-color 0.4s, transform 0.4s',
               }}
             >
               <span style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 11, color: 'var(--accent)', letterSpacing: '0.16em' }}>
@@ -143,21 +137,12 @@ export default function AboutPage() {
           Founder
         </span>
 
-        <div className="about-grid" style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 40, alignItems: 'start' }}>
-          <div
-            className="neo"
-            style={{
-              width: 148, height: 148, borderRadius: '50%',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: 'var(--bg)', flexShrink: 0,
-            }}
-          >
-            <div style={{
-              width: 116, height: 116, borderRadius: '50%', overflow: 'hidden', position: 'relative',
-              border: '1.5px solid var(--accent-soft)', boxShadow: 'inset 0 0 0 1px var(--shadow-um)',
-            }}>
-              <Image src="/Kartik.jpg" alt={founderName} fill sizes="116px" style={{ objectFit: 'cover' }} />
+        <div className="about-grid" style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: 40, alignItems: 'start' }}>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <div style={{ width: 120, height: 120, borderRadius: '50%', overflow: 'hidden', border: '1px solid var(--border-color)', position: 'relative' }}>
+              <Image src="/Kartik.jpg" alt={founderName} fill style={{ objectFit: 'cover' }} />
             </div>
+            <span aria-hidden style={{ position: 'absolute', inset: -5, borderRadius: '50%', border: '1px solid var(--accent-soft)', pointerEvents: 'none' }} />
           </div>
 
           <div>

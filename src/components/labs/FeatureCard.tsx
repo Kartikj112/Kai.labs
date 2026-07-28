@@ -21,11 +21,23 @@ export function FeatureCard({ index, title, description, href, cta, status, dela
         animationDelay: `${delay}s`,
         display: 'flex', flexDirection: 'column', gap: 14,
         padding: '28px 26px',
-        border: '1px solid transparent',
-        borderRadius: 'var(--r-lg)',
+        border: '1px solid var(--border-color)',
+        borderRadius: 14,
         textDecoration: 'none',
         background: 'var(--surface)',
         position: 'relative',
+        overflow: 'hidden',
+        transition: 'border-color 0.4s, transform 0.4s, background 0.4s',
+      }}
+      onMouseEnter={(e) => {
+        const el = e.currentTarget
+        el.style.transform = 'translateY(-4px)'
+        el.style.borderColor = 'color-mix(in srgb, var(--accent) 55%, transparent)'
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget
+        el.style.transform = 'translateY(0)'
+        el.style.borderColor = 'var(--border-color)'
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -42,9 +54,8 @@ export function FeatureCard({ index, title, description, href, cta, status, dela
             style={{
               fontFamily: 'var(--font-mono), DM Mono, monospace',
               fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase',
-              color: 'var(--muted)', background: 'var(--surface-2)',
-              boxShadow: '3px 4px 8px var(--shadow-um), -2px -2px 6px var(--shadow-lu)',
-              borderRadius: 999, padding: '4px 10px',
+              color: 'var(--muted)', border: '1px solid var(--border-color)',
+              borderRadius: 999, padding: '3px 9px',
             }}
           >
             {status}

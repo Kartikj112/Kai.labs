@@ -11,7 +11,7 @@ export function KaiLabsFooter() {
   const year = new Date().getFullYear()
 
   return (
-    <footer style={{ borderTop: 'none', boxShadow: 'inset 0 1px 0 var(--shadow-lu), inset 0 6px 14px -10px var(--shadow-um)', padding: '52px 40px 36px', background: 'var(--surface)' }}>
+    <footer style={{ borderTop: '1px solid var(--border-color)', padding: '48px 40px 36px' }}>
       <div
         style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
@@ -68,7 +68,7 @@ export function KaiLabsFooter() {
         style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           flexWrap: 'wrap', gap: 12, maxWidth: 1200, margin: '36px auto 0',
-          paddingTop: 24, borderTop: 'none', boxShadow: 'inset 0 1px 0 var(--shadow-lu), inset 0 6px 14px -10px var(--shadow-um)',
+          paddingTop: 24, borderTop: '1px solid var(--border-color)',
         }}
       >
         <p style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 11, color: 'var(--muted)', letterSpacing: '0.08em' }}>

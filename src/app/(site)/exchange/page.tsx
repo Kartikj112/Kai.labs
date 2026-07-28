@@ -15,7 +15,7 @@ export default async function ExchangePage() {
   const live = isExchangeConfigured()
 
   return (
-    <main style={{ paddingTop: 96 }}>
+    <main style={{ paddingTop: 64 }}>
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section style={{ padding: '120px 40px 56px', maxWidth: 1100, margin: '0 auto', position: 'relative', overflow: 'hidden' }}>
         <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 70% 50% at 80% 20%, var(--accent-soft) 0%, transparent 60%)' }} />

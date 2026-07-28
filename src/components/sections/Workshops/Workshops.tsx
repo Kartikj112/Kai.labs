@@ -43,7 +43,9 @@ export function Workshops({ onOpenWorkshop }: WorkshopsProps) {
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: 28,
+          gap: 1,
+          background: 'var(--border-color)',
+          border: '1px solid var(--border-color)',
         }}
       >
         {workshops.map((workshop, i) => (

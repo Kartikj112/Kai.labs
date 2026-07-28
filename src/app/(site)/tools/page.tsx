@@ -41,8 +41,9 @@ export default function ToolsPage() {
           className="feature-card animate-fade-up"
           style={{
             animationDelay: '0.3s', display: 'flex', flexDirection: 'column', gap: 14,
-            padding: '28px 26px', border: '1px solid transparent', borderRadius: 'var(--r-lg)',
+            padding: '28px 26px', border: '1px solid var(--border-color)', borderRadius: 14,
             textDecoration: 'none', background: 'var(--surface)',
+            transition: 'border-color 0.4s, transform 0.4s',
           }}
         >
           <span style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 11, color: 'var(--accent)', letterSpacing: '0.16em' }}>

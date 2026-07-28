@@ -99,9 +99,7 @@ export function SatelliteCard({ instructor, revealDelay = 1 }: SatelliteCardProp
           fontFamily: 'var(--font-mono), DM Mono, monospace',
           fontSize: 9, letterSpacing: '0.12em',
           textTransform: 'uppercase', color: 'var(--accent)',
-          borderRadius: 999, padding: '4px 10px',
-          background: 'var(--surface-2)',
-          boxShadow: '3px 4px 8px var(--shadow-um), -2px -2px 6px var(--shadow-lu)',
+          border: '1px solid rgba(192, 90, 93,.2)', padding: '4px 8px',
         }}>
           {instructor.badge}
         </span>
@@ -109,22 +107,16 @@ export function SatelliteCard({ instructor, revealDelay = 1 }: SatelliteCardProp
 
       {/* Photo */}
       <div style={{
-        width: 104, height: 104, marginBottom: 24,
-        borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'var(--surface)',
-        boxShadow: '6px 7px 16px var(--shadow-um), -5px -5px 12px var(--shadow-lu)',
-        flexShrink: 0,
+        width: 90, height: 90, marginBottom: 24,
+        borderRadius: '50%', overflow: 'hidden',
+        position: 'relative', border: '1px solid var(--border-color)',
       }}>
-        <div style={{
-          width: 82, height: 82, borderRadius: '50%', overflow: 'hidden',
-          position: 'relative', border: '1px solid var(--border-color)',
-        }}>
         {showPhoto ? (
           <Image
             src={instructor.photoSrc as string}
             alt={instructor.name}
             fill
-            sizes="82px"
+            sizes="90px"
             style={{ objectFit: 'cover' }}
             onError={() => setImgFailed(true)}
           />
@@ -144,7 +136,6 @@ export function SatelliteCard({ instructor, revealDelay = 1 }: SatelliteCardProp
             }}>Photo</span>
           </div>
         )}
-        </div>
       </div>
 
       <p style={{
@@ -178,22 +169,21 @@ export function SatelliteCard({ instructor, revealDelay = 1 }: SatelliteCardProp
               fontFamily: 'var(--font-mono), DM Mono, monospace',
               fontSize: 11, lineHeight: 1.9, color: 'var(--muted)',
               marginBottom: 20, paddingTop: 16,
-              boxShadow: 'inset 0 1px 0 var(--shadow-lu), inset 0 4px 10px -8px var(--shadow-um)',
+              borderTop: '1px solid var(--border-color)',
             }}>
               {instructor.intro}
             </p>
           )}
 
           {instructor.skills && instructor.skills.length > 0 && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 20 }}>
               {instructor.skills.map((skill) => (
                 <span key={skill} style={{
                   fontFamily: 'var(--font-mono), DM Mono, monospace',
                   fontSize: 9, letterSpacing: '0.1em',
-                  textTransform: 'uppercase', borderRadius: 999,
-                  padding: '5px 10px', color: 'var(--accent)',
-                  background: 'var(--surface-2)',
-                  boxShadow: '3px 4px 8px var(--shadow-um), -2px -2px 6px var(--shadow-lu)',
+                  textTransform: 'uppercase', border: '1px solid var(--border-color)',
+                  padding: '4px 8px', color: 'var(--accent)',
+                  background: 'rgba(192, 90, 93,.03)',
                 }}>
                   {skill}
                 </span>

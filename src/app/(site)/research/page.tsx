@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ResearchPage() {
   return (
-    <main style={{ paddingTop: 96 }}>
+    <main style={{ paddingTop: 64 }}>
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section style={{ padding: '120px 40px 64px', maxWidth: 1100, margin: '0 auto' }}>
         <span
@@ -58,15 +58,14 @@ export default function ResearchPage() {
           Research Areas
         </span>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
           {researchAreas.map((area) => (
             <article
               key={area.id}
-              className="neo"
               style={{
                 display: 'flex', flexDirection: 'column', gap: 14,
-                padding: '28px 26px', border: '1px solid transparent',
-                background: 'var(--surface)',
+                padding: '28px 26px', border: '1px solid var(--border-color)',
+                borderRadius: 14, background: 'var(--surface)',
               }}
             >
               <span style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 11, color: 'var(--accent)', letterSpacing: '0.16em' }}>
@@ -85,9 +84,7 @@ export default function ResearchPage() {
                     style={{
                       fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 10,
                       letterSpacing: '0.06em', color: 'var(--muted)',
-                      background: 'var(--surface-2)',
-                      boxShadow: '3px 4px 8px var(--shadow-um), -2px -2px 6px var(--shadow-lu)',
-                      borderRadius: 999, padding: '4px 10px',
+                      border: '1px solid var(--border-color)', borderRadius: 999, padding: '4px 10px',
                     }}
                   >
                     {t}
@@ -112,7 +109,7 @@ export default function ResearchPage() {
             Selected Publications
           </span>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 1, background: 'var(--border-color)' }}>
             {publications.map((pub) => (
               <a key={pub.href} href={pub.href} target="_blank" rel="noopener noreferrer" className="pub-item">
                 <span style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 12, color: 'var(--accent)', letterSpacing: '0.1em' }}>

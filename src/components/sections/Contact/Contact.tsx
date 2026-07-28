@@ -120,27 +120,25 @@ export function Contact() {
             rel="noopener noreferrer"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
-              padding: '11px 16px',
-              border: 'none',
+              padding: '10px 14px',
+              border: '1px solid var(--border-color)',
               borderRadius: 999,
-              background: 'var(--surface)',
-              boxShadow: '5px 6px 12px var(--shadow-um), -4px -4px 10px var(--shadow-lu)',
               textDecoration: 'none', color: 'var(--text)',
               fontFamily: 'var(--font-mono), DM Mono, monospace',
               fontSize: 11, letterSpacing: '0.08em',
-              transition: 'box-shadow 0.3s, color 0.3s, transform 0.3s cubic-bezier(0.23,1,0.32,1)',
+              transition: 'background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.2s',
             }}
             onMouseEnter={e => {
               const el = e.currentTarget
-              el.style.transform    = 'translateY(-3px)'
-              el.style.color        = 'var(--accent)'
-              el.style.boxShadow    = '8px 10px 18px var(--shadow-um-2), -5px -5px 12px var(--shadow-lu-2)'
+              el.style.transform    = 'translateY(-1px)'
+              el.style.borderColor  = 'rgba(192, 90, 93,.25)'
+              el.style.background   = 'var(--hover)'
             }}
             onMouseLeave={e => {
               const el = e.currentTarget
               el.style.transform    = 'translateY(0)'
-              el.style.color        = 'var(--text)'
-              el.style.boxShadow    = '5px 6px 12px var(--shadow-um), -4px -4px 10px var(--shadow-lu)'
+              el.style.borderColor  = 'var(--border-color)'
+              el.style.background   = 'transparent'
             }}
           >
             {icon}

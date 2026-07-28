@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function HostPage() {
   return (
-    <main style={{ paddingTop: 96, minHeight: '100vh' }}>
+    <main style={{ paddingTop: 64, minHeight: '100vh' }}>
       <section style={{ padding: '120px 40px 120px', maxWidth: 720, margin: '0 auto' }}>
         <Link href="/exchange" style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 11, letterSpacing: '0.1em', color: 'var(--muted)', textDecoration: 'none' }}>
           ← Kai Exchange
