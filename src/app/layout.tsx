@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Cormorant_Garamond, DM_Mono, Syne } from 'next/font/google'
-import { ThemeProvider } from '@/providers/ThemeProvider'
 import { CustomCursor } from '@/components/ui/CustomCursor'
 import '@/app/globals.css'
 
@@ -53,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      // Default to dark — the inline script below overrides before paint
+      // Site is dark-theme only.
       data-theme="dark"
       className={`${cormorant.variable} ${dmMono.variable} ${syne.variable}`}
     >
@@ -70,30 +69,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             `,
           }}
         />
-        {/*
-          Inline theme script: runs synchronously before first paint to avoid
-          flash of wrong theme. Must be a plain <script>, not deferred.
-        */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var saved = localStorage.getItem('kai-theme');
-                  var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-                  var theme = saved || (prefersLight ? 'light' : 'dark');
-                  document.documentElement.setAttribute('data-theme', theme);
-                } catch(e) {}
-              })();
-            `,
-          }}
-        />
       </head>
       <body>
-        <ThemeProvider>
-          <CustomCursor />
-          {children}
-        </ThemeProvider>
+        <CustomCursor />
+        {children}
       </body>
     </html>
   )

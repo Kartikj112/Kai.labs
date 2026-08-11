@@ -62,8 +62,5 @@ export interface StatRow {
   smallValue?: boolean
 }
 
-// ── Theme ──────────────────────────────────────────────────────────────────
-export type Theme = 'dark' | 'light'
-
 // ── Interest Vote ──────────────────────────────────────────────────────────
 export type VoteType = 'yes' | 'no' | null

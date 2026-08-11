@@ -26,25 +26,6 @@
 }
 
 /* ════════════════════════════════════════════════════════
-   DESIGN TOKENS — light
-   ════════════════════════════════════════════════════════ */
-[data-theme="light"] {
-  --bg:          #f5f2eb;
-  --surface:     #ffffff;
-  --border-color:rgba(15, 23, 42, 0.10);
-  --text:        #111827;
-  --muted:       rgba(17, 24, 39, 0.62);
-  --accent:      #A63D40;
-  --accent2:     #8E2F38;
-  --accent-soft: rgba(166, 61, 64, 0.10);
-  --err:         #C2362B;
-  --warn:        #B7791F;
-  --ok:          #2F8F57;
-  --hover:       #efe7e2;
-  --nav-fade:    rgba(245, 242, 235, 0.92);
-}
-
-/* ════════════════════════════════════════════════════════
    BASE
    ════════════════════════════════════════════════════════ */
 *, *::before, *::after {
@@ -56,10 +37,6 @@
 html {
   scroll-behavior: smooth;
   color-scheme: dark;
-}
-
-[data-theme="light"] html {
-  color-scheme: light;
 }
 
 body {
@@ -546,10 +523,6 @@ button, a, input, textarea, select {
   user-select: none;
 }
 
-[data-theme="light"] .contact-watermark {
-  color: rgba(0, 0, 0, 0.03);
-}
-
 /* ════════════════════════════════════════════════════════
    RESPONSIVE OVERRIDES
    ════════════════════════════════════════════════════════ */
@@ -682,9 +655,6 @@ button, a, input, textarea, select {
     z-index: 1;
     cursor: pointer;
   }
-  /* Keep the theme label visible inside the mobile panel even though
-     the top-bar label is hidden on small screens. */
-  nav > .theme-toggle .theme-toggle-label { display: none; }
 }
 
 /* Hamburger icon lines */
@@ -750,21 +720,6 @@ button, a, input, textarea, select {
   letter-spacing: 0.1em;
   color: var(--accent);
 }
-.mobile-menu-footer {
-  margin-top: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-.mobile-menu-footer .mm-label {
-  font-family: var(--font-mono), 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
 /* ════════════════════════════════════════════════════════
    ENGINE HEADER (slim top bar on /engine pages)
    ════════════════════════════════════════════════════════ */

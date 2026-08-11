@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 const LINKS: [string, string][] = [
   ['/', 'Home'],
@@ -74,8 +73,6 @@ export function KaiLabsNav() {
           KAI<span style={{ color: 'var(--accent)' }}>.</span>LABS
         </Link>
 
-        <ThemeToggle />
-
         {/* Desktop links */}
         <ul
           className="nav-main-links"
@@ -129,10 +126,6 @@ export function KaiLabsNav() {
             {label}
           </Link>
         ))}
-        <div className="mobile-menu-footer">
-          <span className="mm-label">Appearance</span>
-          <ThemeToggle />
-        </div>
       </div>
     </>
   )

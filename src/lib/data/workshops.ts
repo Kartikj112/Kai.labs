@@ -8,7 +8,6 @@ export const workshops: Workshop[] = [
     description:
       'Learn how biological data becomes scientific insight. Explore DNA, proteins, and biological databases, understand how sequences are compared, and see how researchers turn raw data into meaningful discoveries — no coding required.',
     tags: ['Biological Data', 'Databases', 'BLAST', 'Sequence Comparison', 'Protein Structure'],
-    isLive: true,
     level: 'Beginner',
     duration: '2 Days',
     format: 'Online / In-Person',
@@ -61,6 +60,7 @@ export const workshops: Workshop[] = [
       'End-to-end bacterial whole-genome sequencing — assembly, annotation, and biosynthetic gene cluster discovery from real genomes.',
     tags: ['SPAdes', 'Prokka', 'antiSMASH', 'QUAST'],
     isLive: true,
+    registrationUrl: 'https://forms.gle/iaYeZ9eUcSEfMRPz6',
     level: 'Intermediate',
     duration: '3 Days',
     format: 'Online / In-Person',
