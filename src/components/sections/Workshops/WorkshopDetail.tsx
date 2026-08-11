@@ -193,31 +193,67 @@ export function WorkshopDetail({ workshop }: WorkshopDetailProps) {
 
           <InterestPanel workshopId={workshop.id} />
 
-          {/* Registration placeholder */}
-          <div style={{
-            border: '1px dashed rgba(192, 90, 93,.2)',
-            background: 'rgba(192, 90, 93,.02)',
-            padding: '40px 28px',
-            textAlign: 'center',
-            marginBottom: 20,
-            marginTop: 32,
-          }}>
-            <p style={{ fontSize: 28, marginBottom: 14, opacity: 0.4 }}>🧬</p>
-            <p style={{
-              fontFamily: 'var(--font-mono), DM Mono, monospace',
-              fontSize: 11, letterSpacing: '0.06em',
-              color: 'var(--muted)', lineHeight: 1.9,
+          {/* Registration */}
+          {workshop.registrationUrl ? (
+            <div style={{
+              border: '1px solid rgba(192, 90, 93,.3)',
+              background: 'rgba(192, 90, 93,.04)',
+              padding: '36px 28px',
+              textAlign: 'center',
+              marginBottom: 20,
+              marginTop: 32,
             }}>
-              <strong style={{ display: 'block', color: 'var(--accent)', fontSize: 12, letterSpacing: '0.1em', marginBottom: 10 }}>
-                Registration Coming Soon
-              </strong>
-              Use code{' '}
-              <code style={{ color: 'var(--accent)', background: 'rgba(192, 90, 93,.08)', padding: '2px 6px' }}>
-                EARLYBIRD
-              </code>{' '}
-              for 20% off your first workshop.
-            </p>
-          </div>
+              <p style={{ fontSize: 28, marginBottom: 14 }}>🧬</p>
+              <p style={{
+                fontFamily: 'var(--font-mono), DM Mono, monospace',
+                fontSize: 11, letterSpacing: '0.06em',
+                color: 'var(--muted)', lineHeight: 1.9, marginBottom: 24,
+              }}>
+                <strong style={{ display: 'block', color: 'var(--accent)', fontSize: 12, letterSpacing: '0.1em', marginBottom: 10 }}>
+                  Registration Open
+                </strong>
+                Use code{' '}
+                <code style={{ color: 'var(--accent)', background: 'rgba(192, 90, 93,.08)', padding: '2px 6px' }}>
+                  EARLYBIRD
+                </code>{' '}
+                for 20% off your first workshop.
+              </p>
+              <a
+                href={workshop.registrationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary"
+                style={{ width: '100%', textAlign: 'center' }}
+              >
+                Register Now
+              </a>
+            </div>
+          ) : (
+            <div style={{
+              border: '1px dashed rgba(192, 90, 93,.2)',
+              background: 'rgba(192, 90, 93,.02)',
+              padding: '40px 28px',
+              textAlign: 'center',
+              marginBottom: 20,
+              marginTop: 32,
+            }}>
+              <p style={{ fontSize: 28, marginBottom: 14, opacity: 0.4 }}>🧬</p>
+              <p style={{
+                fontFamily: 'var(--font-mono), DM Mono, monospace',
+                fontSize: 11, letterSpacing: '0.06em',
+                color: 'var(--muted)', lineHeight: 1.9,
+              }}>
+                <strong style={{ display: 'block', color: 'var(--accent)', fontSize: 12, letterSpacing: '0.1em', marginBottom: 10 }}>
+                  Registration Coming Soon
+                </strong>
+                Use code{' '}
+                <code style={{ color: 'var(--accent)', background: 'rgba(192, 90, 93,.08)', padding: '2px 6px' }}>
+                  EARLYBIRD
+                </code>{' '}
+                for 20% off your first workshop.
+              </p>
+            </div>
+          )}
 
           <p style={{
             fontFamily: 'var(--font-mono), DM Mono, monospace',

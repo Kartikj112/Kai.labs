@@ -16,6 +16,7 @@ export interface Workshop {
   description: string
   tags: string[]
   isLive?: boolean
+  registrationUrl?: string
   // Detail page fields
   level: string
   duration: string

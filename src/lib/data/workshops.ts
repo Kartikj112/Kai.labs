@@ -87,6 +87,8 @@ export const workshops: Workshop[] = [
     description:
       'From raw 16S rRNA reads to community profiles. OTU/ASV pipelines, diversity metrics, and ecological interpretation in real datasets.',
     tags: ['QIIME2', '16S rRNA', 'R', 'Diversity'],
+    isLive: true,
+    registrationUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSehUtu7lD7gqCh016zU8-kOV4kq31-p5_OXP_WahlxQfcFRHQ/viewform?usp=publish-editor',
     level: 'Intermediate',
     duration: '3 Days',
     format: 'Online / In-Person',
