@@ -206,17 +206,10 @@ export function WorkshopDetail({ workshop }: WorkshopDetailProps) {
               <p style={{ fontSize: 28, marginBottom: 14 }}>🧬</p>
               <p style={{
                 fontFamily: 'var(--font-mono), DM Mono, monospace',
-                fontSize: 11, letterSpacing: '0.06em',
-                color: 'var(--muted)', lineHeight: 1.9, marginBottom: 24,
+                fontSize: 12, letterSpacing: '0.1em', color: 'var(--accent)',
+                marginBottom: 24,
               }}>
-                <strong style={{ display: 'block', color: 'var(--accent)', fontSize: 12, letterSpacing: '0.1em', marginBottom: 10 }}>
-                  Registration Open
-                </strong>
-                Use code{' '}
-                <code style={{ color: 'var(--accent)', background: 'rgba(192, 90, 93,.08)', padding: '2px 6px' }}>
-                  EARLYBIRD
-                </code>{' '}
-                for 20% off your first workshop.
+                Registration Open
               </p>
               <a
                 href={workshop.registrationUrl}
@@ -240,17 +233,10 @@ export function WorkshopDetail({ workshop }: WorkshopDetailProps) {
               <p style={{ fontSize: 28, marginBottom: 14, opacity: 0.4 }}>🧬</p>
               <p style={{
                 fontFamily: 'var(--font-mono), DM Mono, monospace',
-                fontSize: 11, letterSpacing: '0.06em',
-                color: 'var(--muted)', lineHeight: 1.9,
+                fontSize: 12, letterSpacing: '0.1em',
+                color: 'var(--accent)',
               }}>
-                <strong style={{ display: 'block', color: 'var(--accent)', fontSize: 12, letterSpacing: '0.1em', marginBottom: 10 }}>
-                  Registration Coming Soon
-                </strong>
-                Use code{' '}
-                <code style={{ color: 'var(--accent)', background: 'rgba(192, 90, 93,.08)', padding: '2px 6px' }}>
-                  EARLYBIRD
-                </code>{' '}
-                for 20% off your first workshop.
+                Registration Coming Soon
               </p>
             </div>
           )}
