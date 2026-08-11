@@ -1,4 +1,5 @@
 import { DnaCanvas } from './DnaCanvas'
+import { InteractiveNetwork } from '@/components/experiments/InteractiveNetwork/InteractiveNetwork'
 import { InitiativeBadge } from '@/components/labs/InitiativeBadge'
 
 export function Hero() {
@@ -16,6 +17,15 @@ export function Hero() {
       }}
     >
       <DnaCanvas />
+
+      {/*
+        Additive layer only -- mix-blend-screen means fully-transparent canvas
+        pixels (almost the entire frame; the network is sparse) contribute
+        nothing, so the video underneath is untouched wherever the network
+        isn't actively drawing a node/edge/pulse. Nothing here dims, replaces,
+        or otherwise alters DnaCanvas.
+      */}
+      <InteractiveNetwork className="absolute inset-0 pointer-events-none mix-blend-screen" />
 
       {/* Sub-brand badge */}
       <div
