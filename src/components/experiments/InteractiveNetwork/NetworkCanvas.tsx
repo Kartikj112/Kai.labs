@@ -213,8 +213,8 @@ export function NetworkCanvas({ width, height, containerRef, tunables }: Network
 
       const targetPX = pointer.active ? ((pointer.x - width / 2) / (width / 2 || 1)) * t.parallaxStrength : 0;
       const targetPY = pointer.active ? ((pointer.y - height / 2) / (height / 2 || 1)) * t.parallaxStrength : 0;
-      parallaxRef.current.x += (targetPX - parallaxRef.current.x) * Math.min(1, dt * 1.6);
-      parallaxRef.current.y += (targetPY - parallaxRef.current.y) * Math.min(1, dt * 1.6);
+      parallaxRef.current.x += (targetPX - parallaxRef.current.x) * Math.min(1, dt * 3.2);
+      parallaxRef.current.y += (targetPY - parallaxRef.current.y) * Math.min(1, dt * 3.2);
 
       draw(ctx, width, height, nodes, edges, trianglesRef.current, signalsRef.current, t, elapsedRef.current, parallaxRef.current);
     };
