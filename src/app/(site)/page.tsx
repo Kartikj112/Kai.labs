@@ -1,9 +1,18 @@
 import Link from 'next/link'
 import { FeatureCard } from '@/components/labs/FeatureCard'
+import { InteractiveNetwork } from '@/components/experiments/InteractiveNetwork/InteractiveNetwork'
 
 export default function KaiLabsHome() {
   return (
     <main>
+      {/*
+        Fixed + negative z-index so this sits behind every section on the
+        page (not just the hero's 100vh), stays put as the page scrolls, and
+        needs no changes to any individual section below -- CSS stacking
+        rules put negative z-index behind all normal in-flow content
+        automatically, positioned or not.
+      */}
+      <InteractiveNetwork className="fixed inset-0 pointer-events-none z-[-1]" />
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section
         style={{
