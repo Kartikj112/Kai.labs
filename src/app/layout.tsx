@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Cormorant_Garamond, DM_Mono, Syne } from 'next/font/google'
 import { CustomCursor } from '@/components/ui/CustomCursor'
+import { SITE_URL } from '@/lib/site-config'
 import '@/app/globals.css'
 
 // ── Font Definitions ─────────────────────────────────────────────────────────
@@ -28,6 +29,7 @@ const syne = Syne({
 
 // ── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'Kai Labs — A Scientific Ecosystem',
     template: '%s',

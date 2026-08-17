@@ -1,18 +1,23 @@
 import type { Metadata } from 'next'
+import { getAllArticles, getCategories } from '@/lib/research/articles'
+import { ResearchExplorer } from '@/components/research/ResearchExplorer'
 import { researchAreas } from '@/lib/data/research'
 import { publications } from '@/lib/data/content'
 
 export const metadata: Metadata = {
   title: 'Research — Kai Labs',
   description:
-    'Research directions across Kai Labs — marine sponge microbiomes, genome mining and natural-product discovery, antimicrobial peptide design, and origin-of-life theory.',
+    'Kai Genomics Research Intelligence tracks and interprets emerging developments in genomics, metagenomics, bioinformatics, natural products, antimicrobial peptides, and AI-driven biological discovery.',
 }
 
 export default function ResearchPage() {
+  const articles = getAllArticles()
+  const categories = getCategories(articles)
+
   return (
     <main style={{ paddingTop: 64 }}>
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section style={{ padding: '120px 40px 64px', maxWidth: 1100, margin: '0 auto' }}>
+      <section style={{ padding: '120px 40px 64px', maxWidth: 1200, margin: '0 auto' }}>
         <span
           className="animate-fade-up"
           style={{
@@ -20,42 +25,48 @@ export default function ResearchPage() {
             fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--accent)',
           }}
         >
-          Research
+          Research Intelligence
         </span>
         <h1
           className="animate-fade-up"
           style={{
             fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif',
-            fontWeight: 300, fontSize: 'clamp(46px, 8vw, 96px)', lineHeight: 0.98,
+            fontWeight: 300, fontSize: 'clamp(42px, 7vw, 84px)', lineHeight: 1.0,
             letterSpacing: '-0.03em', margin: '24px 0 24px', animationDelay: '0.1s',
           }}
         >
-          Open scientific
+          Kai Genomics
           <br />
-          <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>questions.</em>
+          <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Research Intelligence.</em>
         </h1>
         <p
           className="animate-fade-up"
           style={{
             fontFamily: 'var(--font-mono), DM Mono, monospace',
-            fontSize: 14, color: 'var(--muted)', lineHeight: 1.9, maxWidth: 580, animationDelay: '0.2s',
+            fontSize: 14, color: 'var(--muted)', lineHeight: 1.9, maxWidth: 640, animationDelay: '0.2s',
           }}
         >
-          From the microbial communities of marine sponges to the chemistry of life&apos;s
-          origins — the research threads that run through Kai Labs.
+          We track and interpret emerging research across genomics, metagenomics, bioinformatics,
+          natural products, antimicrobial peptides, protein design, and AI-driven biological
+          discovery — summarised for researchers, collaborators, and the curious.
         </p>
       </section>
 
-      {/* ── Research areas ───────────────────────────────────── */}
-      <section style={{ padding: '24px 40px 80px', maxWidth: 1100, margin: '0 auto' }}>
+      {/* ── Featured + grid + filters ───────────────────────────── */}
+      <section style={{ padding: '24px 40px 100px', maxWidth: 1200, margin: '0 auto' }}>
+        <ResearchExplorer articles={articles} categories={categories} />
+      </section>
+
+      {/* ── Lab focus areas (existing content, preserved) ──────── */}
+      <section style={{ padding: '24px 40px 80px', maxWidth: 1100, margin: '0 auto', borderTop: '1px solid var(--border-color)' }}>
         <span
           style={{
             display: 'block', fontFamily: 'var(--font-mono), DM Mono, monospace',
             fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase',
-            color: 'var(--muted)', marginBottom: 32,
+            color: 'var(--muted)', margin: '56px 0 32px',
           }}
         >
-          Research Areas
+          From the Lab — Focus Areas
         </span>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
@@ -96,7 +107,7 @@ export default function ResearchPage() {
         </div>
       </section>
 
-      {/* ── Publications ─────────────────────────────────────── */}
+      {/* ── Publications (existing content, preserved) ──────────── */}
       <section style={{ padding: '40px 40px 140px', background: 'var(--surface)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <span
