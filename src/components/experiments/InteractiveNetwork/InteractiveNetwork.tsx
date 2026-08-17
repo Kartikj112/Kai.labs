@@ -50,12 +50,12 @@ function buildTunables(
     // CURSOR-DRIVEN MOVEMENT -- how much the field visibly reacts as the
     // cursor moves (parallax shift + gentle node repulsion). Raised from the
     // original prototype's more conservative defaults per request.
-    parallaxStrength: isTouchPrimary || reducedMotion ? 0 : 45,
-    cursorRepelStrength: isTouchPrimary || reducedMotion ? 0 : 30,
-    cursorRepelRadius: 170,
+    parallaxStrength: isTouchPrimary || reducedMotion ? 0 : 26,
+    cursorRepelStrength: isTouchPrimary || reducedMotion ? 0 : 14,
+    cursorRepelRadius: 130,
 
     // CURSOR RADIUS -- the brief's suggested range is 100-180px.
-    interactionRadius: isTouchPrimary ? 110 : 180,
+    interactionRadius: isTouchPrimary ? 110 : 150,
 
     // SIGNAL SPEED -- progress-units/second along an edge (1.0 = full edge
     // length per second). ~0.6 crosses a ~150px edge in about a second.
