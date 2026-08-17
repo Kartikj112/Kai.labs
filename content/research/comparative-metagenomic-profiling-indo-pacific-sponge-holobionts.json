@@ -1,0 +1,43 @@
+{
+  "slug": "comparative-metagenomic-profiling-indo-pacific-sponge-holobionts",
+  "title": "Comparative Metagenomic Profiling Reveals Host-Specific Biosynthetic Potential Across Indo-Pacific Marine Sponge Holobionts",
+  "date": "2026-06-30",
+  "category": "Marine Biotechnology",
+  "tags": ["Metagenomics", "Marine Biotechnology", "MAGs", "Natural Products"],
+  "excerpt": "Shotgun metagenomes from sponges across three Indo-Pacific reef sites show that biosynthetic gene cluster diversity tracks host species more closely than geography.",
+  "isSample": true,
+
+  "journal": "Kai Research Digest — Sample Entry",
+
+  "heroImage": {
+    "src": "/research/images/comparative-metagenomic-profiling-indo-pacific-sponge-holobionts.jpg",
+    "alt": "Abstract illustration of a marine sponge holobiont with associated microbial community",
+    "caption": "Conceptual view of a sponge holobiont and its associated, densely biosynthetic microbial community.",
+    "credit": "Kai Genomics",
+    "source": ""
+  },
+
+  "summary": [
+    "Marine sponges are filter-feeding hosts to some of the densest and most chemically prolific microbial communities known — a large fraction of described marine natural products trace back to sponge-associated bacteria rather than the sponge itself. Understanding what drives biosynthetic gene cluster (BGC) diversity within these communities — host identity, geography, or something else — matters for knowing where to look next.",
+    "This sample entry summarizes a comparative shotgun metagenomic survey across sponge specimens collected from three reef sites, recovering metagenome-assembled genomes (MAGs) and profiling BGC content across host species and sites."
+  ],
+
+  "whyItMatters": [
+    "If biosynthetic potential tracks host species rather than location, that reshapes prospecting strategy: it means revisiting known, accessible host species for undersampled microbial lineages can be as productive as chasing new dive sites — a meaningfully cheaper way to expand candidate diversity."
+  ],
+
+  "keyFindings": [
+    "BGC class composition clustered more tightly by host sponge species than by collection site across the three reefs sampled.",
+    "A subset of recovered MAGs, all from the same host genus, carried NRPS clusters with low similarity to any characterized reference cluster.",
+    "Community diversity was consistently higher in host species previously reported to harbor dense, stable symbiont populations, in line with prior single-site studies."
+  ],
+
+  "kaiGenomicsPerspective": [
+    "This host-over-geography pattern is consistent with what we've seen in our own sponge metagenome work along the Indian coast, and it's a useful prioritization signal: for a given amount of field and sequencing effort, sampling more host species tends to be more informative than sampling more sites for the same species.",
+    "The novel NRPS clusters flagged here are a good example of the kind of candidate we'd want to run through genome mining and prioritize for experimental characterization."
+  ],
+
+  "implications": [
+    "A host-first sampling strategy could make small-boat, single-region expeditions more competitive with large multi-site surveys for the specific goal of maximizing novel BGC recovery per sample processed."
+  ]
+}

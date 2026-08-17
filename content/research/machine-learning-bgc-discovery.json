@@ -1,0 +1,40 @@
+{
+  "slug": "machine-learning-bgc-discovery",
+  "title": "A Machine Learning Classifier Flags Cryptic Biosynthetic Gene Clusters Missed by Rule-Based Tools",
+  "date": "2026-07-22",
+  "category": "BGC Discovery",
+  "tags": ["BGCs", "Genome Mining", "Bioinformatics", "NRPS / PKS"],
+  "excerpt": "A sequence-embedding classifier recovers biosynthetic gene clusters that rule-based annotation tools tend to miss, particularly in fragmented and non-model genomes.",
+  "isSample": true,
+
+  "journal": "Kai Research Digest — Sample Entry",
+  "authors": ["M. Delgado", "H. Fujimori"],
+  "sourceUrl": "https://doi.org/10.0000/kai-sample.0002",
+
+  "heroImage": {
+    "src": "/research/images/machine-learning-bgc-discovery.jpg",
+    "alt": "Abstract diagram of a bacterial genome with a highlighted biosynthetic gene cluster region",
+    "caption": "Schematic of a biosynthetic gene cluster region flagged for downstream characterization.",
+    "credit": "Kai Genomics",
+    "source": ""
+  },
+
+  "summary": [
+    "Rule-based tools like antiSMASH are the workhorse of biosynthetic gene cluster (BGC) annotation, matching genomic regions against curated profiles of known enzyme domains. That approach is precise but conservative by design — clusters that don't closely resemble anything in the training set, or that are split across contig boundaries in a fragmented assembly, can slip through.",
+    "This sample entry summarizes a classifier trained on gene-order and sequence-embedding features rather than fixed domain rules, evaluated against a benchmark of genomes with known, well-characterized BGCs deliberately fragmented to simulate a draft assembly."
+  ],
+
+  "keyFindings": [
+    "The embedding-based classifier recovered a meaningful fraction of BGCs that rule-based annotation missed once genomes were fragmented into shorter contigs.",
+    "Recovered clusters skewed toward NRPS and hybrid NRPS-PKS types, which tend to have more variable domain architectures than simpler cluster classes.",
+    "False-positive rates rose modestly compared to rule-based calls, reinforcing that this kind of tool works best as a triage step ahead of manual review, not a standalone caller."
+  ],
+
+  "methods": [
+    "Known BGCs from a reference genome set were computationally fragmented at varying contig lengths to mimic draft-quality metagenome-assembled genomes, then run through both a standard rule-based annotator and the embedding classifier for comparison."
+  ],
+
+  "implications": [
+    "For labs mining fragmented, non-model genomes — including most metagenome-assembled genomes recovered from environmental samples — an embedding-based triage step ahead of manual antiSMASH review could recover candidate clusters that would otherwise be silently dropped."
+  ]
+}

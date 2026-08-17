@@ -1,0 +1,63 @@
+{
+  "slug": "ai-designed-antimicrobial-peptides",
+  "title": "AI-Designed Antimicrobial Peptides Show Broad Activity Against Drug-Resistant Bacteria",
+  "date": "2026-08-10",
+  "category": "Antimicrobial Peptides",
+  "tags": ["AMPs", "Protein Design", "AI × Biology", "Drug Discovery"],
+  "excerpt": "A generative protein-language-model pipeline proposes short peptide sequences with activity against multiple priority pathogens, hinting at a faster route from sequence to candidate.",
+  "featured": true,
+  "isSample": true,
+
+  "journal": "Kai Research Digest — Sample Entry",
+  "authors": ["A. Mercer", "T. Okafor", "S. Lindqvist", "R. Bhatt"],
+  "doi": "10.0000/kai-sample.0001",
+  "sourceUrl": "https://doi.org/10.0000/kai-sample.0001",
+
+  "heroImage": {
+    "src": "/research/images/ai-designed-antimicrobial-peptides.jpg",
+    "alt": "Abstract illustration of a folded antimicrobial peptide interacting with a bacterial membrane",
+    "caption": "Conceptual rendering of a designed peptide docking against a model bacterial membrane.",
+    "credit": "Kai Genomics",
+    "source": ""
+  },
+
+  "images": [
+    {
+      "src": "/research/images/ai-designed-antimicrobial-peptides-fig2.jpg",
+      "alt": "Diagram comparing generated peptide candidates against a library of known antimicrobial peptides",
+      "caption": "Generated candidates (right) plotted against known AMP sequence space (left) by predicted charge and hydrophobicity.",
+      "credit": "Kai Genomics",
+      "source": ""
+    }
+  ],
+
+  "summary": [
+    "Antimicrobial resistance keeps eroding the small set of antibiotics still reliably effective against priority pathogens, and the pipeline of genuinely new chemical scaffolds has been thin for decades. Antimicrobial peptides (AMPs) — short, charged sequences that disrupt bacterial membranes rather than a single protein target — are one of the more promising alternatives, partly because that mechanism is harder for bacteria to evolve around.",
+    "In this sample entry, we walk through a representative example of the kind of study Kai Genomics Research Intelligence tracks: a protein-language-model pipeline trained to propose short peptide sequences, screened computationally for predicted membrane activity, and ranked before wet-lab validation against a panel of drug-resistant bacterial strains."
+  ],
+
+  "whyItMatters": [
+    "Traditional AMP discovery leans heavily on nature — mining venoms, skin secretions, and soil microbes for sequences that already work. That approach is slow and the hit rate is low. A model that can propose plausible, diverse candidates directly from learned sequence-structure-function patterns could meaningfully shorten the front end of the discovery pipeline, especially for pathogens where natural AMP libraries are sparse."
+  ],
+
+  "keyFindings": [
+    "Several generated candidates showed measurable activity against multiple drug-resistant bacterial strains in initial screening.",
+    "Predicted membrane-disruption scores correlated reasonably well with observed activity, suggesting the scoring model captured real biophysical signal rather than noise.",
+    "The most active candidates clustered in a region of sequence space distinct from previously characterized natural AMPs — consistent with genuinely novel scaffolds rather than near-duplicates of known peptides.",
+    "Toxicity screening against mammalian cell lines flagged a subset of candidates for exclusion, underscoring that selectivity — not just potency — remains a key filter."
+  ],
+
+  "methods": [
+    "A protein language model, fine-tuned on curated AMP sequence databases, generated thousands of candidate sequences under length and net-charge constraints typical of known membrane-active peptides.",
+    "Candidates were filtered computationally using predicted helicity, hydrophobic moment, and a learned activity classifier before the top-ranked set was synthesized and tested against a panel of ESKAPE pathogens alongside toxicity counter-screens."
+  ],
+
+  "kaiGenomicsPerspective": [
+    "This is exactly the kind of sequence-to-candidate pipeline we're interested in for our own antimicrobial peptide work — pairing structure-aware generative models with the biophysical screens we already use for natural-product-derived candidates. The bottleneck is rarely generating plausible sequences; it's building a screen good enough to trust the ranking before committing wet-lab time.",
+    "We'd want to see this validated against a wider pathogen panel and, critically, against peptides drawn from the same marine and host-associated microbial sources we work with, before drawing conclusions about generality."
+  ],
+
+  "implications": [
+    "If the selectivity gap can be closed at scale, generative AMP design could become a standard early filter ahead of synthesis — not a replacement for wet-lab screening, but a way to spend synthesis budget on candidates with a meaningfully better prior probability of working."
+  ]
+}
