@@ -142,7 +142,6 @@ export default function AboutPage() {
             <div style={{ width: 120, height: 120, borderRadius: '50%', overflow: 'hidden', border: '1px solid var(--border-color)', position: 'relative' }}>
               <Image src="/Kartik.jpg" alt={founderName} fill style={{ objectFit: 'cover' }} />
             </div>
-            <span aria-hidden style={{ position: 'absolute', inset: -5, borderRadius: '50%', border: '1px solid var(--accent-soft)', pointerEvents: 'none' }} />
           </div>
 
           <div>
