@@ -60,6 +60,28 @@ export default function ToolsPage() {
             Open the engine →
           </span>
         </Link>
+
+        <div
+          className="feature-card animate-fade-up"
+          style={{
+            animationDelay: '0.4s', display: 'flex', flexDirection: 'column', gap: 14,
+            padding: '28px 26px', border: '1px solid var(--border-color)', borderRadius: 14,
+            background: 'var(--surface)',
+          }}
+        >
+          <span style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 11, color: 'var(--accent)', letterSpacing: '0.16em' }}>
+            02 · Coming soon
+          </span>
+          <h3 style={{ fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif', fontWeight: 400, fontSize: 28, lineHeight: 1.1 }}>
+            Kai Agents
+          </h3>
+          <p style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 12, color: 'var(--muted)', lineHeight: 1.8 }}>
+            Autonomous AI agents for computational biology — built to carry out focused research tasks such as peptide prediction, genome mining, and more.
+          </p>
+          <span style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 11, letterSpacing: '0.1em', color: 'var(--muted)', marginTop: 4 }}>
+            More agents are on the way.
+          </span>
+        </div>
       </div>
     </main>
   )
