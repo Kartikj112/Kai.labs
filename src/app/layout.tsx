@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Cormorant_Garamond, DM_Mono, Syne } from 'next/font/google'
+import localFont from 'next/font/local'
 import { CustomCursor } from '@/components/ui/CustomCursor'
 import { SITE_URL } from '@/lib/site-config'
 import '@/app/globals.css'
@@ -25,6 +26,26 @@ const syne = Syne({
   weight: ['400', '600', '700', '800'],
   variable: '--font-sans',
   display: 'swap',
+})
+
+// Geist Pixel Square — the instrument-readout voice.
+//
+// Vendored as a single woff2 rather than imported from the `geist` package:
+// `geist/font/pixel` evaluates all five shape variants, so Next preloads
+// ~140 KB of fonts when only one is ever used. This is ~28 KB, one preload.
+// SIL OFL — license sits next to the file in ./fonts/.
+//
+// Reserved for small, uppercase, wide-tracked metadata: eyebrows, section
+// labels, step counters, index numerals, status pills. Never for headlines
+// (that's Cormorant) or prose (that's DM Mono) — a bitmap face stops being
+// legible the moment it has to carry a sentence.
+const geistPixel = localFont({
+  src: './fonts/GeistPixel-Square.woff2',
+  variable: '--font-geist-pixel-square',
+  weight: '500',
+  display: 'swap',
+  fallback: ['Geist Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+  adjustFontFallback: false,
 })
 
 // ── Metadata ─────────────────────────────────────────────────────────────────
@@ -56,7 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       // Site is dark-theme only.
       data-theme="dark"
-      className={`${cormorant.variable} ${dmMono.variable} ${syne.variable}`}
+      className={`${cormorant.variable} ${dmMono.variable} ${syne.variable} ${geistPixel.variable}`}
     >
       <head>
         {/* Google Analytics */}

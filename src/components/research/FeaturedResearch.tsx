@@ -30,10 +30,10 @@ export function FeaturedResearch({ article }: FeaturedResearchProps) {
           borderRadius: 12, overflow: 'hidden', background: 'var(--bg)',
         }}
       >
-        {article.heroImageExists ? (
+        {article.resolvedImage ? (
           <Image
-            src={article.heroImage.src}
-            alt={article.heroImage.alt}
+            src={article.resolvedImage.src}
+            alt={article.resolvedImage.alt}
             fill
             priority
             sizes="(max-width: 900px) 100vw, 50vw"

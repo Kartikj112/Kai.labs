@@ -23,6 +23,39 @@
   --font-display: 'Cormorant Garamond';
   --font-mono:    'DM Mono';
   --font-sans:    'Syne';
+  /* next/font/local registers Geist Pixel under a hashed family name and
+     exposes it as --font-geist-pixel-square (set by GeistPixelSquare.variable
+     on <html> in layout.tsx). Referencing the literal family name instead
+     silently falls back to the platform monospace, so alias the real one. */
+  --font-pixel:   var(--font-geist-pixel-square);
+}
+
+/* ════════════════════════════════════════════════════════
+   PIXEL LABEL — Geist Pixel, the "instrument readout" voice
+   Bitmap faces read as noise below ~9px and as a toy above
+   ~14px, so the scale is deliberately narrow and the
+   tracking generous. Uppercase only.
+   ════════════════════════════════════════════════════════ */
+.pixel-label {
+  font-family: var(--font-pixel), 'Geist Mono', ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  /* Bitmap glyphs are drawn on a fixed grid — let them hit whole pixels. */
+  -webkit-font-smoothing: antialiased;
+  font-variant-ligatures: none;
+}
+
+.pixel-label--sm { font-size: 9.5px; letter-spacing: 0.16em; }
+.pixel-label--lg { font-size: 13px;  letter-spacing: 0.2em;  }
+
+/* Numerals: index counters, step readouts, stat figures. Not uppercased
+   (no lowercase to fold) and tracked tighter so digits group as one value. */
+.pixel-num {
+  font-family: var(--font-pixel), 'Geist Mono', ui-monospace, monospace;
+  letter-spacing: 0.08em;
+  font-variant-ligatures: none;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ════════════════════════════════════════════════════════
@@ -169,10 +202,14 @@ button, a, input, textarea, select {
    SECTION LABEL
    ════════════════════════════════════════════════════════ */
 .section-label {
-  font-family: var(--font-mono), 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.25em;
+  /* Geist Pixel — every section eyebrow across the site reads as an
+     instrument label rather than body copy. See .pixel-label above. */
+  font-family: var(--font-pixel), 'Geist Mono', ui-monospace, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
+  font-variant-ligatures: none;
+  -webkit-font-smoothing: antialiased;
   color: var(--accent);
   margin-bottom: 48px;
   display: flex;

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useElementSize } from "@/lib/hooks/useElementSize";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 import { NetworkCanvas } from "./NetworkCanvas";
 import type { NetworkTunables } from "./types";
@@ -88,15 +89,7 @@ function clamp(v: number, min: number, max: number): number {
 export function InteractiveNetwork({ className, tunables: overrides }: InteractiveNetworkProps) {
   const [containerRef, size] = useElementSize<HTMLDivElement>();
   const reducedMotion = usePrefersReducedMotion();
-  const [isTouchPrimary, setIsTouchPrimary] = useState(false);
-
-  useEffect(() => {
-    const query = window.matchMedia("(pointer: coarse)");
-    setIsTouchPrimary(query.matches);
-    const handler = (e: MediaQueryListEvent) => setIsTouchPrimary(e.matches);
-    query.addEventListener("change", handler);
-    return () => query.removeEventListener("change", handler);
-  }, []);
+  const isTouchPrimary = useMediaQuery("(pointer: coarse)");
 
   const tunables = useMemo<NetworkTunables>(() => {
     const base = buildTunables(size.width, size.height, isTouchPrimary, reducedMotion);

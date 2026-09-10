@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 
 /**
  * Attaches an IntersectionObserver to all `.reveal` elements inside the

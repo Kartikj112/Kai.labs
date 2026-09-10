@@ -33,10 +33,9 @@ export default function KaiLabsHome() {
         />
 
         <span
-          className="animate-fade-up"
+          className="animate-fade-up pixel-label"
           style={{
-            fontFamily: 'var(--font-mono), DM Mono, monospace',
-            fontSize: 12, letterSpacing: '0.22em', textTransform: 'uppercase',
+            fontSize: 12, letterSpacing: '0.2em',
             color: 'var(--accent)', marginBottom: 28, position: 'relative', zIndex: 1,
           }}
         >
@@ -80,12 +79,8 @@ export default function KaiLabsHome() {
       {/* ── Ecosystem grid ───────────────────────────────────── */}
       <section style={{ padding: '40px 40px 140px', maxWidth: 1200, margin: '0 auto' }}>
         <span
-          style={{
-            display: 'block',
-            fontFamily: 'var(--font-mono), DM Mono, monospace',
-            fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase',
-            color: 'var(--muted)', marginBottom: 40,
-          }}
+          className="pixel-label"
+          style={{ display: 'block', color: 'var(--muted)', marginBottom: 40 }}
         >
           The Ecosystem
         </span>

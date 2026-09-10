@@ -22,9 +22,14 @@ export function InterestPanel({ workshopId }: InterestPanelProps) {
   const [vote, setVote]   = useState<VoteType>(null)
   const [count, setCount] = useState(0)
 
+  // Hydrate from localStorage after mount. This deliberately does not run
+  // during render: the server has no localStorage, so reading it during the
+  // first render would produce markup that does not match the client and
+  // trigger a hydration error.
   useEffect(() => {
     const saved = getVote(workshopId)
     const counts = getCounts()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setVote(saved)
     setCount(counts[workshopId] ?? Math.floor(Math.random() * 30 + 5))
   }, [workshopId])
@@ -48,7 +53,6 @@ export function InterestPanel({ workshopId }: InterestPanelProps) {
   }, [workshopId])
 
   const isVotedYes = vote === 'yes'
-  const isVotedNo  = vote === 'no'
   const barWidth   = Math.min(100, (count / 50) * 100)
 
   return (

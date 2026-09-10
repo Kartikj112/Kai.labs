@@ -2,7 +2,24 @@
    KAI Decision Engine — Styles
    Imports the existing site design tokens. No overrides to
    typography, colors, spacing, or animations.
+
+   TYPOGRAPHY NOTE — Geist Pixel (--font-pixel) carries the
+   engine's "instrument readout" layer: category tags, step
+   counters, stat figures, index numerals, module metadata.
+   Question text, option labels and prose stay on DM Mono —
+   a bitmap face is for glanceable metadata, not for reading.
+   Sizes below were nudged up ~1px where pixel replaced mono,
+   because bitmap glyphs lose their grid under about 9px.
    ═══════════════════════════════════════════════════════════ */
+
+.prog-cat, .prog-num, .cat-tag, .module-page-cat, .module-page-steps,
+.hub-stat-n, .hub-stat-l, .hub-section-label, .mc-cat, .mc-badge,
+.mc-steps, .sec-lbl, .st-n, .wf-n, .tools-label, .mx-top-badge,
+.cl-req-badge, .ms-badge, .opt-badge, .tag-k {
+  font-family: var(--font-pixel), 'Geist Mono', ui-monospace, monospace;
+  font-variant-ligatures: none;
+  -webkit-font-smoothing: antialiased;
+}
 
 /* ── Page wrapper ────────────────────────────────────────── */
 .engine-page-wrap {
@@ -40,7 +57,7 @@
 }
 
 .module-page-cat {
-  font-size: 9px;
+  font-size: 9.5px;
   letter-spacing: 2.5px;
   text-transform: uppercase;
   color: var(--accent);
@@ -97,7 +114,7 @@
 /* ── Category tags ───────────────────────────────────────── */
 .cat-tag {
   display: inline-block;
-  font-size: 9px;
+  font-size: 9.5px;
   letter-spacing: 2.5px;
   text-transform: uppercase;
   border-radius: 4px;
@@ -744,9 +761,9 @@
 .hub-stats { display: flex; align-items: center; gap: 20px; }
 
 .hub-stat-n {
-  font-family: 'Syne', system-ui, sans-serif;
-  font-size: 28px;
-  font-weight: 800;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   color: var(--accent);
   line-height: 1;
 }
@@ -800,14 +817,14 @@
 .mc-top { display: flex; justify-content: space-between; align-items: center; }
 
 .mc-cat {
-  font-size: 8px;
+  font-size: 9px;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .mc-badge {
-  font-size: 8px;
+  font-size: 9px;
   letter-spacing: 1px;
   color: var(--accent);
   background: rgba(192, 90, 93, 0.1);

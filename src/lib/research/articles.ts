@@ -15,10 +15,15 @@
 import fs from 'fs'
 import path from 'path'
 import type { LoadedResearchArticle, ResearchArticle, ResearchImage } from './types'
-import { estimateReadingTime, getFeaturedArticle as getFeaturedArticlePure } from './helpers'
+import {
+  estimateReadingTime,
+  getFeaturedArticle as getFeaturedArticlePure,
+  slugifyCategory,
+} from './helpers'
 
 const CONTENT_DIR = path.join(process.cwd(), 'content', 'research')
 const PUBLIC_DIR = path.join(process.cwd(), 'public')
+const DEFAULTS_DIR = '/research/images/_defaults'
 
 function isNonEmptyString(v: unknown): v is string {
   return typeof v === 'string' && v.trim().length > 0
@@ -61,6 +66,29 @@ function publicFileExists(src: string): boolean {
   }
 }
 
+/**
+ * Picks the image to actually render. A per-category default ships for every
+ * category in CATEGORY_ORDER, so an article published without artwork still
+ * gets something on-brand instead of the bare SVG placeholder.
+ */
+function resolveImage(article: ResearchArticle, heroExists: boolean): ResearchImage | null {
+  if (heroExists) return article.heroImage
+
+  const fallbackSrc = `${DEFAULTS_DIR}/${slugifyCategory(article.category)}.jpg`
+  if (publicFileExists(fallbackSrc)) {
+    return {
+      src: fallbackSrc,
+      // Keep the author's alt text when they wrote one — it describes the
+      // article, which is more useful than describing the stock image.
+      alt: article.heroImage.alt || `${article.category} — illustrative image`,
+      caption: article.heroImage.caption,
+      credit: article.heroImage.credit ?? 'Kai Genomics',
+    }
+  }
+
+  return null
+}
+
 function load(filename: string): LoadedResearchArticle | null {
   const fullPath = path.join(CONTENT_DIR, filename)
   let raw: string
@@ -88,10 +116,13 @@ function load(filename: string): LoadedResearchArticle | null {
   const article = data as ResearchArticle
   if (article.draft) return null
 
+  const heroImageExists = publicFileExists(article.heroImage.src)
+
   return {
     ...article,
     tags: article.tags ?? [],
-    heroImageExists: publicFileExists(article.heroImage.src),
+    heroImageExists,
+    resolvedImage: resolveImage(article, heroImageExists),
     readingTime: estimateReadingTime(article),
   }
 }

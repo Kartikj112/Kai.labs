@@ -81,8 +81,14 @@ export function NetworkCanvas({ width, height, containerRef, tunables }: Network
   const elapsedRef = useRef<number>(0);
   const frameCountRef = useRef<number>(0);
   const lastGenSizeRef = useRef({ width: 0, height: 0, nodeCount: 0 });
+  // The rAF loop reads the latest tunables through this ref rather than
+  // closing over them, so the animation never restarts on a tuning change.
+  // Latched in an effect (not during render) — effects run before the next
+  // frame paints, so the loop still sees the current values.
   const tunablesRef = useRef<NetworkTunables>(tunables);
-  tunablesRef.current = tunables;
+  useEffect(() => {
+    tunablesRef.current = tunables;
+  }, [tunables]);
 
   /* ---- (re)generate the node field when size / density changes ---- */
   useEffect(() => {

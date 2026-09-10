@@ -38,7 +38,11 @@ export function KaiLabsNav() {
     return () => window.removeEventListener('keydown', onKey)
   }, [menuOpen])
 
-  // Close the menu whenever the route changes.
+  // Close the menu whenever the route changes. This is a reset driven by an
+  // external event (navigation, including browser back/forward), not derived
+  // state — the menu links close it on click, but history navigation does not
+  // go through them.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setMenuOpen(false) }, [pathname])
 
   return (

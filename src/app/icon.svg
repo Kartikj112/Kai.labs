@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Kai Labs mark: the K of the KAI.LABS wordmark, plus the oxblood
+       separator dot the wordmark sets in the accent colour. Geometric
+       rather than typographic so strokes stay on whole pixels at 16px. -->
+  <rect width="32" height="32" rx="7" fill="#050507"/>
+  <g fill="#f0ede8">
+    <rect x="7.5" y="7" width="3.8" height="18"/>
+    <path d="M11.9 15.4 L19.1 7 L23.6 7 L15.2 16.4 Z"/>
+    <path d="M15.2 15.6 L23.6 25 L19.1 25 L11.9 16.6 Z"/>
+  </g>
+  <circle cx="25.4" cy="22.6" r="2.6" fill="#C05A5D"/>
+</svg>

@@ -16,10 +16,10 @@ export function ResearchCard({ article, revealDelay }: ResearchCardProps) {
       aria-label={`Read analysis: ${article.title}`}
     >
       <div className="research-card-media">
-        {article.heroImageExists ? (
+        {article.resolvedImage ? (
           <Image
-            src={article.heroImage.src}
-            alt={article.heroImage.alt}
+            src={article.resolvedImage.src}
+            alt={article.resolvedImage.alt}
             fill
             sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
             style={{ objectFit: 'cover' }}

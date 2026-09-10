@@ -65,7 +65,12 @@ const CARD_COLS =
 
 export async function listApprovedWorkshops(): Promise<WorkshopCard[]> {
   if (!isExchangeConfigured()) {
-    return seedWorkshops.map(({ description, hostBio, meetLink, resources, ...card }) => card)
+    // Seed data is WorkshopFull; the listing only needs the card fields.
+    return seedWorkshops.map((w): WorkshopCard => ({
+      slug: w.slug, title: w.title, hostName: w.hostName, institution: w.institution,
+      category: w.category, startsAt: w.startsAt, durationMin: w.durationMin,
+      skill: w.skill, maxAttendees: w.maxAttendees, seatsRemaining: w.seatsRemaining,
+    }))
   }
   try {
     const res = await fetch(

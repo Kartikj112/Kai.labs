@@ -1,8 +1,19 @@
 import type { MetadataRoute } from 'next'
 import { getAllArticles } from '@/lib/research/articles'
+import { ENGINE_MODULES } from '@/lib/engines/registry'
 import { SITE_URL } from '@/lib/site-config'
 
-const STATIC_ROUTES = ['', '/genomics', '/exchange', '/research', '/tools', '/about', '/contact']
+const STATIC_ROUTES = [
+  '',
+  '/genomics',
+  '/exchange',
+  '/exchange/host',
+  '/research',
+  '/tools',
+  '/engine',
+  '/about',
+  '/contact',
+]
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({
@@ -19,5 +30,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }))
 
-  return [...staticEntries, ...articleEntries]
+  // Every live Decision Engine module is its own indexable page — these are
+  // the deepest, most searched-for content on the site, so they belong here.
+  const engineEntries: MetadataRoute.Sitemap = ENGINE_MODULES.filter(
+    (m) => m.status === 'live'
+  ).map((m) => ({
+    url: `${SITE_URL}/engine/${m.id}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.6,
+  }))
+
+  return [...staticEntries, ...articleEntries, ...engineEntries]
 }

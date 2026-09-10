@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import type { DecisionTree, EngineState, TreeNode, MsOption } from '@/lib/engines/types';
 import { QuestionNodeRenderer }    from './nodes/QuestionNode';
@@ -76,7 +76,7 @@ export function EngineRunner({ moduleId, moduleTitle, tree, startNode }: Props) 
       ans:  { ...state.ans, [state.nid]: { id: opt.id, label: opt.label, badge: opt.badge, sub: opt.sub } },
       msel: [],
     });
-  }, [state, tree, transition, goToSummary, router]);
+  }, [state, tree, transition, goToSummary]);
 
   // ── Continue from info/rec/block nodes ────────────────
   const cont = useCallback((nextId: string) => {
@@ -135,7 +135,7 @@ export function EngineRunner({ moduleId, moduleTitle, tree, startNode }: Props) 
       ans:  { ...state.ans, [state.nid]: { selected: state.msel, options: selectedOpts } },
       msel: [],
     });
-  }, [state, tree, transition, goToSummary, router]);
+  }, [state, tree, transition, goToSummary]);
 
   // ── Checklist continue ────────────────────────────────
   const contFromChecklist = useCallback((nextId: string) => cont(nextId), [cont]);

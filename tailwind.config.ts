@@ -27,6 +27,7 @@ const config: Config = {
         display: ['var(--font-display)', 'Georgia', 'serif'],
         mono:    ['var(--font-mono)', 'monospace'],
         sans:    ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        pixel:   ['var(--font-pixel)', 'Geist Mono', 'ui-monospace', 'monospace'],
       },
 
       fontSize: {

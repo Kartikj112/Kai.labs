@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { CalcNode } from '@/lib/engines/types';
 import type { EngineState } from '@/lib/engines/types';
 import { CatTag, Pills, SecLabel, ArrowPoint } from './shared';
@@ -86,8 +86,13 @@ export function CalcNodeRenderer({ node, state, onContinue }: Props) {
   const [nc,  setNc]  = useState(isHyb ? (gc.na || 30) : isLO ? 80 : 0);
   const [eff, setEff] = useState(80);
 
-  const [result, setResult] = useState<CalcResult>({});
-  useEffect(() => { setResult(compute(gs, ic, showNano ? nc : 0, eff)); }, [gs, ic, nc, eff, showNano]);
+  // Purely derived from the inputs — computing it during render (rather than
+  // in an effect that sets state) avoids a second render pass on every
+  // keystroke, and there is no external system to synchronise with here.
+  const result = useMemo(
+    () => compute(gs, ic, showNano ? nc : 0, eff),
+    [gs, ic, nc, eff, showNano]
+  );
 
   return (
     <>

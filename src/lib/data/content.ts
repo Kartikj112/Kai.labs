@@ -28,7 +28,9 @@ export const satelliteInstructors: SatelliteInstructor[] = [
     id: 'tbd1',
     name: 'Instructor I',
     expertise: 'Expertise area to be announced',
-    photoSrc: '/shlok.png',
+    // No photoSrc: /shlok.png was referenced but never committed, so every
+    // render 404'd before falling back. The card's PersonIcon placeholder is
+    // the intended look until a real photo is added to /public.
     intro:
       'Research scholar with five years of marine biology experience, specializing in multi-omics approaches for bioprospecting and ecological studies of marine invertebrates.',
     skills: ['Transcriptomics', 'Metagenomics', 'Peptide Discovery', 'Field Ecology', 'Python/R', 'Bioinformatics'],

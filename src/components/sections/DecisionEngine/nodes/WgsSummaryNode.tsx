@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { EngineState } from '@/lib/engines/types';
+import type { EngineState, MsOption } from '@/lib/engines/types';
 
 interface Props {
   state: EngineState;
@@ -75,7 +75,7 @@ export function WgsSummaryNode({ state, onRestart, onHub }: Props) {
   wf.push({ l: 'Assembly quality assessment', d: 'QUAST (N50, contig count) · CheckM2 (completeness >95%, contamination <5%) · BUSCO v5 · Bandage' });
   wf.push({ l: 'Taxonomic confirmation', d: `FastANI / skani vs. type strain · GTDB-Tk${isNovel || isGray ? ' · GBDP/TYGS (dDDH) · IQ-TREE2 core genome phylogeny' : ''}` });
   wf.push({ l: 'Genome annotation', d: 'Bakta (2025 recommended) · Prokka (alternative) · NCBI PGAP (for GenBank submission)' });
-  (ann?.options ?? []).forEach((o: any) => wf.push({ l: o.label, d: o.tools.join(' · ') }));
+  (ann?.options ?? []).forEach((o: MsOption) => wf.push({ l: o.label, d: (o.tools ?? []).join(' · ') }));
   wf.push({ l: 'Data deposition & metadata', d: 'NCBI GenBank / ENA · Include: collection date, GPS coordinates, isolation source, host organism' });
 
   // ── Checklist ──────────────────────────────────────────

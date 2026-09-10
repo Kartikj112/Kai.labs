@@ -58,6 +58,15 @@ export interface ResearchArticle {
 export interface LoadedResearchArticle extends ResearchArticle {
   /** Whether heroImage.src actually exists in /public (for graceful fallback). */
   heroImageExists: boolean
+  /**
+   * The image the UI should actually render. Resolution order:
+   *   1. `heroImage.src`, when that file exists in /public
+   *   2. the per-category default in /research/images/_defaults/<category>.jpg
+   *   3. `null` — the caller draws its inline SVG placeholder
+   * Automations can therefore publish an article with no artwork at all and
+   * still get a category-appropriate image rather than an empty grey box.
+   */
+  resolvedImage: ResearchImage | null
   /** Estimated reading time, e.g. "4 min read". */
   readingTime: string
 }

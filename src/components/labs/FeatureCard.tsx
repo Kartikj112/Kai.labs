@@ -41,21 +41,15 @@ export function FeatureCard({ index, title, description, href, cta, status, dela
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span
-          style={{
-            fontFamily: 'var(--font-mono), DM Mono, monospace',
-            fontSize: 11, color: 'var(--accent)', letterSpacing: '0.16em',
-          }}
-        >
+        <span className="pixel-num" style={{ fontSize: 12, color: 'var(--accent)' }}>
           {index}
         </span>
         {status && (
           <span
+            className="pixel-label pixel-label--sm"
             style={{
-              fontFamily: 'var(--font-mono), DM Mono, monospace',
-              fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase',
               color: 'var(--muted)', border: '1px solid var(--border-color)',
-              borderRadius: 999, padding: '3px 9px',
+              borderRadius: 999, padding: '4px 10px',
             }}
           >
             {status}

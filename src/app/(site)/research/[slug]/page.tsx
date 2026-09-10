@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!article) return { title: 'Research — Kai Labs' }
 
   const url = `${SITE_URL}/research/${article.slug}`
-  const ogImage = article.heroImageExists ? `${SITE_URL}${article.heroImage.src}` : undefined
+  const ogImage = article.resolvedImage ? `${SITE_URL}${article.resolvedImage.src}` : undefined
 
   return {
     title: `${article.title} — Kai Genomics Research`,
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url,
       publishedTime: article.date,
       authors: article.authors,
-      images: ogImage ? [{ url: ogImage, width: 1600, height: 900, alt: article.heroImage.alt }] : undefined,
+      images: ogImage ? [{ url: ogImage, width: 1600, height: 900, alt: article.resolvedImage!.alt }] : undefined,
     },
     twitter: {
       card: 'summary_large_image',
@@ -115,10 +115,10 @@ export default async function ResearchArticlePage({ params }: Props) {
             border: '1px solid var(--border-color)',
           }}
         >
-          {article.heroImageExists ? (
+          {article.resolvedImage ? (
             <Image
-              src={article.heroImage.src}
-              alt={article.heroImage.alt}
+              src={article.resolvedImage.src}
+              alt={article.resolvedImage.alt}
               fill
               priority
               sizes="(max-width: 1100px) 100vw, 1100px"
@@ -137,16 +137,16 @@ export default async function ResearchArticlePage({ params }: Props) {
             </div>
           )}
         </div>
-        {(article.heroImage.caption || article.heroImage.credit) && (
+        {article.resolvedImage && (article.resolvedImage.caption || article.resolvedImage.credit) && (
           <p
             style={{
               fontFamily: 'var(--font-mono), DM Mono, monospace',
               fontSize: 11, color: 'var(--muted)', lineHeight: 1.7, marginTop: 12,
             }}
           >
-            {article.heroImage.caption}
-            {article.heroImage.caption && article.heroImage.credit ? ' — ' : ''}
-            {article.heroImage.credit && <span>Credit: {article.heroImage.credit}</span>}
+            {article.resolvedImage.caption}
+            {article.resolvedImage.caption && article.resolvedImage.credit ? ' — ' : ''}
+            {article.resolvedImage.credit && <span>Credit: {article.resolvedImage.credit}</span>}
           </p>
         )}
       </div>

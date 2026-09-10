@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { EngineRunner } from '@/components/sections/DecisionEngine/EngineRunner';
 import { getTree, getStartNode } from '@/lib/engines/loader';
@@ -37,7 +38,7 @@ export default async function ModulePage({ params }: Props) {
   return (
     <main className="engine-page-wrap">
       <div className="module-page-header">
-        <a href="/engine" className="module-back-link">← Decision Engine</a>
+        <Link href="/engine" className="module-back-link">← Decision Engine</Link>
         <div className="module-page-meta">
           <span className="module-page-cat">{mod.cat}</span>
           {mod.totalSteps && (

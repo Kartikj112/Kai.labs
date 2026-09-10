@@ -29,6 +29,7 @@ const CAT_COLORS: Record<string, string> = {
 export function EngineHub({ modules }: Props) {
   const live    = modules.filter(m => m.status === 'live');
   const coming  = modules.filter(m => m.status === 'coming-soon' || m.status === 'placeholder');
+  const domains = new Set(live.map(m => m.cat)).size;
 
   return (
     <div className="engine-hub">
@@ -40,7 +41,9 @@ export function EngineHub({ modules }: Props) {
 
       {/* Hero */}
       <div className="hub-hero" style={{ position: 'relative', zIndex: 1 }}>
-        <div className="tag cat-tag--default" style={{ marginBottom: 20 }}>KAI DECISION ENGINE</div>
+        {/* cat-tag (not the site-wide .tag) — .cat-tag carries the
+            inline-block that keeps this from stretching the full column. */}
+        <div className="cat-tag cat-tag--default" style={{ marginBottom: 20 }}>KAI DECISION ENGINE</div>
         <h1 className="hub-title">Research Decision Support</h1>
         <p className="hub-subtitle italic">for genomics, metagenomics &amp; bioinformatics</p>
         <p className="hub-desc">
@@ -54,9 +57,11 @@ export function EngineHub({ modules }: Props) {
             <div className="hub-stat-l">Live modules</div>
           </div>
           <div className="hub-stat-div" />
+          {/* Once every module ships, "0 coming soon" is a worse stat than
+              the breadth it replaced — so swap in domain coverage instead. */}
           <div className="hub-stat">
-            <div className="hub-stat-n">{coming.length}</div>
-            <div className="hub-stat-l">Coming soon</div>
+            <div className="hub-stat-n">{coming.length > 0 ? coming.length : domains}</div>
+            <div className="hub-stat-l">{coming.length > 0 ? 'Coming soon' : 'Research domains'}</div>
           </div>
           <div className="hub-stat-div" />
           <div className="hub-stat">

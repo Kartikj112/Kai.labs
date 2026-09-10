@@ -17,6 +17,17 @@ import {
   conferenceTree,
   careerPathwayTree,
 } from './modules-9-14';
+import {
+  ontBasecallingTree,
+  primerSelectionTree,
+  metadataComplianceTree,
+  statisticalPowerTree,
+} from './modules-15-18';
+import {
+  ampDiscoveryTree,
+  novelSpeciesTree,
+  computeEstimatorTree,
+} from './modules-19-21';
 
 const TREES: Record<string, DecisionTree> = {
   'wgs':                  wgsTree,
@@ -33,6 +44,13 @@ const TREES: Record<string, DecisionTree> = {
   'phd-planner':          phdPlannerTree,
   'conference':           conferenceTree,
   'career-pathway':       careerPathwayTree,
+  'ont-basecalling':      ontBasecallingTree,
+  'primer-selection':     primerSelectionTree,
+  'metadata-compliance':  metadataComplianceTree,
+  'statistical-power':    statisticalPowerTree,
+  'amp-discovery':        ampDiscoveryTree,
+  'novel-species':        novelSpeciesTree,
+  'compute-estimator':    computeEstimatorTree,
 };
 
 export function getTree(moduleId: string): DecisionTree | null {

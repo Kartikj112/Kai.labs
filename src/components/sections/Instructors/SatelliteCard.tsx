@@ -51,6 +51,10 @@ export function SatelliteCard({ instructor, revealDelay = 1 }: SatelliteCardProp
   useEffect(() => {
     const el = cardRef.current
     if (!el) return
+    // No IntersectionObserver (old browser, or a test environment): reveal
+    // immediately rather than leaving the card permanently invisible. Can only
+    // be checked after mount, since the server has no such global.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (typeof IntersectionObserver === 'undefined') { setRevealed(true); return }
     const io = new IntersectionObserver(
       (entries) => {
