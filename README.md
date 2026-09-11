@@ -24,7 +24,9 @@ Live at [kai-genomics.vercel.app](https://kai-genomics.vercel.app/).
 | Deployment   | Vercel                                                   |
 | Analytics    | Google Analytics 4                                       |
 
-**No runtime dependencies beyond `next`, `react` and `react-dom`.** Supabase and Resend are
+**No runtime dependencies beyond `next`, `react` and `react-dom`.** (`@anthropic-ai/sdk`
+and `zod` are devDependencies — they are used by the research ingest script in CI and never
+reach the browser bundle.) Supabase and Resend are
 reached with plain `fetch` against their REST APIs rather than SDKs, and the one non-Google
 font is vendored as a single `woff2`. That keeps the dependency surface and the bundle small.
 
@@ -88,6 +90,7 @@ public/
 
 scripts/
   validate-engines.mts        Graph-validates every decision tree; runs on prebuild
+  research-ingest.mts         Finds, screens and writes up new papers; runs weekly in CI
 
 supabase/
   schema.sql                  Kai Exchange schema, RLS policies, demo rows
@@ -267,6 +270,66 @@ otherwise an inline SVG placeholder. A new category only needs a matching `.jpg`
 
 `lib/research/articles.ts` is server-only (it uses `fs`); pure logic shared with client
 components lives in `lib/research/helpers.ts`. Don't import the former from a client component.
+
+### Autonomous ingest
+
+`scripts/research-ingest.mts` is the producer. It runs weekly in GitHub Actions
+(`.github/workflows/research-ingest.yml`), finds newly published papers, writes up the ones
+worth writing up, and commits them. The commit is what publishes — Vercel redeploys on push,
+and the new files are picked up because the folder *is* the CMS.
+
+```
+DISCOVER  Crossref, one query per topic in TOPICS       (no key — a contact email)
+DEDUPE    drop DOIs already in content/.processed-dois.json
+ENRICH    Europe PMC fills abstracts Crossref omits     (no key)
+SCREEN    one Claude call scores every candidate 1-10 and assigns a category
+WRITE     one Claude call per selected paper
+PERSIST   write content/research/<slug>.json, extend the ledger
+VERIFY    re-read through getAllArticles() and assert the new slugs parse
+```
+
+Only papers scoring `MIN_RELEVANCE` or above are written, capped at `--limit` per run, so a
+quiet week publishes nothing — that is a normal outcome, not a failure. **Every DOI that
+reaches the screening step enters the ledger whether it was published or rejected**, so no
+paper is ever paid to screen twice.
+
+Articles are written from the abstract alone, and the system prompt forbids inventing
+numbers, organisms, or claims the abstract doesn't contain. `heroImage` points at the
+per-category default, so artwork needs no generation step.
+
+The writing step is provider-agnostic. It needs **one** model key, and uses whichever is
+present — Gemini first when both are:
+
+| Setting | Where | Required |
+|---|---|---|
+| `GEMINI_API_KEY` *or* `ANTHROPIC_API_KEY` | repo secret | **yes** — one of the two |
+| Workflow permissions: *Read and write* | Settings → Actions → General | **yes** — the job pushes |
+| `LLM_PROVIDER` | repo variable | no — force `gemini` or `anthropic` when both keys exist |
+| `RESEARCH_MODEL` | repo variable | no — override the model id |
+| `CROSSREF_CONTACT_EMAIL` | repo variable | no — only sets the Crossref polite pool |
+
+Defaults are `gemini-3.8-flash` and `claude-opus-5`. Gemini has a free tier and this pipeline
+makes about four model calls a week, so it sits comfortably inside it.
+
+Both keys are **API keys, not subscriptions** — an Anthropic Console key or a Google AI Studio
+key, billed (or not) per token. Neither is tied to a Claude.ai or Claude Code plan, and the
+workflow runs on GitHub's servers, so nothing here depends on a local machine or a seat
+somewhere lapsing. Swapping provider is a repository-variable change, never a code change.
+
+> Google's free tier may use submitted prompts and responses to improve their products. These
+> are public paper summaries, so that's a fair trade here — but it is the reason to use the
+> paid Anthropic path for anything unpublished.
+
+Widen or narrow what the pipeline is interested in by editing `TOPICS` and `LAB_FOCUS` in
+the script; `CATEGORY_ORDER` is imported from `lib/research/helpers.ts` so the categories the
+model may assign can never drift from the ones the filter row renders.
+
+```bash
+npm run research:ingest -- --discover-only          # Crossref only, no API key needed
+npm run research:ingest -- --dry-run --verbose      # full run, writes nothing
+npm run research:ingest -- --limit 1                # publish at most one
+npm run research:ingest -- --reset-ledger           # forget every past decision
+```
 
 ---
 

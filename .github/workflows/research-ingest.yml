@@ -1,0 +1,106 @@
+# Kai Genomics Research Intelligence — autonomous ingest.
+#
+# Finds new papers, writes up the ones worth writing up, and commits them.
+# The commit to master is what publishes: Vercel redeploys on push, and the
+# site picks the new files up because `content/research/*.json` IS the CMS.
+#
+# Requires one secret — either will do:
+#   GEMINI_API_KEY     Google Gemini. Has a free tier; used first if both exist.
+#   ANTHROPIC_API_KEY  Claude. Better prose, billed per token.
+# Requires one setting: Settings → Actions → General → Workflow permissions
+#   → "Read and write permissions" (so the job can push).
+name: Research Intelligence
+
+on:
+  schedule:
+    # Mondays, 06:00 UTC. GitHub's scheduler is best-effort and can run late
+    # under load — the DOI ledger makes a missed or doubled run harmless.
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Max articles to publish this run'
+        required: false
+        default: '3'
+      since:
+        description: 'Only consider papers published on/after this date (YYYY-MM-DD)'
+        required: false
+      dry_run:
+        description: 'Run without writing or committing anything'
+        type: boolean
+        required: false
+        default: false
+
+# Two runs writing the ledger at once would race. Never cancel a run mid-flight:
+# it may have already written articles but not yet committed them.
+concurrency:
+  group: research-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Ingest
+        env:
+          # Set whichever one you have. Gemini is used first if both are set.
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CROSSREF_CONTACT_EMAIL: ${{ vars.CROSSREF_CONTACT_EMAIL }}
+          # Optional repo variables. LLM_PROVIDER forces 'gemini' or 'anthropic';
+          # RESEARCH_MODEL overrides the model id. Both let you change what this
+          # costs from the GitHub UI, with no code change and no redeploy.
+          LLM_PROVIDER: ${{ vars.LLM_PROVIDER }}
+          RESEARCH_MODEL: ${{ vars.RESEARCH_MODEL }}
+        run: |
+          npx tsx scripts/research-ingest.mts \
+            --limit "${{ inputs.limit || '3' }}" \
+            ${{ inputs.since && format('--since {0}', inputs.since) || '' }} \
+            ${{ inputs.dry_run && '--dry-run' || '' }} \
+            --verbose
+
+      # Proves the site still builds with the new articles in it. A malformed
+      # article is skipped rather than fatal, so this is a backstop for the
+      # rarer case — a change that breaks the build outright.
+      - name: Build
+        if: ${{ !inputs.dry_run }}
+        run: npm run build
+
+      - name: Commit
+        if: ${{ !inputs.dry_run }}
+        run: |
+          if [ -z "$(git status --porcelain content/)" ]; then
+            echo "Nothing new to publish."
+            exit 0
+          fi
+
+          git config user.name  "kai-research-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content/
+
+          slugs=$(git diff --cached --name-only --diff-filter=A -- 'content/research/*.json' \
+                  | xargs -r -n1 basename \
+                  | sed 's/\.json$//' \
+                  | paste -sd ', ' -)
+
+          if [ -n "$slugs" ]; then
+            git commit -m "Research Intelligence: publish ${slugs}"
+          else
+            git commit -m "Research Intelligence: update processed-DOI ledger"
+          fi
+
+          # The scheduled run and a human push can collide; rebase rather than fail.
+          git pull --rebase --autostash origin ${{ github.ref_name }}
+          git push origin HEAD:${{ github.ref_name }}

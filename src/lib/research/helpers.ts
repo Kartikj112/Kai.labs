@@ -8,7 +8,12 @@ import type { LoadedResearchArticle, ResearchArticle } from './types'
 // Preferred display order for known categories. Anything not in this list
 // (a brand-new category an automation invents) is appended automatically —
 // the filter is never hard-coded to a fixed set.
-const CATEGORY_ORDER = [
+//
+// Exported because `scripts/research-ingest.mts` constrains the model to these
+// values when it categorises a paper. Keeping one list means the ingest and the
+// filter row can't drift, and every category here has default artwork in
+// public/research/images/_defaults/<slugified>.jpg.
+export const CATEGORY_ORDER = [
   'Genomics',
   'Metagenomics',
   'Bioinformatics',
