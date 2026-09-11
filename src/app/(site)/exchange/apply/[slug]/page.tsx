@@ -28,8 +28,8 @@ export default async function ApplyPage({ params }: Props) {
           ← {w.title}
         </Link>
 
-        <h1 className="animate-fade-up" style={{ fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif', fontWeight: 300, fontSize: 'clamp(34px, 6vw, 60px)', lineHeight: 1.0, letterSpacing: '-0.03em', margin: '20px 0 14px' }}>
-          Apply to <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>attend</em>.
+        <h1 className="animate-fade-up" style={{ fontFamily: 'var(--font-pixel-display), ui-monospace, monospace', fontWeight: 500, fontSize: 'clamp(34px, 6.5vw, 65px)', lineHeight: 1.04, letterSpacing: 0, margin: '20px 0 14px' }}>
+          Apply to <em style={{ fontStyle: 'normal', color: 'var(--accent)' }}>attend</em>.
         </h1>
         <p style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 13, color: 'var(--muted)', lineHeight: 1.85, maxWidth: 540, marginBottom: 40 }}>
           You&apos;re applying for <strong style={{ color: 'var(--text)' }}>{w.title}</strong>.

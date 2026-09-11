@@ -22,10 +22,10 @@ export default async function ExchangePage() {
         <span className="animate-fade-up" style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--accent)', position: 'relative', zIndex: 1 }}>
           Kai Exchange
         </span>
-        <h1 className="animate-fade-up" style={{ fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif', fontWeight: 300, fontSize: 'clamp(44px, 8vw, 92px)', lineHeight: 0.98, letterSpacing: '-0.03em', margin: '24px 0 24px', position: 'relative', zIndex: 1, animationDelay: '0.1s' }}>
+        <h1 className="animate-fade-up" style={{ fontFamily: 'var(--font-pixel-display), ui-monospace, monospace', fontWeight: 500, fontSize: 'clamp(44px, 8.6vw, 99px)', lineHeight: 1.04, letterSpacing: 0, margin: '24px 0 24px', position: 'relative', zIndex: 1, animationDelay: '0.1s' }}>
           Scientists teach
           <br />
-          <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>scientists.</em>
+          <em style={{ fontStyle: 'normal', color: 'var(--accent)' }}>scientists.</em>
         </h1>
         <p className="animate-fade-up" style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 14, color: 'var(--muted)', lineHeight: 1.9, maxWidth: 560, marginBottom: 40, position: 'relative', zIndex: 1, animationDelay: '0.2s' }}>
           A free, community-driven platform. Anyone can host a workshop; anyone can attend.

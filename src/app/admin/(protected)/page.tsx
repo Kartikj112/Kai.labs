@@ -31,7 +31,7 @@ export default async function AdminDashboard() {
 
   return (
     <div>
-      <h1 style={{ fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif', fontWeight: 300, fontSize: 44, letterSpacing: '-0.02em', marginBottom: 8 }}>
+      <h1 style={{ fontFamily: 'var(--font-pixel-display), ui-monospace, monospace', fontWeight: 500, fontSize: 44, letterSpacing: 0, marginBottom: 8 }}>
         Review queue
       </h1>
       <p style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 12, color: 'var(--muted)', marginBottom: 36 }}>

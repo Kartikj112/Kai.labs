@@ -45,13 +45,13 @@ export default function KaiLabsHome() {
         <h1
           className="animate-fade-up"
           style={{
-            fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif',
-            fontWeight: 300, fontSize: 'clamp(64px, 13vw, 184px)', lineHeight: 0.92,
-            letterSpacing: '-0.04em', marginBottom: 32, position: 'relative', zIndex: 1,
+            fontFamily: 'var(--font-pixel-display), ui-monospace, monospace',
+            fontWeight: 500, fontSize: 'clamp(64px, 14vw, 198px)', lineHeight: 1.04,
+            letterSpacing: 0, marginBottom: 32, position: 'relative', zIndex: 1,
             animationDelay: '0.1s',
           }}
         >
-          Kai<span style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Labs</span>
+          Kai<span style={{ color: 'var(--accent)' }}>Labs</span>
         </h1>
 
         <p

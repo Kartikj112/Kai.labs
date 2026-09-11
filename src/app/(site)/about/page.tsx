@@ -29,9 +29,9 @@ export default function AboutPage() {
         <h1
           className="animate-fade-up"
           style={{
-            fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif',
-            fontWeight: 300, fontSize: 'clamp(40px, 6.5vw, 82px)', lineHeight: 1.02,
-            letterSpacing: '-0.03em', margin: '24px 0 28px', maxWidth: 820, animationDelay: '0.1s',
+            fontFamily: 'var(--font-pixel-display), ui-monospace, monospace',
+            fontWeight: 500, fontSize: 'clamp(32px, 5.2vw, 62px)', lineHeight: 1.04,
+            letterSpacing: 0, margin: '24px 0 28px', maxWidth: 1040, animationDelay: '0.1s',
           }}
         >
           {aboutLede}

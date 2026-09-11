@@ -18,7 +18,7 @@ Live at [kai-genomics.vercel.app](https://kai-genomics.vercel.app/).
 | Framework    | Next.js 16 (App Router, Turbopack)                      |
 | Language     | TypeScript, `strict`                                     |
 | Styling      | CSS custom properties + Tailwind utilities              |
-| Fonts        | `next/font` — Cormorant Garamond, DM Mono, Syne, Geist Pixel |
+| Fonts        | `next/font` — Cormorant Garamond, DM Mono, Syne, Geist Pixel (Circle + Square) |
 | Database     | Supabase via PostgREST (Kai Exchange only, optional)     |
 | Email        | Resend REST API (optional)                               |
 | Deployment   | Vercel                                                   |
@@ -96,7 +96,7 @@ src/
   app/
     layout.tsx                Root layout — fonts, metadata, GA4, custom cursor
     globals.css               Design tokens, base styles, shared components
-    fonts/                    Vendored Geist Pixel Square + its OFL licence
+    fonts/                    Vendored Geist Pixel Circle + Square + their OFL licence
     (site)/                   Pages that share the Kai Labs nav + footer
     engine/                   Decision Engine (own layout + engine.css)
     admin/                    Exchange review console
@@ -138,25 +138,42 @@ Dark theme only. The theme toggle was removed; `data-theme="dark"` is fixed on `
 
 ### Typography
 
-Four faces, each with one job. The rule that keeps it coherent: **display carries meaning,
-mono carries content, pixel carries metadata.**
+Five faces, each with one job. The rule that keeps it coherent: **pixel carries the
+headline, display carries the sub-headline, mono carries content, pixel carries metadata.**
 
-| Role    | Font               | Used for                                                |
-|---------|--------------------|---------------------------------------------------------|
-| Display | Cormorant Garamond | Headlines, section titles, stat figures                  |
-| Mono    | DM Mono            | Body copy, questions, option labels, nav                 |
-| Sans    | Syne               | The `KAI.LABS` wordmark                                  |
-| Pixel   | Geist Pixel Square | Eyebrows, section labels, step counters, index numerals, status pills |
+| Role        | Font               | Used for                                                |
+|-------------|--------------------|---------------------------------------------------------|
+| Headline    | Geist Pixel Circle | Every heading rendered at 40px and up                    |
+| Display     | Cormorant Garamond | Card titles, publication rows, sidebar values, stat figures, sub-headings below 40px |
+| Mono        | DM Mono            | Body copy, questions, option labels, nav                 |
+| Sans        | Syne               | The `KAI.LABS` wordmark                                  |
+| Metadata    | Geist Pixel Square | Eyebrows, section labels, step counters, index numerals, status pills |
 
-Geist Pixel is deliberately confined to small, uppercase, wide-tracked metadata — the
-"instrument readout" layer. It is never used for headlines or prose: a bitmap face stops
-being legible the moment it has to carry a sentence, and it loses its grid below ~9px.
+**The size threshold is the whole rule.** Geist Pixel Circle's dot texture is only visible
+above roughly 40px; below that it flattens into a plain monospace and becomes
+indistinguishable from DM Mono, which collapses the hierarchy. So Circle owns the display
+tier and Cormorant keeps everything under it — the site still has a serif voice, it has just
+moved down one level. Neither pixel face ever carries prose.
+
+Two consequences of Geist Pixel shipping a single weight and **no italic**:
+
+- Accent words in headings (`Kai`**`Labs`**, `Decode the `**`invisible`**` microbiome.`) used
+  to carry italic *and* oxblood. They now carry oxblood alone — a synthetic oblique shears
+  the pixel grid, so `<em>` inside a display heading is set to `fontStyle: 'normal'`.
+- Circle is monospaced and runs **14–24% wider than Cormorant** at the same size. Display
+  headings therefore want `letterSpacing: 0` (negative tracking collides the glyph cells)
+  and `lineHeight` around `1.04` (Cormorant's `0.92` was tuned for a short x-height and long
+  descenders). Check any new heading at ~400px, where the clamp *minimum* is what overflows.
+
 Use the `.pixel-label` / `.pixel-num` helpers in `globals.css` rather than reaching for the
-variable directly.
+metadata variable directly.
 
-> **Gotcha:** `--font-pixel` aliases `var(--font-geist-pixel-square)`, which `next/font`
-> defines. Referencing the literal family name `'Geist Pixel Square'` silently falls back
-> to the platform monospace — it looks plausible on Windows (Consolas) and is easy to miss.
+> **Gotcha:** `--font-pixel` and `--font-pixel-display` alias `var(--font-geist-pixel-square)`
+> and `var(--font-geist-pixel-circle)`, which `next/font` defines. Referencing a literal
+> family name like `'Geist Pixel Circle'` silently falls back to the platform monospace — it
+> looks plausible on Windows (Consolas) and is easy to miss. Verify a pixel face is really
+> painting by *measuring rendered text width* against a deliberately missing family;
+> inspecting `font-family` or computed style reports the declared stack either way.
 
 ---
 
@@ -315,5 +332,5 @@ first, so a broken decision tree fails the build rather than reaching production
 
 © Kai Labs. All rights reserved.
 
-Geist Pixel Square (`src/app/fonts/`) is © 2023 Vercel and basement.studio, used under the
-SIL Open Font License 1.1 — the licence text sits beside the font file.
+Geist Pixel Circle and Square (`src/app/fonts/`) are © 2023 Vercel and basement.studio, used
+under the SIL Open Font License 1.1 — the licence text sits beside the font files.

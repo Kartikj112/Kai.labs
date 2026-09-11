@@ -48,6 +48,20 @@ const geistPixel = localFont({
   adjustFontFallback: false,
 })
 
+// Geist Pixel Circle — the display voice. Carries every heading at 28px and up.
+//
+// Circle's dot texture only reads above ~40px; below that it flattens into a
+// plain monospace, which is why the display tier is where it lives and why
+// Cormorant keeps everything smaller. Same vendoring rationale as Square.
+const geistPixelCircle = localFont({
+  src: './fonts/GeistPixel-Circle.woff2',
+  variable: '--font-geist-pixel-circle',
+  weight: '500',
+  display: 'swap',
+  fallback: ['Geist Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+  adjustFontFallback: false,
+})
+
 // ── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -77,7 +91,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       // Site is dark-theme only.
       data-theme="dark"
-      className={`${cormorant.variable} ${dmMono.variable} ${syne.variable} ${geistPixel.variable}`}
+      className={`${cormorant.variable} ${dmMono.variable} ${syne.variable} ${geistPixel.variable} ${geistPixelCircle.variable}`}
     >
       <head>
         {/* Google Analytics */}

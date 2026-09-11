@@ -28,6 +28,9 @@
      on <html> in layout.tsx). Referencing the literal family name instead
      silently falls back to the platform monospace, so alias the real one. */
   --font-pixel:   var(--font-geist-pixel-square);
+  /* Display tier (≥28px) is Geist Pixel Circle; --font-display (Cormorant)
+     still carries everything below that. Same hashed-name caveat as above. */
+  --font-pixel-display: var(--font-geist-pixel-circle);
 }
 
 /* ════════════════════════════════════════════════════════
@@ -657,6 +660,9 @@ button, a, input, textarea, select {
    ════════════════════════════════════════════════════════ */
 .contact-watermark {
   position: absolute;
+  /* Stays Cormorant. The pixel face is a display voice, and this is a
+     decorative wash at 1.8% opacity — at 28vw the dot grid resolves into
+     visible speckle behind the copy instead of a ghost letterform. */
   font-family: var(--font-display), 'Cormorant Garamond', serif;
   font-size: 28vw;
   font-weight: 300;

@@ -30,14 +30,14 @@ export default function ResearchPage() {
         <h1
           className="animate-fade-up"
           style={{
-            fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif',
-            fontWeight: 300, fontSize: 'clamp(42px, 7vw, 84px)', lineHeight: 1.0,
-            letterSpacing: '-0.03em', margin: '24px 0 24px', animationDelay: '0.1s',
+            fontFamily: 'var(--font-pixel-display), ui-monospace, monospace',
+            fontWeight: 500, fontSize: 'clamp(42px, 7.6vw, 91px)', lineHeight: 1.04,
+            letterSpacing: 0, margin: '24px 0 24px', animationDelay: '0.1s',
           }}
         >
           Kai Genomics
           <br />
-          <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Research Intelligence.</em>
+          <em style={{ fontStyle: 'normal', color: 'var(--accent)' }}>Research Intelligence.</em>
         </h1>
         <p
           className="animate-fade-up"

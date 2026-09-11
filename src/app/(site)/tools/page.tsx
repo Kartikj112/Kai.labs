@@ -17,12 +17,12 @@ export default function ToolsPage() {
       <h1
         className="animate-fade-up"
         style={{
-          fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif',
-          fontWeight: 300, fontSize: 'clamp(48px, 9vw, 104px)', lineHeight: 0.98,
-          letterSpacing: '-0.03em', margin: '24px 0 20px', animationDelay: '0.1s',
+          fontFamily: 'var(--font-pixel-display), ui-monospace, monospace',
+          fontWeight: 500, fontSize: 'clamp(40px, 9.7vw, 112px)', lineHeight: 1.04,
+          letterSpacing: 0, margin: '24px 0 20px', animationDelay: '0.1s',
         }}
       >
-        Computational <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>tools</em>.
+        Computational <em style={{ fontStyle: 'normal', color: 'var(--accent)' }}>tools</em>.
       </h1>
       <p
         className="animate-fade-up"

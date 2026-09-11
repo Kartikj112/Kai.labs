@@ -22,11 +22,11 @@ export function Workshops({ onOpenWorkshop }: WorkshopsProps) {
       <h2
         className="reveal reveal-delay-1"
         style={{
-          fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif',
-          fontSize: 'clamp(36px, 6vw, 72px)',
-          fontWeight: 300,
+          fontFamily: 'var(--font-pixel-display), ui-monospace, monospace',
+          fontSize: 'clamp(36px, 6.5vw, 78px)',
+          fontWeight: 500,
           lineHeight: 1.05,
-          letterSpacing: '-0.02em',
+          letterSpacing: 0,
           maxWidth: 700,
           marginBottom: 64,
         }}
@@ -34,7 +34,7 @@ export function Workshops({ onOpenWorkshop }: WorkshopsProps) {
         Hands-on training
         <br />
         for the{' '}
-        <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>next generation</em>
+        <em style={{ fontStyle: 'normal', color: 'var(--accent)' }}>next generation</em>
         <br />
         of microbial researchers.
       </h2>

@@ -57,11 +57,11 @@ export function Hero() {
       <h1
         className="animate-fade-up"
         style={{
-          fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif',
-          fontSize: 'clamp(44px, 9vw, 120px)',
-          fontWeight: 300,
-          lineHeight: 0.92,
-          letterSpacing: '-0.02em',
+          fontFamily: 'var(--font-pixel-display), ui-monospace, monospace',
+          fontSize: 'clamp(46px, 9.7vw, 130px)',
+          fontWeight: 500,
+          lineHeight: 1.04,
+          letterSpacing: 0,
           maxWidth: 900,
           animationDelay: '0.5s',
           position: 'relative',
@@ -70,7 +70,7 @@ export function Hero() {
       >
         Decode the
         <br />
-        <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>invisible</em>
+        <em style={{ fontStyle: 'normal', color: 'var(--accent)' }}>invisible</em>
         <br />
         microbiome.
       </h1>

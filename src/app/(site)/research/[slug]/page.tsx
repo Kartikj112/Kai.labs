@@ -88,9 +88,9 @@ export default async function ResearchArticlePage({ params }: Props) {
 
         <h1
           style={{
-            fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif',
-            fontWeight: 300, fontSize: 'clamp(32px, 5.4vw, 64px)', lineHeight: 1.06,
-            letterSpacing: '-0.02em', maxWidth: 920, marginBottom: 28,
+            fontFamily: 'var(--font-pixel-display), ui-monospace, monospace',
+            fontWeight: 500, fontSize: 'clamp(32px, 5.8vw, 69px)', lineHeight: 1.06,
+            letterSpacing: 0, maxWidth: 920, marginBottom: 28,
           }}
         >
           {article.title}

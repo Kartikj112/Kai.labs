@@ -78,14 +78,14 @@ export function LecturerApplication() {
           <h2
             className="reveal reveal-delay-1"
             style={{
-              fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif',
-              fontSize: 'clamp(36px, 6vw, 68px)',
-              fontWeight: 300, lineHeight: 1.05,
-              letterSpacing: '-0.02em', marginBottom: 32,
+              fontFamily: 'var(--font-pixel-display), ui-monospace, monospace',
+              fontSize: 'clamp(36px, 6.5vw, 73px)',
+              fontWeight: 500, lineHeight: 1.05,
+              letterSpacing: 0, marginBottom: 32,
             }}
           >
             Become a{' '}
-            <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Satellite Lecturer</em>
+            <em style={{ fontStyle: 'normal', color: 'var(--accent)' }}>Satellite Lecturer</em>
           </h2>
 
           <p className="reveal reveal-delay-2" style={{

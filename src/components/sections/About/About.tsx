@@ -52,10 +52,10 @@ export function About() {
         <h2
           className="reveal reveal-delay-1"
           style={{
-            fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif',
-            fontSize: 'clamp(32px, 5vw, 64px)',
-            fontWeight: 300, lineHeight: 1.05,
-            letterSpacing: '-0.02em', marginBottom: 32,
+            fontFamily: 'var(--font-pixel-display), ui-monospace, monospace',
+            fontSize: 'clamp(32px, 5.4vw, 69px)',
+            fontWeight: 500, lineHeight: 1.05,
+            letterSpacing: 0, marginBottom: 32,
           }}
         >
           Science from the
@@ -63,7 +63,7 @@ export function About() {
           ocean floor to
           <br />
           the{' '}
-          <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>algorithm.</em>
+          <em style={{ fontStyle: 'normal', color: 'var(--accent)' }}>algorithm.</em>
         </h2>
 
         {[

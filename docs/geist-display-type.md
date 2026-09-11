@@ -1,219 +1,103 @@
-# Open task — move display headings to Geist Pixel Circle
+# Display type — Geist Pixel Circle
 
-**Status:** not started. Investigated and specced only.
-**Raised:** 10 Sep 2026, at the end of the session that shipped Geist Pixel Square.
-**To resume:** point Claude at this file — "read `docs/geist-display-type.md` and implement it".
-
----
-
-## The ask
-
-The large headings across the site — `KaiLabs`, `Kai Genomics`, `Decode the invisible
-microbiome.`, and every other H1/H2-tier heading — should render in **Geist Pixel Circle**,
-not Cormorant Garamond.
-
-This is a deliberate reversal of the scoping decision made when Geist Pixel was introduced.
-That pass confined the pixel face to small metadata (eyebrows, step counters, index numerals)
-and left Cormorant on all display type. The brief now is the opposite for the big tier.
+**Status:** done, 11 Sep 2026. The rule now lives in the Typography section of `README.md`;
+this file records the decisions and the measurements behind them, which the README doesn't
+have room for.
 
 ---
 
-## Current state (verified, not assumed)
+## What shipped
 
-`--font-display` (Cormorant Garamond) is referenced **48 times across 29 files**. Split by
-rendered size:
+Every heading rendered at **40px and up** is Geist Pixel Circle. Cormorant Garamond keeps
+everything below that — card titles, publication rows, sidebar values, stat figures, the
+About mission statement. The site still has a serif voice; it moved down one level.
 
-- **23 usages at ≥28px** — the display tier. This is what changes.
-- **25 usages below 28px** — card titles, publication rows, sidebar values, stat figures.
-  These should almost certainly **stay Cormorant** (see "Where to stop", below).
+`GeistPixel-Circle.woff2` is vendored beside Square in `src/app/fonts/` (28 KB, SIL OFL,
+covered by the existing licence file). It's declared in `src/app/layout.tsx` and exposed as
+`--font-pixel-display` in `globals.css`, mirroring the `--font-pixel` setup for Square.
 
-### The 23 display-tier usages
+## The three decisions
 
-| px (max) | Size declaration | File:line |
-|---:|---|---|
-| 184 | `clamp(64px, 13vw, 184px)` | `src/app/(site)/page.tsx:48` — **KaiLabs** |
-| 120 | `clamp(44px, 9vw, 120px)` | `src/components/sections/Hero/Hero.tsx:60` — **Decode the invisible microbiome.** |
-| 104 | `clamp(48px, 9vw, 104px)` | `src/components/labs/ComingSoon.tsx:33` |
-| 104 | `clamp(48px, 9vw, 104px)` | `src/app/(site)/tools/page.tsx:20` |
-| 96 | `clamp(42px, 8vw, 96px)` | `src/components/sections/Contact/Contact.tsx:62` |
-| 88 | `clamp(40px, 7vw, 88px)` | `src/components/sections/Workshops/WorkshopDetail.tsx:53` |
-| 84 | `clamp(42px, 7vw, 84px)` | `src/app/(site)/research/page.tsx:33` |
-| 82 | `clamp(40px, 6.5vw, 82px)` | `src/app/(site)/about/page.tsx:32` |
-| 72 | `clamp(36px, 6vw, 72px)` | `src/components/sections/Workshops/Workshops.tsx:25` |
-| 68 | `clamp(36px, 6vw, 68px)` | `src/components/sections/LecturerApplication/LecturerApplication.tsx:81` |
-| 66 | `clamp(38px, 6vw, 66px)` | `src/app/(site)/exchange/host/page.tsx:18` |
-| 64 | `clamp(32px, 5vw, 64px)` | `src/components/sections/Publications/Publications.tsx:16` |
-| 64 | `clamp(32px, 5vw, 64px)` | `src/components/sections/About/About.tsx:55` |
-| 64 | `clamp(32px, 5.4vw, 64px)` | `src/app/(site)/research/[slug]/page.tsx:91` |
-| 62 | `clamp(34px, 6vw, 62px)` | `src/app/(site)/exchange/workshops/[slug]/page.tsx:70` |
-| 60 | `clamp(34px, 6vw, 60px)` | `src/app/(site)/exchange/apply/[slug]/page.tsx:31` |
-| 44 | `44` | `src/app/admin/(protected)/page.tsx:34` |
-| 42 | `clamp(28px, 3.2vw, 42px)` | `src/components/research/FeaturedResearch.tsx:72` |
-| 34 | `34` | `src/app/(site)/about/page.tsx:148` (founder name) |
-| 34 | `clamp(22px, 3.4vw, 34px)` | `src/app/(site)/about/page.tsx:54` (mission statement) |
-| 28 | `28` | `src/components/labs/FeatureCard.tsx:62` |
-| 28 | `28px` | `src/app/globals.css:849` |
-| 28 | `28` | `src/app/globals.css:660` |
+### 1. Accent words: colour only
 
-Also relevant: `.node-title` in `src/app/engine/engine.css` (`clamp(26px, 5vw, 44px)`) is the
-Decision Engine's heading and is hard-coded to `'Cormorant Garamond'` rather than the token.
+13 headings set an accent word in Cormorant italic. Geist Pixel ships one weight and no
+italic, and a synthetic oblique shears the pixel grid, so `<em>` inside a display heading is
+now `fontStyle: 'normal'` and the accent carries oxblood alone.
 
----
+A specimen compared this against setting the accent in a second pixel variant (Circle body +
+Line, Grid or Square accent). Line and Grid are *hollower* than Circle, so the accent read as
+less emphasis than the text around it — the opposite of what italic did. Square read as more
+and was the strongest of the alternatives, but colour-only was chosen for uniformity. If the
+accent ever needs more weight, Square is the variant to reach for and it's already vendored.
 
-## Blockers and decisions needed
+### 2. The threshold is 40px, not 28px
 
-### 1. Geist Pixel Circle is not in the repo
+Circle's dot texture is only visible above roughly 40px. Below that it flattens into a plain
+monospace and stops being distinguishable from DM Mono, which collapses the card hierarchy —
+this was visible on the homepage `FeatureCard` titles at 28px and they were reverted.
 
-Only `GeistPixel-Square.woff2` was vendored. The `geist` npm package was uninstalled after
-vendoring, so Circle has to be re-obtained:
+Also reverted for the same reason, or because they aren't headings:
 
-```bash
-npm i geist                      # temporary
-cp node_modules/geist/dist/fonts/geist-pixel/GeistPixel-Circle.woff2 src/app/fonts/
-npm uninstall geist
-```
+- `FeatureCard` h3 (28px), `.mobile-menu a` (28px), the About founder name (34px)
+- The About mission statement (`clamp(22px, 3.4vw, 34px)`) — 206 characters of prose
+- `.contact-watermark` (28vw) — at 1.8% opacity the dot grid resolves into visible speckle
+  behind the copy rather than a ghost letterform
 
-Then declare it alongside the existing Square face in `src/app/layout.tsx`:
+### 3. Metrics
 
-```ts
-const geistPixelCircle = localFont({
-  src: './fonts/GeistPixel-Circle.woff2',
-  variable: '--font-geist-pixel-circle',
-  weight: '500',
-  display: 'swap',
-  fallback: ['Geist Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
-  adjustFontFallback: false,
-})
-```
+Measured against the **actually loaded** Cormorant (not the Georgia proxy used in the
+original spec, which understated it badly):
 
-…add `geistPixelCircle.variable` to the `<html>` className, and add a
-`--font-pixel-display: var(--font-geist-pixel-circle)` token in `globals.css`.
+| String | Size | Cormorant | Circle | Δ |
+|---|---:|---:|---:|---:|
+| `KaiLabs` | 184px | 576 | 692 | +20% |
+| `Decode the` | 120px | 525 | 629 | +20% |
+| `microbiome.` | 120px | 589 | 670 | +14% |
+| `Research Intelligence.` | 84px | 712 | 881 | +24% |
+| `Hands-on training` | 72px | 520 | 621 | +19% |
 
-**Do not reference the literal family name `'Geist Pixel Circle'`.** `next/font` registers
-the face under a hashed name; the literal silently falls back to the platform monospace,
-which on Windows is Consolas and looks plausible enough to pass a visual check. This exact
-mistake shipped once already in this project. Verify by measuring rendered text width against
-a guaranteed-missing family — computed style and `font-family` inspection both report the
-*declared* stack and will look correct even when the font is broken.
+Circle runs 14–24% wider. Despite that, the display headings had 200–350px of headroom at
+1440px, so the clamps went **up** about 8% rather than down — the dot texture is the point of
+the face and it reads better larger. Per heading: `letterSpacing: 0` (negative tracking
+collides the glyph cells) and `lineHeight: 1.04` (the old `0.92` was tuned for Cormorant's
+short x-height and long descenders).
 
-### 2. There is no italic — this is the significant design decision
+Two headings needed individual attention:
 
-13 headings set an accent word in Cormorant **italic**:
+- **`/tools` h1** — `Computational` is one unbreakable 13-character word and overflowed at
+  400px. Clamp minimum dropped 48px → 40px.
+- **About lede** — 126 characters, three times longer than any other headline, inside a
+  1000px-capped section. Sized down to `clamp(32px, 5.2vw, 62px)` so it holds roughly the
+  line count Cormorant did at 82px.
 
-```
-src/app/(site)/page.tsx:54                      Kai<em>Labs</em>
-src/components/sections/Hero/Hero.tsx:73        <em>invisible</em>
-src/components/sections/Workshops/Workshops.tsx:37   <em>next generation</em>
-src/components/sections/Contact/Contact.tsx:70  <em>science</em>
-src/components/sections/About/About.tsx:66      <em>algorithm.</em>
-src/components/sections/Publications/Publications.tsx:24  <em>microbial genomics.</em>
-src/app/(site)/research/page.tsx:40             <em>Research Intelligence.</em>
-src/app/(site)/tools/page.tsx:25                <em>tools</em>
-src/app/(site)/exchange/page.tsx:28             <em>scientists.</em>
-src/app/(site)/exchange/host/page.tsx:19        <em>workshop</em>
-src/app/(site)/exchange/apply/[slug]/page.tsx:32  <em>attend</em>
-src/components/sections/LecturerApplication/LecturerApplication.tsx:88  <em>Satellite Lecturer</em>
-src/components/sections/Workshops/WorkshopDetail.tsx:61  <em>{word}</em>
-```
+## Headings the original spec missed
 
-Geist Pixel ships **one weight (500) and no italic**. A synthetic oblique on a bitmap face
-looks broken — the pixel grid shears. So the accent word currently carries *two* signals
-(italic + oxblood) and would drop to *one* (oxblood only). Confirmed visually in the specimen.
+The spec's table of 23 omitted four sites that are display tier by the size rule. Three were
+converted: `(site)/exchange/page.tsx:25` (92px), and the two admin `Pending …` h1s at 40px.
+Plus `.hub-title` in `engine.css` (the Decision Engine landing h1, hard-coded Cormorant like
+`.node-title`).
 
-Options, in the order I'd suggest trying them:
+Not converted: `admin/(protected)/page.tsx:20`, a 52px stat **figure** rather than a heading.
+Numerals already have a pixel voice in `.pixel-num` (Square); putting a dashboard stat in
+Circle would be a second, competing one.
 
-- **(a) Colour only.** Simplest. Accent word is just oxblood. Slight loss of emphasis.
-- **(b) Colour + a second pixel variant.** Set the accent word in Geist Pixel **Line** or
-  **Grid** against Circle for the rest. Different texture, same grid — this is what the five
-  shape variants are *for*, and it is the most idiomatic use of the family.
-- **(c) Keep Cormorant italic for accent words only.** Mixed-face heading. Can look
-  deliberate or can look like a bug; needs to be seen.
-- **(d) Colour + underline/strike or a background block.** Heaviest-handed.
+## Verifying the face actually paints
 
-**(b) is the interesting one** and is worth prototyping first.
+`next/font` registers the face under a hashed name, so a literal `'Geist Pixel Circle'`
+silently falls back to the platform monospace — Consolas on Windows, which looks plausible.
+Inspecting `font-family` or computed style reports the *declared* stack and will look correct
+even when the font is broken.
 
-### 3. Metrics will need retuning
+Measure rendered text width against a deliberately missing family instead. In the production
+build, `KaiLabs — 0123` at 100px: Circle 752.4px, missing-family control 769.7px. Different,
+so the face is really painting.
 
-Geist Pixel is monospaced. Measured against Georgia at identical size, Circle runs **0–7%
-wider**:
+## Verified
 
-| String | Size | Circle | Georgia | Δ |
-|---|---:|---:|---:|---|
-| `KaiLabs` | 184px | 692px | 661px | +5% |
-| `Decode the` | 120px | 629px | 592px | +6% |
-| `microbiome.` | 120px | 670px | 672px | 0% |
-| `Research Intelligence.` | 84px | 881px | 820px | +7% |
-| `Hands-on training` | 72px | 621px | 590px | +5% |
+- `npm run lint` — clean (one pre-existing GA `next-script-for-ga` warning)
+- `npm run build` — passes, 38 static pages
+- Production build audited at 400 / 900 / 1440 across 11 routes: no pixel heading overflows
+  its box, no page scrolls horizontally
 
-Caveat: Georgia is a *proxy*. Cormorant is a narrower, higher-contrast serif than Georgia, so
-the real delta against Cormorant will be larger than these numbers. Re-measure against the
-actual loaded Cormorant before finalising the clamps.
-
-Concretely, expect to:
-
-- Reduce the `vw` term and the max in each `clamp()` — start around −8% and check.
-- Revisit `letterSpacing`. The headings use `-0.02em` to `-0.04em` (tightening a serif).
-  A pixel face on a fixed grid generally wants `0` or slightly positive; negative tracking
-  will collide the glyph cells.
-- Revisit `lineHeight`. `0.92` is set for Cormorant's small x-height and long descenders.
-  Geist Pixel has a large x-height and short descenders — `0.92` will look cramped; expect
-  `1.0`–`1.1`.
-- Check the narrow breakpoint (~400px) specifically. The clamp *minimums* (44–64px) are where
-  a monospace face is most likely to overflow, not the maximums.
-
-### 4. Where to stop
-
-The 25 sub-28px Cormorant usages are a real fork in the road, and it's a taste call:
-
-- **Keep them Cormorant** → the site retains a serif voice and gains a pixel display voice.
-  Three-face hierarchy stays legible. *This is my recommendation.*
-- **Convert everything** → Cormorant leaves the site entirely. Cleaner, more uniform, more
-  "terminal", but loses the editorial warmth that currently distinguishes Kai Labs from
-  every other dark-mode dev-tool site.
-
-Worth deciding explicitly before starting, because it changes whether `--font-display` is
-*re-pointed* (global, one-line) or whether a *new* `--font-pixel-display` token is introduced
-and applied to 23 sites (surgical).
-
----
-
-## Verified findings from the specimen
-
-Rendered Circle at 88px against the real headline strings:
-
-- **It looks good at display size.** The circular-dot texture is clearly visible and
-  attractive at 88px+. `KaiLabs` and `Decode the invisible microbiome.` both read well.
-- **Glyph coverage is complete** for everything the site uses: em dash, middle dot,
-  ampersand, right single quote, ×, é, ü, digits, parentheses, brackets, slash. No `.notdef`
-  boxes.
-- **The texture fades below ~40px.** At 40px Circle reads as a fairly plain monospace and the
-  pixel character is largely lost. This *supports* confining Circle to the display tier —
-  using it at 20–28px buys the legibility cost without the visual payoff.
-
----
-
-## Suggested order of work
-
-1. Vendor `GeistPixel-Circle.woff2`, declare it, add the token. Verify it actually paints
-   (width measurement, not computed style).
-2. Prototype on **two** headings only — `page.tsx:48` (KaiLabs) and `Hero.tsx:60` (Decode the
-   invisible microbiome) — and settle the italic question (§2) and the metrics (§3) there.
-3. Screenshot at 1440px, 900px and 400px before rolling out.
-4. Once the treatment is agreed, apply to the remaining 21 display-tier sites.
-5. Decide §4 (sub-28px) explicitly.
-6. Update the Typography section of `README.md` — it currently documents the *old* rule
-   ("display carries meaning, mono carries content, pixel carries metadata") and states that
-   the pixel face is never used for headlines. That will be wrong after this change.
-7. `npm run build && npm run lint`, then visual check on the deploy.
-
----
-
-## Reference
-
-- Geist Pixel ships five shape variants: Square (in use), **Circle** (wanted), Grid, Line,
-  Triangle. All single weight 500, all no italic, all ~28 KB.
-- Source: `node_modules/geist/dist/fonts/geist-pixel/` after `npm i geist`.
-- Licence: SIL OFL. `src/app/fonts/GeistPixel-LICENSE.txt` already covers the family; no new
-  licence file needed when adding Circle.
-- Existing Square setup to mirror: `src/app/layout.tsx` (declaration), `src/app/globals.css`
-  (`--font-pixel`, `.pixel-label`, `.pixel-num`), `src/app/engine/engine.css` (engine labels).
+One unrelated pre-existing issue turned up: `/engine` at 400px overflows by 17px from the
+decorative `.aurora-field` background div. Not typography, not touched.

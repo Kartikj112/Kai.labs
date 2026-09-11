@@ -142,17 +142,19 @@
 
 /* ── Typography ──────────────────────────────────────────── */
 .node-title {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-pixel-display), ui-monospace, monospace;
   font-size: clamp(26px, 5vw, 44px);
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.1;
+  letter-spacing: 0;
   color: var(--text);
   margin-bottom: 14px;
 }
 
+/* Geist Pixel has no italic and a synthetic oblique shears the pixel grid,
+   so the emphasis this modifier used to carry is now colour alone. */
 .node-title.italic {
-  font-style: italic;
-  font-weight: 300;
+  font-style: normal;
   color: var(--accent);
 }
 
@@ -733,10 +735,11 @@
 .hub-hero { margin-bottom: 48px; }
 
 .hub-title {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(32px, 6vw, 56px);
-  font-weight: 400;
+  font-family: var(--font-pixel-display), ui-monospace, monospace;
+  font-size: clamp(32px, 6.5vw, 60px);
+  font-weight: 500;
   line-height: 1.05;
+  letter-spacing: 0;
   color: var(--text);
   margin-bottom: 4px;
 }

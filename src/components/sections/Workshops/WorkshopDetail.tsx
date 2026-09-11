@@ -50,15 +50,15 @@ export function WorkshopDetail({ workshop }: WorkshopDetailProps) {
         </p>
 
         <h1 style={{
-          fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif',
-          fontSize: 'clamp(40px, 7vw, 88px)',
-          fontWeight: 300, lineHeight: 0.95,
-          letterSpacing: '-0.02em', maxWidth: 800,
+          fontFamily: 'var(--font-pixel-display), ui-monospace, monospace',
+          fontSize: 'clamp(40px, 7.6vw, 95px)',
+          fontWeight: 500, lineHeight: 1.04,
+          letterSpacing: 0, maxWidth: 800,
           position: 'relative', zIndex: 1,
         }}>
           {workshop.title.split(' ').map((word, i) =>
             ['Bioinformatics','Metagenomics','Pangenomics','Sequencing','Genomics','Functional','Amplicon','Bacterial','Introduction','Sanger','Pan-genomics'].includes(word)
-              ? <em key={i} style={{ fontStyle: 'italic', color: 'var(--accent)' }}>{word} </em>
+              ? <em key={i} style={{ fontStyle: 'normal', color: 'var(--accent)' }}>{word} </em>
               : word + ' '
           )}
         </h1>

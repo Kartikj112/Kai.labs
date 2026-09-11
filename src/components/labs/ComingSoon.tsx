@@ -30,9 +30,9 @@ export function ComingSoon({ eyebrow, title, description, bullets }: ComingSoonP
       <h1
         className="animate-fade-up"
         style={{
-          fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif',
-          fontWeight: 300, fontSize: 'clamp(48px, 9vw, 104px)', lineHeight: 0.98,
-          letterSpacing: '-0.03em', marginBottom: 28, animationDelay: '0.1s',
+          fontFamily: 'var(--font-pixel-display), ui-monospace, monospace',
+          fontWeight: 500, fontSize: 'clamp(48px, 9.7vw, 112px)', lineHeight: 1.04,
+          letterSpacing: 0, marginBottom: 28, animationDelay: '0.1s',
         }}
       >
         {title}

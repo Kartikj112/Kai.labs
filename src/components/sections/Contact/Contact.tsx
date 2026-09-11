@@ -59,15 +59,15 @@ export function Contact() {
       <h2
         className="reveal"
         style={{
-          fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif',
-          fontSize: 'clamp(42px, 8vw, 96px)',
-          fontWeight: 300, letterSpacing: '-0.03em',
-          lineHeight: 0.95, marginBottom: 40,
+          fontFamily: 'var(--font-pixel-display), ui-monospace, monospace',
+          fontSize: 'clamp(42px, 8.6vw, 104px)',
+          fontWeight: 500, letterSpacing: 0,
+          lineHeight: 1.04, marginBottom: 40,
           position: 'relative', zIndex: 1,
         }}
       >
         Let&apos;s do{' '}
-        <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>science</em>
+        <em style={{ fontStyle: 'normal', color: 'var(--accent)' }}>science</em>
         <br />
         together.
       </h2>

@@ -13,15 +13,15 @@ export function Publications() {
       <h2
         className="reveal reveal-delay-1"
         style={{
-          fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif',
-          fontSize: 'clamp(32px, 5vw, 64px)',
-          fontWeight: 300, letterSpacing: '-0.02em',
+          fontFamily: 'var(--font-pixel-display), ui-monospace, monospace',
+          fontSize: 'clamp(32px, 5.4vw, 69px)',
+          fontWeight: 500, letterSpacing: 0,
           lineHeight: 1.05, marginBottom: 56, maxWidth: 600,
         }}
       >
         Published work in
         <br />
-        <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>microbial genomics.</em>
+        <em style={{ fontStyle: 'normal', color: 'var(--accent)' }}>microbial genomics.</em>
       </h2>
 
       {/* Publication list */}

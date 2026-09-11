@@ -53,7 +53,7 @@ export default async function AdminWorkshopsPage() {
       <Link href="/admin" style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 11, letterSpacing: '0.1em', color: 'var(--muted)', textDecoration: 'none' }}>
         ← Overview
       </Link>
-      <h1 style={{ fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif', fontWeight: 300, fontSize: 40, letterSpacing: '-0.02em', margin: '16px 0 28px' }}>
+      <h1 style={{ fontFamily: 'var(--font-pixel-display), ui-monospace, monospace', fontWeight: 500, fontSize: 40, letterSpacing: 0, margin: '16px 0 28px' }}>
         Pending workshops{items.length > 0 ? ` (${items.length})` : ''}
       </h1>
 

@@ -67,7 +67,7 @@ export default async function WorkshopEventPage({ params }: Props) {
           <span className="kx-tag" style={{ color: 'var(--muted)' }}>{SKILL_LABELS[w.skill]}</span>
         </div>
 
-        <h1 style={{ fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif', fontWeight: 300, fontSize: 'clamp(34px, 6vw, 62px)', lineHeight: 1.04, letterSpacing: '-0.02em', marginBottom: 18 }}>
+        <h1 style={{ fontFamily: 'var(--font-pixel-display), ui-monospace, monospace', fontWeight: 500, fontSize: 'clamp(34px, 6.5vw, 67px)', lineHeight: 1.04, letterSpacing: 0, marginBottom: 18 }}>
           {w.title}
         </h1>
         <p style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 13, color: 'var(--muted)', marginBottom: 40 }}>

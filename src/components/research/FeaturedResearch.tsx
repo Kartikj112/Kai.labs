@@ -69,9 +69,9 @@ export function FeaturedResearch({ article }: FeaturedResearchProps) {
         <Link href={`/research/${article.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <h2
             style={{
-              fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif',
-              fontWeight: 300, fontSize: 'clamp(28px, 3.2vw, 42px)', lineHeight: 1.08,
-              letterSpacing: '-0.02em', marginBottom: 18,
+              fontFamily: 'var(--font-pixel-display), ui-monospace, monospace',
+              fontWeight: 500, fontSize: 'clamp(28px, 3.2vw, 42px)', lineHeight: 1.08,
+              letterSpacing: 0, marginBottom: 18,
             }}
           >
             {article.title}
