@@ -289,7 +289,15 @@ VERIFY    re-read through getAllArticles() and assert the new slugs parse
 ```
 
 Only papers scoring `MIN_RELEVANCE` or above are written, capped at `--limit` per run, so a
-quiet week publishes nothing — that is a normal outcome, not a failure. **Every DOI that
+quiet week publishes nothing — that is a normal outcome, not a failure.
+
+Screening runs in batches of `SCREEN_BATCH` rather than one request. Scores are independent
+of each other, so batching changes nothing about the result — but one request carrying ninety
+abstracts is the likeliest thing here to be load-shed, and losing it loses the whole run.
+Transient failures (429, 5xx, "high demand") retry with exponential backoff; a 400 or 401
+rethrows immediately rather than burning four minutes on an error that will never clear. A
+batch that fails anyway is skipped, and because those DOIs never reach the ledger, the next
+run reconsiders them. **Every DOI that
 reaches the screening step enters the ledger whether it was published or rejected**, so no
 paper is ever paid to screen twice.
 

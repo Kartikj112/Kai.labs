@@ -331,6 +331,46 @@ interface Ask {
   <T>(args: AskArgs<T>): Promise<T | null>
 }
 
+/**
+ * Both providers shed load under pressure, and a free tier sheds it sooner —
+ * "currently experiencing high demand" is a 500, not a bug, and it clears on its
+ * own. Anything transient is worth waiting out rather than losing the run: the
+ * discovery work is already done by this point and would otherwise be discarded.
+ * A 400 or 401 is not transient and rethrows immediately.
+ */
+function isTransient(err: unknown): boolean {
+  const status = (err as { status?: number })?.status
+  if (typeof status === 'number') return status === 429 || status >= 500
+  const msg = err instanceof Error ? err.message : String(err)
+  return /\b(429|500|502|503|504)\b|overload|high demand|rate.?limit|timeout|try again|unavailable/i.test(
+    msg
+  )
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+/** Wraps any Ask with exponential backoff. 6 attempts spans roughly four minutes. */
+function withRetry(ask: Ask, attempts = 6): Ask {
+  return async <T,>(args: AskArgs<T>) => {
+    let last: unknown
+    for (let i = 0; i < attempts; i++) {
+      try {
+        return await ask<T>(args)
+      } catch (err) {
+        if (!isTransient(err)) throw err
+        last = err
+        if (i === attempts - 1) break
+        // Exponential, with jitter so parallel retries don't resynchronise.
+        const wait = Math.round(4000 * 2 ** i * (0.75 + Math.random() * 0.5))
+        log(`      … ${(err as Error).message?.slice(0, 90)}`)
+        log(`      … retrying in ${Math.round(wait / 1000)}s (attempt ${i + 2}/${attempts})`)
+        await sleep(wait)
+      }
+    }
+    throw last
+  }
+}
+
 function anthropicAsk(): Ask {
   const client = new Anthropic()
   return async <T,>({ system, user, schema, effort = 'default' }: AskArgs<T>) => {
@@ -406,30 +446,66 @@ const LAB_FOCUS = `Kai Genomics is a computational biology lab. Its focus areas:
 Adjacent work that genuinely informs those — protein design, AI applied to biology,
 bioinformatics method papers, metagenomic tooling — also counts.`
 
-async function screen(ask: Ask, candidates: Candidate[]) {
-  const list = candidates
-    .map(
-      (c, i) =>
-        `[${i + 1}] DOI: ${c.doi}\nTitle: ${c.title}\nJournal: ${c.journal ?? 'unknown'}\n` +
-        `Abstract: ${c.abstract.slice(0, 1200)}`
-    )
-    .join('\n\n---\n\n')
+/**
+ * Screening is classification against a fixed rubric — it doesn't need deep
+ * reasoning, so it runs at low effort. The writing calls use the default.
+ *
+ * It runs in batches rather than one request. Scores are independent of each
+ * other (each paper is measured against the rubric, not against its neighbours),
+ * so batching changes nothing about the result — but a single request carrying
+ * ninety abstracts is the most likely thing in this pipeline to be load-shed,
+ * and when it fails the whole run dies. Smaller requests survive, and a batch
+ * that fails anyway costs one batch instead of everything.
+ */
+const SCREEN_BATCH = 25
 
-  // Screening is classification against a fixed rubric — it doesn't need deep
-  // reasoning, and it's the call carrying the long input (every abstract at
-  // once), so low effort keeps the cost and the wall clock down. The writing
-  // calls below run at the default effort.
-  const out = await ask({
-    system:
-      `You screen newly published papers for a research digest.\n\n${LAB_FOCUS}\n\n` +
-      `Score each candidate 1-10 for relevance to those focus areas and assign the single ` +
-      `best category. Be strict: a paper that merely shares a keyword is not relevant. Most ` +
-      `candidates should score low — a 7+ means someone in this lab would genuinely want to ` +
-      `read it. Return an entry for every candidate.`,
-    user: `Screen these ${candidates.length} candidates.\n\n${list}`,
-    schema: ScreenSchema,
-    effort: 'low',
-  })
+async function screen(ask: Ask, candidates: Candidate[]) {
+  const batches: Candidate[][] = []
+  for (let i = 0; i < candidates.length; i += SCREEN_BATCH) {
+    batches.push(candidates.slice(i, i + SCREEN_BATCH))
+  }
+
+  const all: { doi: string; relevance: number; category: string; reason: string }[] = []
+
+  for (const [n, batch] of batches.entries()) {
+    const list = batch
+      .map(
+        (c, i) =>
+          `[${i + 1}] DOI: ${c.doi}\nTitle: ${c.title}\nJournal: ${c.journal ?? 'unknown'}\n` +
+          `Abstract: ${c.abstract.slice(0, 1200)}`
+      )
+      .join('\n\n---\n\n')
+
+    let out: { selections: typeof all } | null = null
+    try {
+      out = await ask({
+        system:
+          `You screen newly published papers for a research digest.\n\n${LAB_FOCUS}\n\n` +
+          `Score each candidate 1-10 for relevance to those focus areas and assign the single ` +
+          `best category. Be strict: a paper that merely shares a keyword is not relevant. Most ` +
+          `candidates should score low — a 7+ means someone in this lab would genuinely want to ` +
+          `read it. Return an entry for every candidate.`,
+        user: `Screen these ${batch.length} candidates.\n\n${list}`,
+        schema: ScreenSchema,
+        effort: 'low',
+      })
+    } catch (err) {
+      // One lost batch is some papers not considered this week — they stay out
+      // of the ledger, so next week reconsiders them. Losing the run entirely
+      // would throw away the whole pipeline's work.
+      console.warn(`      ! batch ${n + 1}/${batches.length} failed: ${(err as Error).message?.slice(0, 120)}`)
+      continue
+    }
+
+    if (out?.selections) all.push(...out.selections)
+    log(`      batch ${n + 1}/${batches.length} → ${out?.selections?.length ?? 0} scored`)
+
+    // Free tiers meter by requests per minute; a short pause is cheaper than
+    // provoking the 429 that a burst would earn.
+    if (n < batches.length - 1) await sleep(2000)
+  }
+
+  const out = { selections: all }
 
   return out?.selections ?? []
 }
@@ -559,7 +635,7 @@ async function main() {
     return
   }
 
-  const ask: Ask = PROVIDER === 'gemini' ? geminiAsk() : anthropicAsk()
+  const ask: Ask = withRetry(PROVIDER === 'gemini' ? geminiAsk() : anthropicAsk())
 
   // 4. Screen
   log(`\n[4/6] Screening ${readable.length} candidates…`)
@@ -574,16 +650,32 @@ async function main() {
     debug(`${String(s.relevance).padStart(2)}/10  ${s.category.padEnd(24)} ${s.reason}`)
   }
 
+  if (ranked.length === 0) {
+    console.error('✗ every screening batch failed — nothing was scored.')
+    process.exit(1)
+  }
+
   const selected = ranked.filter((s) => s.relevance >= MIN_RELEVANCE).slice(0, LIMIT)
-  log(`      ${selected.length} scored ${MIN_RELEVANCE}+ and will be written up`)
+  log(`      ${ranked.length} scored, ${selected.length} at ${MIN_RELEVANCE}+ will be written up`)
 
   // 5 + 6. Write and persist
   log(`\n[5/6] Writing…`)
   const writtenSlugs: string[] = []
 
-  for (const sel of selected) {
+  for (const [n, sel] of selected.entries()) {
     const c = byDoi.get(sel.doi.toLowerCase())!
-    const body = await writeArticle(ask, c, sel.category)
+    if (n > 0) await sleep(2000)
+
+    let body: Awaited<ReturnType<typeof writeArticle>> = null
+    try {
+      body = await writeArticle(ask, c, sel.category)
+    } catch (err) {
+      // One article lost is one article. The DOI still enters the ledger below,
+      // so it won't be reconsidered — that's the right trade for a digest: a
+      // paper missed is not a paper wrong.
+      console.warn(`      ✗ ${c.doi}: ${(err as Error).message?.slice(0, 120)}`)
+      continue
+    }
     if (!body) {
       console.warn(`      ✗ ${c.doi}: model returned no parsable article — skipped`)
       continue
