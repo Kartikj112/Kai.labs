@@ -291,13 +291,21 @@ VERIFY    re-read through getAllArticles() and assert the new slugs parse
 Only papers scoring `MIN_RELEVANCE` or above are written, capped at `--limit` per run, so a
 quiet week publishes nothing — that is a normal outcome, not a failure.
 
-Screening runs in batches of `SCREEN_BATCH` rather than one request. Scores are independent
-of each other, so batching changes nothing about the result — but one request carrying ninety
-abstracts is the likeliest thing here to be load-shed, and losing it loses the whole run.
-Transient failures (429, 5xx, "high demand") retry with exponential backoff; a 400 or 401
-rethrows immediately rather than burning four minutes on an error that will never clear. A
-batch that fails anyway is skipped, and because those DOIs never reach the ledger, the next
-run reconsiders them. **Every DOI that
+**Requests, not tokens, are the budget.** Free tiers meter calls — Gemini allows roughly 20 a
+day for a current flash model — so the pipeline is built to spend as few as possible. Only the
+newest `MAX_SCREEN` candidates (50) reach the model, screened in batches of `SCREEN_BATCH`
+(25), which puts a normal run at **2 screening calls plus up to 3 writes — about 5 of 20**.
+Scores are measured against a fixed rubric rather than against each other, so batching changes
+nothing about the result; it just keeps any one request from being large enough to be
+load-shed.
+
+Transient failures (429, 5xx, quota, "high demand") retry, preferring the provider's own
+stated delay — a quota window that resets in 41s is not helped by a 4s backoff — and falling
+back to exponential with jitter. A 400 or 401 rethrows immediately rather than burning minutes
+on an error that will never clear. Retries spend the same metered budget as real work, so
+`MODEL_CALL_BUDGET` (18) caps total calls per run including them; hitting it stops the run
+cleanly rather than exhausting a daily quota. A skipped batch's DOIs never reach the ledger,
+so the next run reconsiders them. **Every DOI that
 reaches the screening step enters the ledger whether it was published or rejected**, so no
 paper is ever paid to screen twice.
 
@@ -315,6 +323,7 @@ present — Gemini first when both are:
 | `LLM_PROVIDER` | repo variable | no — force `gemini` or `anthropic` when both keys exist |
 | `RESEARCH_MODEL` | repo variable | no — override the model id |
 | `CROSSREF_CONTACT_EMAIL` | repo variable | no — only sets the Crossref polite pool |
+| `MAX_SCREEN` / `MODEL_CALL_BUDGET` | repo variable | no — tune if your free-tier allowance differs |
 
 Defaults are `gemini-3.8-flash` and `claude-opus-5`. Gemini has a free tier and this pipeline
 makes about four model calls a week, so it sits comfortably inside it.

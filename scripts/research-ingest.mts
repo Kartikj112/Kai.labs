@@ -12,9 +12,10 @@
  *   3. ENRICH    Crossref omits many abstracts; Europe PMC fills the gaps. Also
  *                keyless. A candidate with no abstract is dropped — the model
  *                must never write up a paper it hasn't read.
- *   4. SCREEN    One model call ranks every candidate against the lab's focus
- *                and assigns a category. Most papers are rejected here, which is
- *                the point: one cheap call decides, and only winners get written.
+ *   4. SCREEN    The newest MAX_SCREEN candidates are scored against the lab's
+ *                focus and given a category, in batches. Most are rejected here,
+ *                which is the point: cheap calls decide, and only the winners
+ *                are written.
  *   5. WRITE     One model call per selected paper produces the body sections.
  *   6. PERSIST   Write the JSON, extend the ledger.
  *   7. VERIFY    Re-read through the site's own loader and assert the new slugs
@@ -28,6 +29,10 @@
  * Needs exactly one model key — GEMINI_API_KEY (free tier) or ANTHROPIC_API_KEY
  * (paid). Whichever is present is used; Gemini wins if both are. Everything else
  * in the pipeline is keyless.
+ *
+ * Free tiers meter *requests*, so that — not tokens — is the budget this is
+ * built around. A normal run spends about five calls: two screening batches plus
+ * up to three writes, against a Gemini free allowance of roughly twenty a day.
  *
  * Run with:
  *   npx tsx scripts/research-ingest.mts --discover-only # no key needed at all
@@ -45,6 +50,23 @@ import { CATEGORY_ORDER, slugifyCategory } from '../src/lib/research/helpers'
 import type { ResearchArticle } from '../src/lib/research/types'
 
 // ── Config ───────────────────────────────────────────────────────────────────
+
+/**
+ * An unset GitHub repository variable arrives as an empty string, and a
+ * mistyped one as something Number() turns into NaN — which would silently
+ * screen zero candidates rather than fail. Anything not a positive integer
+ * falls back to the default and says so.
+ */
+function posIntEnv(name: string, fallback: number): number {
+  const raw = process.env[name]?.trim()
+  if (!raw) return fallback
+  const n = Number(raw)
+  if (!Number.isInteger(n) || n <= 0) {
+    console.warn(`! ${name}="${raw}" is not a positive integer — using ${fallback}`)
+    return fallback
+  }
+  return n
+}
 
 const ROOT = process.cwd()
 const CONTENT_DIR = path.join(ROOT, 'content', 'research')
@@ -87,6 +109,16 @@ const DOMAIN_TERMS = [
 const LOOKBACK_DAYS = 30
 /** Per topic. 8 topics × 12 = up to ~96 candidates before dedupe. */
 const ROWS_PER_TOPIC = 12
+/**
+ * How many candidates actually reach the model, newest first.
+ *
+ * Free tiers meter requests, not tokens — Gemini's free allowance for a current
+ * flash model is around 20 a day — so the number of *calls* is the budget that
+ * matters, and screening every paper found is a waste of it. Publishing three a
+ * week out of fifty recent candidates is not meaningfully worse than out of
+ * ninety, and it halves the requests.
+ */
+const MAX_SCREEN = posIntEnv('MAX_SCREEN', 50)
 /** Articles published per run. Kept low deliberately — this is a digest. */
 const DEFAULT_LIMIT = 3
 /** Below this, a paper isn't worth a page. */
@@ -342,28 +374,65 @@ function isTransient(err: unknown): boolean {
   const status = (err as { status?: number })?.status
   if (typeof status === 'number') return status === 429 || status >= 500
   const msg = err instanceof Error ? err.message : String(err)
-  return /\b(429|500|502|503|504)\b|overload|high demand|rate.?limit|timeout|try again|unavailable/i.test(
+  return /\b(429|500|502|503|504)\b|overload|high demand|rate.?limit|quota|timeout|try again|unavailable/i.test(
     msg
   )
 }
 
+/**
+ * Providers usually say how long to wait, and they know better than a fixed
+ * curve does — a quota window that resets in 41s is not helped by a 4s backoff.
+ * Reads Gemini's "Please retry in 41.6s" and the `retryDelay: 30s` field both
+ * SDKs surface in different shapes. Returns milliseconds, or null to fall back.
+ */
+function serverRetryHint(err: unknown): number | null {
+  const msg = err instanceof Error ? err.message : String(err)
+  const m =
+    msg.match(/retry in\s+([\d.]+)\s*s/i) ||
+    msg.match(/retryDelay["':\s]+([\d.]+)s/i) ||
+    msg.match(/retry-after["':\s]+([\d.]+)/i)
+  if (!m) return null
+  const seconds = Number(m[1])
+  if (!Number.isFinite(seconds) || seconds <= 0) return null
+  // Pad slightly — the window is usually just past what the server quotes.
+  return Math.min(Math.round(seconds * 1000) + 3000, 120_000)
+}
+
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
-/** Wraps any Ask with exponential backoff. 6 attempts spans roughly four minutes. */
-function withRetry(ask: Ask, attempts = 6): Ask {
+/**
+ * Free tiers meter requests, so retries spend the same budget the real work
+ * does. This is the ceiling on total model calls per run, retries included —
+ * once it's gone, stopping is better than burning a daily quota on a provider
+ * that is refusing anyway.
+ */
+const MODEL_CALL_BUDGET = posIntEnv('MODEL_CALL_BUDGET', 18)
+let modelCalls = 0
+
+class BudgetExhausted extends Error {}
+
+/** Wraps any Ask with backoff that prefers the server's own retry hint. */
+function withRetry(ask: Ask, attempts = 5): Ask {
   return async <T,>(args: AskArgs<T>) => {
     let last: unknown
     for (let i = 0; i < attempts; i++) {
+      if (modelCalls >= MODEL_CALL_BUDGET) {
+        throw new BudgetExhausted(
+          `model call budget spent (${MODEL_CALL_BUDGET}) — raise MODEL_CALL_BUDGET or wait for the quota window`
+        )
+      }
+      modelCalls++
       try {
         return await ask<T>(args)
       } catch (err) {
         if (!isTransient(err)) throw err
         last = err
         if (i === attempts - 1) break
-        // Exponential, with jitter so parallel retries don't resynchronise.
-        const wait = Math.round(4000 * 2 ** i * (0.75 + Math.random() * 0.5))
-        log(`      … ${(err as Error).message?.slice(0, 90)}`)
-        log(`      … retrying in ${Math.round(wait / 1000)}s (attempt ${i + 2}/${attempts})`)
+        // The server's hint wins; otherwise exponential with jitter so parallel
+        // retries don't resynchronise.
+        const wait = serverRetryHint(err) ?? Math.round(4000 * 2 ** i * (0.75 + Math.random() * 0.5))
+        log(`      … ${(err as Error).message?.split('\n')[0]?.slice(0, 100)}`)
+        log(`      … waiting ${Math.round(wait / 1000)}s (attempt ${i + 2}/${attempts})`)
         await sleep(wait)
       }
     }
@@ -490,6 +559,12 @@ async function screen(ask: Ask, candidates: Candidate[]) {
         effort: 'low',
       })
     } catch (err) {
+      // Out of budget means every later batch would fail too — stop, and keep
+      // whatever earlier batches produced.
+      if (err instanceof BudgetExhausted) {
+        console.warn(`      ! ${err.message}`)
+        break
+      }
       // One lost batch is some papers not considered this week — they stay out
       // of the ledger, so next week reconsiders them. Losing the run entirely
       // would throw away the whole pipeline's work.
@@ -637,10 +712,17 @@ async function main() {
 
   const ask: Ask = withRetry(PROVIDER === 'gemini' ? geminiAsk() : anthropicAsk())
 
-  // 4. Screen
-  log(`\n[4/6] Screening ${readable.length} candidates…`)
-  const scores = await screen(ask, readable)
-  const byDoi = new Map(readable.map((c) => [c.doi, c]))
+  // 4. Screen — newest first, capped, because requests are the scarce resource.
+  const shortlist = [...readable]
+    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+    .slice(0, MAX_SCREEN)
+
+  const batchCount = Math.ceil(shortlist.length / SCREEN_BATCH)
+  log(`\n[4/6] Screening ${shortlist.length} of ${readable.length} candidates, newest first…`)
+  log(`      ${batchCount} batch(es) + up to ${LIMIT} write(s) = ~${batchCount + LIMIT} model calls`)
+
+  const scores = await screen(ask, shortlist)
+  const byDoi = new Map(shortlist.map((c) => [c.doi, c]))
 
   const ranked = scores
     .filter((s) => byDoi.has(s.doi.toLowerCase()))
@@ -670,6 +752,10 @@ async function main() {
     try {
       body = await writeArticle(ask, c, sel.category)
     } catch (err) {
+      if (err instanceof BudgetExhausted) {
+        console.warn(`      ! ${err.message}`)
+        break
+      }
       // One article lost is one article. The DOI still enters the ledger below,
       // so it won't be reconsidered — that's the right trade for a digest: a
       // paper missed is not a paper wrong.
@@ -752,6 +838,7 @@ async function main() {
     log(`      ✓ all ${writtenSlugs.length} parse and would render`)
   }
 
+  log(`\n      ${modelCalls} model call(s) used of a ${MODEL_CALL_BUDGET} budget`)
   log(
     writtenSlugs.length > 0
       ? `\nPublished ${writtenSlugs.length} article(s).`

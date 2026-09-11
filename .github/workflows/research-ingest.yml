@@ -64,6 +64,10 @@ jobs:
           # costs from the GitHub UI, with no code change and no redeploy.
           LLM_PROVIDER: ${{ vars.LLM_PROVIDER }}
           RESEARCH_MODEL: ${{ vars.RESEARCH_MODEL }}
+          # Free tiers meter requests. Tune these if your allowance differs from
+          # the ~20/day a current Gemini flash model gets.
+          MAX_SCREEN: ${{ vars.MAX_SCREEN }}
+          MODEL_CALL_BUDGET: ${{ vars.MODEL_CALL_BUDGET }}
         run: |
           npx tsx scripts/research-ingest.mts \
             --limit "${{ inputs.limit || '3' }}" \
