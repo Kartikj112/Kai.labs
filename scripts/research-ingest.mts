@@ -24,7 +24,8 @@
  *
  * Every DOI that reaches step 4 is added to the ledger whether it was published
  * or rejected — "processed" means decided, so a rejected paper is never paid to
- * screen twice.
+ * screen twice. The one exception is a paper selected for writing that never got
+ * written; it stays out so the next run can try again.
  *
  * Needs exactly one model key — GEMINI_API_KEY (free tier) or ANTHROPIC_API_KEY
  * (paid). Whichever is present is used; Gemini wins if both are. Everything else
@@ -370,6 +371,17 @@ interface Ask {
  * discovery work is already done by this point and would otherwise be discarded.
  * A 400 or 401 is not transient and rethrows immediately.
  */
+/**
+ * A 429 is two different things. A per-minute limit clears in seconds and is
+ * worth waiting out; a per-day quota does not clear until tomorrow, and every
+ * retry against it is another request the provider may count. The server's
+ * "retry in 24s" hint is misleading here — it describes the per-minute window.
+ */
+function isDailyQuota(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err)
+  return /per ?day|PerDay|exceeded your current quota|check your plan and billing/i.test(msg)
+}
+
 function isTransient(err: unknown): boolean {
   const status = (err as { status?: number })?.status
   if (typeof status === 'number') return status === 429 || status >= 500
@@ -425,6 +437,12 @@ function withRetry(ask: Ask, attempts = 5): Ask {
       try {
         return await ask<T>(args)
       } catch (err) {
+        if (isDailyQuota(err)) {
+          throw new BudgetExhausted(
+            `the provider's daily quota is spent — stopping rather than retrying into it. ` +
+              `(${(err as Error).message?.split('\n')[0]?.slice(0, 140)})`
+          )
+        }
         if (!isTransient(err)) throw err
         last = err
         if (i === attempts - 1) break
@@ -440,8 +458,13 @@ function withRetry(ask: Ask, attempts = 5): Ask {
   }
 }
 
+// Both SDKs retry on their own by default, underneath withRetry(). Stacked,
+// one logical call became up to 25 HTTP requests — and on a 20-a-day free tier
+// the first "high demand" 503 spent the whole day's quota before a single
+// paper was screened. withRetry() is the only retry layer; the SDKs get none.
+
 function anthropicAsk(): Ask {
-  const client = new Anthropic()
+  const client = new Anthropic({ maxRetries: 0 })
   return async <T,>({ system, user, schema, effort = 'default' }: AskArgs<T>) => {
     const res = await client.messages.parse({
       model: MODEL,
@@ -462,18 +485,21 @@ function geminiAsk(): Ask {
   // Reads GEMINI_API_KEY from the environment.
   const ai = new GoogleGenAI({})
   return async <T,>({ system, user, schema }: AskArgs<T>) => {
-    const interaction = await ai.interactions.create({
-      model: MODEL,
-      system_instruction: system,
-      input: user,
-      response_format: {
-        type: 'text',
-        mime_type: 'application/json',
-        // `reused: 'inline'` keeps $ref out of the schema — Gemini's structured
-        // output rejects references.
-        schema: z.toJSONSchema(schema as never, { reused: 'inline' }),
+    const interaction = await ai.interactions.create(
+      {
+        model: MODEL,
+        system_instruction: system,
+        input: user,
+        response_format: {
+          type: 'text',
+          mime_type: 'application/json',
+          // `reused: 'inline'` keeps $ref out of the schema — Gemini's structured
+          // output rejects references.
+          schema: z.toJSONSchema(schema as never, { reused: 'inline' }),
+        },
       },
-    })
+      { retries: { strategy: 'none' } }
+    )
 
     const text = interaction.output_text
     if (!text) return null
@@ -743,6 +769,7 @@ async function main() {
   // 5 + 6. Write and persist
   log(`\n[5/6] Writing…`)
   const writtenSlugs: string[] = []
+  const publishedDois: string[] = []
 
   for (const [n, sel] of selected.entries()) {
     const c = byDoi.get(sel.doi.toLowerCase())!
@@ -812,10 +839,27 @@ async function main() {
       )
     }
     writtenSlugs.push(slug)
+    publishedDois.push(c.doi)
   }
 
-  // Every DOI we screened is decided, published or not — so none is paid for twice.
-  const decided = [...new Set([...ledger, ...ranked.map((s) => s.doi.toLowerCase())])]
+  // Every DOI we screened is decided, published or not — so none is paid for
+  // twice. The exception is a paper that was selected but never written (the
+  // budget ran out, or the write failed): those are the best candidates of the
+  // run, and ledgering them would drop them for good. Leaving them out means
+  // next run screens them again and gets another chance to write them.
+  const writtenDois = new Set(publishedDois.map((d) => d.toLowerCase()))
+  const unwritten = new Set(
+    selected.map((s) => s.doi.toLowerCase()).filter((d) => !writtenDois.has(d))
+  )
+  if (unwritten.size > 0) {
+    log(`      ${unwritten.size} selected paper(s) not written — left out of the ledger for next run`)
+  }
+  const decided = [
+    ...new Set([
+      ...ledger,
+      ...ranked.map((s) => s.doi.toLowerCase()).filter((d) => !unwritten.has(d)),
+    ]),
+  ]
   if (!DRY_RUN) {
     fs.writeFileSync(LEDGER_PATH, JSON.stringify(decided, null, 2) + '\n', 'utf-8')
   }

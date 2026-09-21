@@ -97,7 +97,8 @@ jobs:
           slugs=$(git diff --cached --name-only --diff-filter=A -- 'content/research/*.json' \
                   | xargs -r -n1 basename \
                   | sed 's/\.json$//' \
-                  | paste -sd ', ' -)
+                  | paste -sd ',' - \
+                  | sed 's/,/, /g')
 
           if [ -n "$slugs" ]; then
             git commit -m "Research Intelligence: publish ${slugs}"

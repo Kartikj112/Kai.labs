@@ -56,6 +56,8 @@ falls back to seed data and the admin console reports that it is unconfigured.
 /genomics                     Kai Genomics — hero, workshops, about, publications, contact
 /research                     Research Intelligence index (featured + category filter)
 /research/[slug]              Article page, generated from content/research/*.json
+/blog                         Kai Blogs index — founder essays and notes
+/blog/[slug]                  Blog post, generated from content/blog/*.md
 /exchange                     Kai Exchange — approved workshop listing
 /exchange/host                Workshop submission form
 /exchange/workshops/[slug]    Workshop detail
@@ -81,6 +83,7 @@ its own slim header, and admin has its own shell.
 content/
   research/*.json             One JSON file per article — the entire research CMS
   .processed-dois.json        Ledger so the n8n automation doesn't republish a DOI
+  blog/*.md                   One Markdown file per Kai Blogs post
 
 public/
   hero-bg.mp4                 Genomics hero background
@@ -302,12 +305,18 @@ load-shed.
 Transient failures (429, 5xx, quota, "high demand") retry, preferring the provider's own
 stated delay — a quota window that resets in 41s is not helped by a 4s backoff — and falling
 back to exponential with jitter. A 400 or 401 rethrows immediately rather than burning minutes
-on an error that will never clear. Retries spend the same metered budget as real work, so
+on an error that will never clear. A **daily** quota 429 ("per day", "exceeded your current
+quota") is not retried at all — it won't clear until tomorrow — and stops the run. Both SDKs'
+built-in retries are switched off so `withRetry` is the only retry layer: stacked, the Gemini
+SDK's own four retries turned one call into as many as 25 requests, which is how the first
+runs spent a 20-a-day free quota before screening a single paper. Retries spend the same metered budget as real work, so
 `MODEL_CALL_BUDGET` (18) caps total calls per run including them; hitting it stops the run
 cleanly rather than exhausting a daily quota. A skipped batch's DOIs never reach the ledger,
 so the next run reconsiders them. **Every DOI that
 reaches the screening step enters the ledger whether it was published or rejected**, so no
-paper is ever paid to screen twice.
+paper is ever paid to screen twice. The exception is a paper that was selected but never
+written (the budget ran out, or the write failed): it stays out of the ledger, so the best
+candidates of a run aren't lost to a quota window.
 
 Articles are written from the abstract alone, and the system prompt forbids inventing
 numbers, organisms, or claims the abstract doesn't contain. `heroImage` points at the
@@ -347,6 +356,29 @@ npm run research:ingest -- --dry-run --verbose      # full run, writes nothing
 npm run research:ingest -- --limit 1                # publish at most one
 npm run research:ingest -- --reset-ledger           # forget every past decision
 ```
+
+---
+
+## Kai Blogs
+
+Essays and working notes, published the same way as Research Intelligence: one Markdown
+file per post in `content/blog/`, and the push is what publishes.
+
+```bash
+npm run blog:new -- "On reading papers slowly"   # creates content/blog/<slug>.md as a draft
+npm run dev                                      # preview at /blog/<slug>
+# remove `draft: true`, commit, push — Vercel redeploys and it's live
+```
+
+Frontmatter needs only `title` and `date`; `excerpt`, `tags: [a, b]`, `cover`, `featured`
+and `draft` are optional. Drafts render under `npm run dev` with a badge and are excluded
+from production builds and the sitemap. `content/blog/writing-guide.md` is a permanent draft
+that demonstrates every supported format.
+
+Markdown is parsed by a small renderer in `components/blog/Markdown.tsx` — headings, quotes,
+lists, fenced code, rules, figures, and bold/italic/code/links inline — and emitted as React
+elements, never as an HTML string. That keeps the zero-runtime-dependency rule and means a
+post cannot inject markup.
 
 ---
 
