@@ -4,6 +4,7 @@ const ECOSYSTEM: [string, string][] = [
   ['/genomics', 'Kai Genomics'],
   ['/exchange', 'Kai Exchange'],
   ['/research', 'Research'],
+  ['/blog', 'Kai Blogs'],
   ['/tools', 'Tools'],
 ]
 

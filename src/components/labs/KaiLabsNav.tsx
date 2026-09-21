@@ -9,6 +9,7 @@ const LINKS: [string, string][] = [
   ['/genomics', 'Kai Genomics'],
   ['/exchange', 'Kai Exchange'],
   ['/research', 'Research'],
+  ['/blog', 'Kai Blogs'],
   ['/tools', 'Tools'],
   ['/about', 'About'],
   ['/contact', 'Contact'],

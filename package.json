@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "validate:engines": "tsx scripts/validate-engines.mts",
     "prebuild": "tsx scripts/validate-engines.mts",
-    "research:ingest": "tsx scripts/research-ingest.mts"
+    "research:ingest": "tsx scripts/research-ingest.mts",
+    "blog:new": "tsx scripts/new-post.mts"
   },
   "dependencies": {
     "next": "^16.2.6",
