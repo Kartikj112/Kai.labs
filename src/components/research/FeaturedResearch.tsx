@@ -1,16 +1,22 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import type { LoadedResearchArticle } from '@/lib/research/types'
 import { formatDate } from '@/lib/research/helpers'
+import { useReveal } from '@/lib/hooks/useReveal'
 
 interface FeaturedResearchProps {
   article: LoadedResearchArticle
 }
 
 export function FeaturedResearch({ article }: FeaturedResearchProps) {
+  const [ref, visible] = useReveal<HTMLDivElement>()
+
   return (
     <div
-      className="research-featured-grid reveal"
+      ref={ref}
+      className={`research-featured-grid reveal${visible ? ' visible' : ''}`}
       style={{
         display: 'grid',
         gridTemplateColumns: '1.1fr 1fr',

@@ -1,7 +1,10 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import type { LoadedResearchArticle } from '@/lib/research/types'
 import { formatDate } from '@/lib/research/helpers'
+import { useReveal } from '@/lib/hooks/useReveal'
 
 interface ResearchCardProps {
   article: LoadedResearchArticle
@@ -9,10 +12,13 @@ interface ResearchCardProps {
 }
 
 export function ResearchCard({ article, revealDelay }: ResearchCardProps) {
+  const [ref, visible] = useReveal<HTMLAnchorElement>()
+
   return (
     <Link
+      ref={ref}
       href={`/research/${article.slug}`}
-      className={`research-card${revealDelay ? ` reveal reveal-delay-${revealDelay}` : ''}`}
+      className={`research-card${revealDelay ? ` reveal reveal-delay-${revealDelay}` : ''}${visible ? ' visible' : ''}`}
       aria-label={`Read analysis: ${article.title}`}
     >
       <div className="research-card-media">
@@ -65,7 +71,7 @@ export function ResearchCard({ article, revealDelay }: ResearchCardProps) {
         <p
           style={{
             fontFamily: 'var(--font-mono), DM Mono, monospace',
-            fontSize: 12, color: 'var(--muted)', lineHeight: 1.8, flex: 1,
+            fontSize: 12, color: 'var(--muted)', lineHeight: 1.8,
             display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
           }}
         >
@@ -75,7 +81,7 @@ export function ResearchCard({ article, revealDelay }: ResearchCardProps) {
         <div
           style={{
             fontFamily: 'var(--font-mono), DM Mono, monospace',
-            fontSize: 10, color: 'var(--muted)', letterSpacing: '0.05em',
+            fontSize: 10, color: 'var(--muted)', letterSpacing: '0.05em', marginTop: 'auto',
           }}
         >
           {formatDate(article.date)}
