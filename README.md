@@ -88,7 +88,7 @@ its own slim header, and admin has its own shell.
 
 ```
 content/
-  research/*.json             One JSON file per article — the entire research CMS
+  research/*.json             REAL, published research articles (written by Actions)
   .processed-dois.json        Ledger of decisions by the GitHub Actions ingest workflow
   blog/*.md                   One Markdown file per Kai Blogs post
 
@@ -103,6 +103,10 @@ scripts/
   research-ingest.mts         Finds, screens and writes up new papers; runs weekly in CI
   research-core.mts           Testable DOI, date, abstract and screening validators
   research-core.test.mts      Built-in Node regression tests
+  research-feed.test.mts      Guardrails for public feed and featured article selection
+
+examples/
+  research/*.json             Retired sample/demo articles; never loaded by the site
 
 supabase/
   schema.sql                  Kai Exchange schema, RLS policies, demo rows
@@ -276,7 +280,23 @@ section is optional and simply omitted from the page when absent.
 
 An article that fails validation is **skipped with a console warning rather than failing the
 build**, so a malformed file from an automation can never take the site down. Setting
-`"draft": true` hides an article from the live site.
+`"draft": true` hides an article from the live site. Sample entries (`"isSample": true`,
+or a legacy `journal` containing `Sample Entry`) are **always hidden**, including from
+featured selection, category filters, article detail URLs, and the sitemap.
+
+The three former demo fixtures are archived in `examples/research/` and are not eligible
+for public display. Only genuine generated JSON belongs in `content/research/`. If there
+are no real articles yet, the page displays an honest empty state, never fabricated
+papers. The sample feature flag can no longer displace newer authentic research.
+
+**IMPORTANT when updating an existing GitHub deployment:** The provided ZIP is based
+on the earlier source snapshot; it does **not** include any real article JSON that GitHub
+Actions may have committed since that snapshot. Apply code changes to your **current
+GitHub default branch** and preserve its `content/research/*.json` and
+`content/.processed-dois.json`. Never replace the existing research feed with the
+contents of this ZIP. For example, clone/pull the latest GitHub branch first, then
+copy the changed source, workflow and docs into it; keep the branch's current genuine
+article files. The PDFs/screenshots of live articles are not an export of their JSON.
 
 Images resolve in three steps: the article's own `heroImage` if the file exists, otherwise
 the per-category default in `public/research/images/_defaults/<slugified-category>.jpg`,
@@ -303,7 +323,8 @@ SCREEN    Gemini OR Anthropic scores limited batches; verify each returned DOI
 WRITE     up to --limit evidence-grounded summaries from abstracts + metadata
 PERSIST   save article JSON and accepted/rejected DOI decisions
 VERIFY    reload from the site's production article loader
-PUBLISH   GitHub Action builds and commits → Vercel redeploys on push
+PUBLISH   GitHub Action builds and commits to DEFAULT branch → Vercel deploy
+          (optional VERCEL_DEPLOY_HOOK if bot commits do not trigger a build)
 ```
 
 The workflow runs Mondays 06:00 UTC and can be manually dispatched under **Actions →
@@ -319,7 +340,12 @@ text and generated summaries should be editorially checked against the cited DOI
 (`GEMINI_API_KEY` or `ANTHROPIC_API_KEY`). Give GitHub Actions **Read and write** workflow
 permissions so it can push content. Optionally add repository **variables**
 `CROSSREF_CONTACT_EMAIL`, `LLM_PROVIDER`, `RESEARCH_MODEL`, `MAX_ENRICH`,
-`MAX_SCREEN`, and `MODEL_CALL_BUDGET`. Defaults are `gemini-3.8-flash` and
+`MAX_SCREEN`, and `MODEL_CALL_BUDGET`. If push commits are not automatically
+redeployed by Vercel, create a Vercel **Production Deploy Hook** for the default branch
+and save its URL as the GitHub Actions **secret** `VERCEL_DEPLOY_HOOK`. The workflow
+invokes it *only after a successful push that changes content*. Manual publishing
+runs from other branches now fail fast instead of publishing unseen changes.
+Defaults are `gemini-3.8-flash` and
 `claude-sonnet-5-5`. Models and provider quota/pricing are subject to change;
 chat subscriptions do not substitute for API credentials. Gemini is selected first
 when both keys are set, unless `LLM_PROVIDER` selects otherwise.
@@ -416,6 +442,12 @@ layout shift.
 
 Vercel auto-detects the framework; push and import. `npm run build` runs engine validation
 first, so a broken decision tree fails the build rather than reaching production.
+
+Research pages are generated from the **file snapshot at build time**. After a GitHub
+Actions publication, compare the commit SHA in GitHub's default branch with the Vercel
+production deployment; verify the deployment completed. A successful Actions run alone
+is not proof that Vercel has deployed the newly committed JSON. The optional deploy hook
+is for integrations that do not rebuild when GitHub Actions pushes with `GITHUB_TOKEN`.
 
 ---
 
