@@ -18,6 +18,7 @@ import type { LoadedResearchArticle, ResearchArticle, ResearchImage } from './ty
 import {
   estimateReadingTime,
   getFeaturedArticle as getFeaturedArticlePure,
+  isPublicResearchArticle,
   slugifyCategory,
 } from './helpers'
 
@@ -114,7 +115,9 @@ function load(filename: string): LoadedResearchArticle | null {
   }
 
   const article = data as ResearchArticle
-  if (article.draft) return null
+  // Never expose sample fixtures or drafts in production, including by slug.
+  // This also protects old deployed repos that still contain legacy sample files.
+  if (!isPublicResearchArticle(article)) return null
 
   const heroImageExists = publicFileExists(article.heroImage.src)
 
@@ -127,7 +130,7 @@ function load(filename: string): LoadedResearchArticle | null {
   }
 }
 
-/** All published (non-draft, schema-valid) articles, newest first. */
+/** All real, published (non-sample, non-draft, schema-valid) articles, newest first. */
 export function getAllArticles(): LoadedResearchArticle[] {
   let filenames: string[]
   try {
@@ -148,7 +151,7 @@ export function getArticleBySlug(slug: string): LoadedResearchArticle | undefine
   return getAllArticles().find((a) => a.slug === slug)
 }
 
-/** Explicit `featured: true` wins; otherwise the most recent article. */
+/** Explicit `featured: true` on a real paper wins; otherwise the newest real article. */
 export function getFeaturedArticle(articles: LoadedResearchArticle[]): LoadedResearchArticle | undefined {
   return getFeaturedArticlePure(articles)
 }

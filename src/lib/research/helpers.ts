@@ -53,9 +53,20 @@ export function getCategories(articles: ResearchArticle[]): string[] {
   return [...ordered, ...extras]
 }
 
-/** Explicit `featured: true` wins; otherwise the most recent article (list must be pre-sorted newest-first). */
+/**
+ * Demo fixtures and drafts must never enter the public feed or get featured,
+ * even if a legacy fixture was marked `featured: true`.
+ * The old sample JSON files now live under examples/research/ for reference.
+ */
+export function isPublicResearchArticle(article: Pick<ResearchArticle, 'draft' | 'isSample' | 'journal'>): boolean {
+  return article.draft !== true && article.isSample !== true &&
+    !(typeof article.journal === 'string' && article.journal.toLowerCase().includes('sample entry'))
+}
+
+/** Explicitly featured REAL papers win; otherwise use the newest real paper. */
 export function getFeaturedArticle<T extends ResearchArticle>(articles: T[]): T | undefined {
-  return articles.find((a) => a.featured) ?? articles[0]
+  const published = articles.filter(isPublicResearchArticle)
+  return published.find((a) => a.featured) ?? published[0]
 }
 
 export function estimateReadingTime(article: ResearchArticle): string {
