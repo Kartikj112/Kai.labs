@@ -1,0 +1,56 @@
+{
+  "slug": "pseudomonas-syringae-syringotoxin-gene-cluster-identified-and-linked-to-predator",
+  "title": "Pseudomonas syringae Syringotoxin Gene Cluster Identified and Linked to Predator Defence",
+  "date": "2026-10-02",
+  "category": "BGC Discovery",
+  "excerpt": "Researchers have identified the psyt gene cluster responsible for syringotoxin synthesis in Pseudomonas syringae, revealing its role in amoebal defence and antifungal potency.",
+  "heroImage": {
+    "src": "/research/images/_defaults/bgc-discovery.jpg",
+    "alt": "BGC Discovery — illustrative image",
+    "credit": "Kai Genomics"
+  },
+  "tags": [
+    "Biosynthetic gene clusters",
+    "Nonribosomal peptides",
+    "Pseudomonas syringae",
+    "Natural products",
+    "Antimicrobial activity"
+  ],
+  "journal": "ACS Chemical Biology",
+  "authors": [
+    "Ying Huang",
+    "Shuaibing Zhang",
+    "Lisa Reimer",
+    "Grit Walther",
+    "Karsten Willing",
+    "Pierre Stallforth"
+  ],
+  "doi": "10.1021/acschembio.6c00589",
+  "sourceUrl": "https://doi.org/10.1021/acschembio.6c00589",
+  "summary": [
+    "Syringotoxins are chlorinated cyclic lipopeptides produced by Pseudomonas syringae that were structurally characterised over three decades ago, but the biosynthetic gene cluster responsible for their production had remained unverified experimentally. In this study, the authors identified a divergent syringomycin-type nonribosomal peptide synthetase (NRPS) cluster, designated psyt, in P. syringae DSM 1242 and confirmed that it directs syringotoxin biosynthesis.",
+    "Targeted deletion of the psyt cluster eliminated syringotoxin production and rendered the bacterial mutant vulnerable to predation by the amoeba Dictyostelium discoideum. In bioactivity evaluations, syringotoxin B demonstrated nanomolar amoebicidal potency as well as strong antifungal activity, notably against Candida pathogens.",
+    "Comparative genomic and structural analyses placed psyt within the syringomycin-type lipopeptide family. Chemical assessment showed that opening the macrolactone ring led to a loss of biological activity, confirming that the intact cyclic lipopeptide architecture is essential for its function as a predator-defence molecule."
+  ],
+  "whyItMatters": [
+    "A substantial number of bacterial natural products described in classic chemical literature remain genetically orphaned, meaning their biosynthetic genes are absent from modern functional databases. Linking these legacy molecules to specific biosynthetic gene clusters is essential for accurate genome mining, dereplication, and synthetic biology applications.",
+    "Furthermore, confirming that syringotoxin acts as a countermeasure against amoebal predation underscores the evolutionary pressures that drive the maintenance of complex lipopeptides, offering insights into the ecological roles of bacterial secondary metabolites."
+  ],
+  "keyFindings": [
+    "The psyt locus in Pseudomonas syringae DSM 1242 encodes a divergent syringomycin-type NRPS cluster responsible for syringotoxin synthesis.",
+    "Knockout of psyt halts syringotoxin production and leaves P. syringae susceptible to grazing by Dictyostelium discoideum.",
+    "Syringotoxin B demonstrates nanomolar amoebicidal activity alongside strong antifungal activity against Candida pathogens.",
+    "Macrolactone ring opening abolishes bioactivity, proving the necessity of the cyclic lipopeptide scaffold for its defensive properties."
+  ],
+  "methods": [
+    "The authors employed targeted gene knockout in Pseudomonas syringae DSM 1242, followed by metabolite profiling and structural characterisation to confirm that the psyt cluster produces syringotoxin.",
+    "Bioactivity was assessed via predation assays using the amoebal predator Dictyostelium discoideum and antimicrobial testing against Candida pathogens. Comparative genomics was used to contextualise the psyt cluster within the broader family of syringomycin-type lipopeptides, while structural alterations (macrolactone ring opening) were monitored for effects on biological activity."
+  ],
+  "kaiGenomicsPerspective": [
+    "In our genome mining and natural product work, pairing historically known chemical entities with unassigned or divergent NRPS clusters is critical. Highly divergent clusters can elude standard rule-based BGC detection or be misannotated; having an experimentally confirmed reference such as psyt improves the training and validation of discovery pipelines across environmental datasets.",
+    "The strong protective effect against amoebal grazing also aligns with our focus on microbial ecology in complex communities, such as marine holobionts. Understanding that micropredators actively select for cyclic lipopeptide production provides a compelling ecological framework when evaluating uncharacterised defensive clusters identified in metagenomic assemblies."
+  ],
+  "implications": [
+    "Experimentally assigning psyt enables the targeted search for related halogenated lipopeptide clusters across pseudomonads, while the confirmed antifungal and amoebicidal activities highlight the scaffold's potential utility in natural product drug discovery."
+  ]
+}

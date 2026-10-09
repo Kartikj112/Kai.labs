@@ -1,0 +1,54 @@
+{
+  "slug": "multi-model-ai-pipelines-for-multi-objective-antimicrobial-peptide-design",
+  "title": "Multi-model AI pipelines for multi-objective antimicrobial peptide design",
+  "date": "2026-09-29",
+  "category": "Antimicrobial Peptides",
+  "excerpt": "A review details multi-model AI frameworks combining generative design, discriminative filters, docking, and stability predictions to optimise antimicrobial peptides for safety, efficacy, and novelty.",
+  "heroImage": {
+    "src": "/research/images/_defaults/antimicrobial-peptides.jpg",
+    "alt": "Antimicrobial Peptides — illustrative image",
+    "credit": "Kai Genomics"
+  },
+  "tags": [
+    "Antimicrobial peptides",
+    "Machine learning",
+    "In silico drug design",
+    "Antimicrobial resistance"
+  ],
+  "journal": "Frontiers in Cellular and Infection Microbiology",
+  "authors": [
+    "Naveed Saleem",
+    "Emad El-Omar",
+    "Naresh Kumar",
+    "Mark Willcox",
+    "Xiao-Tao Jiang"
+  ],
+  "doi": "10.3389/fcimb.2026.1894311",
+  "sourceUrl": "https://doi.org/10.3389/fcimb.2026.1894311",
+  "summary": [
+    "The rapid rise of antimicrobial resistance (AMR) has outpaced conventional antibiotic development, directing attention towards antimicrobial peptides (AMPs) as broad-spectrum alternatives with low propensity for resistance. However, their clinical translation is frequently impeded by poor proteolytic stability, insufficient potency, and host cytotoxicity. This review presents multi-model AI-driven architectural frameworks designed to address these interdependent hurdles through simultaneous, multi-objective computational optimization.",
+    "The proposed frameworks integrate discriminative classifiers, quantitative potency predictions, and cytotoxicity filters to prioritise peptide candidates with balanced therapeutic indices. To ensure sequence novelty, the pipeline incorporates multi-layer sequential and genomic screening using alignment- and profile-based methods. Structural characterisation is handled via protein folding algorithms and molecular docking to infer peptide–target interaction mechanisms, while enzymatic susceptibility and stability models evaluate pharmacokinetic viability.",
+    "Rather than following a traditional linear screening funnel, the pipeline operates via iterative closed feedback loops. Within these loops, generative and discriminative AI models interface with sequential redesign strategies, refining candidates across efficacy, toxicity, stability, and novelty metrics to minimise late-stage attrition prior to wet-lab validation."
+  ],
+  "whyItMatters": [
+    "Traditional linear drug discovery pipelines often fail late in development when promising antimicrobial candidates prove to be toxic or rapidly degraded in biological environments. Balancing broad-spectrum bactericidal activity against host cell viability and enzymatic degradation presents a complex multi-parameter optimisation challenge.",
+    "By establishing computational frameworks that evaluate and redesign peptides across efficacy, safety, and pharmacokinetic parameters simultaneously, researchers can systematically refine candidate libraries before committing to expensive peptide synthesis and in vitro assays."
+  ],
+  "keyFindings": [
+    "Multi-model AI frameworks enable simultaneous multi-objective optimization of AMP efficacy, safety, stability, and sequence novelty.",
+    "Closed feedback loops between generative models, discriminative classifiers, and sequence redesign strategies replace conventional linear screening funnels.",
+    "Integrating protein folding, molecular docking, and enzymatic susceptibility tools provides structural and pharmacokinetic screening early in the pipeline.",
+    "Multi-layer sequence and genomic screening via alignment and profile approaches preserves candidate novelty."
+  ],
+  "methods": [
+    "This paper is a methodological review and architectural synthesis detailing the design of AI-driven computational pipelines for AMP discovery.",
+    "The surveyed blueprint integrates multiple computational components: alignment and profile-based genomic screening, discriminative classifiers, quantitative potency and cytotoxicity filters, protein folding, molecular docking, enzymatic stability prediction, and generative redesign algorithms connected via iterative feedback loops."
+  ],
+  "kaiGenomicsPerspective": [
+    "This multi-model architectural framing closely aligns with Kai Genomics' computational approach to antimicrobial peptide evaluation. In our experience, isolated sequence-based classifiers often surface candidates that suffer from high haemolytic activity or immediate enzymatic degradation; incorporating biophysical modelling and stability predictions directly into candidate ranking is essential.",
+    "The emphasis on coupling genomic and profile-based sequence mining with generative redesign also mirrors our work discovering and modifying natural peptide scaffolds from uncultivated metagenomic data, ensuring that computationally prioritised molecules maintain realistic paths to downstream validation."
+  ],
+  "implications": [
+    "Standardising reproducible, multi-model AI pipelines that iterate across stability, toxicity, and potency could accelerate the preclinical development of peptide therapeutics, reducing early wet-lab attrition against priority drug-resistant pathogens."
+  ]
+}
