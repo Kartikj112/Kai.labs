@@ -110,3 +110,27 @@ build SHA. Configure `VERCEL_DEPLOY_HOOK` as an Actions secret when the Vercel G
 integration does not deploy bot pushes; do not add it if normal deployment works and
 you want to avoid duplicate deploys. The publishing branch guard rejects non-default
 publishing runs, because a commit to a feature branch does not update production.
+
+## Research image enrichment (2026-10)
+
+The GitHub Actions `Research Intelligence` workflow runs these stages serially:
+
+```text
+Crossref + Europe PMC metadata → AI review → content/research/*.json
+                                            ↓
+                             scripts/research_images.py
+                            DOI → Europe PMC OA JATS XML
+                            → verify Creative Commons licence
+                            → select eligible <fig><graphic>
+                            → retrieve + validate + convert WebP
+                            → local public/research/images/papers/
+                            → heroImage source + licence attribution
+                                            ↓
+                        Next.js static build + Git commit + Vercel
+```
+
+Image enrichment also backfills existing research JSON and records checked DOIs
+under `content/.research-image-checks.json`; its failures cannot suppress an
+otherwise valid paper. The preview is bundled in the static site and is never
+fetched from publisher sites by a visitor's browser. See
+[Research images](RESEARCH-IMAGES.md) for licensing conditions and retry limits.

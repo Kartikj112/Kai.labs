@@ -55,11 +55,28 @@ pipeline does not scrape paywalled articles and writes from metadata/abstracts o
 Any numerical or experimental claim in a generated summary should be editorially
 reviewed before broad redistribution.
 
+## Replacing category artwork with scientific figures
+
+The workflow now runs the licence-aware paper-image step **after ingestion and
+before the build**, regardless of whether any new articles were written.
+It checks current and older real articles (newest first), and changes their
+`heroImage` only after successfully saving an approved local WebP.
+No new GitHub secret is needed; `IMAGE_LOOKUP_LIMIT` (optional Actions variable,
+default **12**) sets the number of articles it attempts per run. This step
+commits `public/research/images/papers/*.webp` **together with** their updated
+`content/research/*.json` and the retry ledger. A scheduled run that discovers
+no papers can still enrich older ones. Original papers may lack reusable figures;
+article ingestion continues with category artwork. Details, licence safeguards
+and manual backfill commands: [RESEARCH-IMAGES.md](RESEARCH-IMAGES.md).
+
 ## Local checks
 
 ```bash
 npm ci
 npm run test:research
+python3 -m pip install -r scripts/research-images-requirements.txt
+python3 -m unittest discover -s scripts -p research_images_test.py -v
+python3 scripts/research_images.py --backfill --dry-run --limit 2
 npm run research:ingest -- --discover-only --verbose
 # put a valid model key in your local environment (never commit .env files)
 npm run research:ingest -- --dry-run --limit 1 --verbose

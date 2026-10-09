@@ -843,9 +843,10 @@ async function main() {
       date: c.date,
       category: sel.category,
       excerpt: body.excerpt,
-      // Point at the per-category default. The site's resolveImage() falls
-      // through to its SVG placeholder if this ever goes missing, so a new
-      // category without artwork degrades rather than breaks.
+      // Category illustration is a temporary fallback. After ingest, the
+      // Python research_images.py step checks OA licensing and attempts to
+      // replace this with an actual attributed figure from the DOI's paper.
+      // No reusable figure = keep the safe category illustration.
       heroImage: {
         src: `/research/images/_defaults/${categorySlug}.jpg`,
         alt: `${sel.category} — illustrative image`,
