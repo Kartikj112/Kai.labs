@@ -9,7 +9,9 @@ article files. Nothing on the `/research` page directly invokes an LLM or crawls
 
 ## Initial setup
 
-1. Push these changes to the default GitHub branch connected to Vercel.
+1. Merge these **code** changes into the current default branch connected to Vercel;
+   **preserve any real article JSON** already committed there by earlier Actions runs.
+   The repair ZIP was made from an older snapshot and is not a backup of those articles.
 2. At **GitHub → Settings → Secrets and variables → Actions → Secrets**, add at
    least one valid API key: `GEMINI_API_KEY` or `ANTHROPIC_API_KEY`.
 3. At **GitHub → Settings → Actions → General → Workflow permissions**, select
@@ -21,9 +23,16 @@ article files. Nothing on the `/research` page directly invokes an LLM or crawls
    `MAX_ENRICH`, `MAX_SCREEN`, `MODEL_CALL_BUDGET` under **Variables**.
 6. Manually run **Research Intelligence** with `dry_run=true` and `limit=1`.
    Inspect logs for HTTP source errors, screening count and model errors.
-7. Run again with `dry_run=false`; inspect **Build**, **Commit**, and the Vercel
-   deployment corresponding to the new commit. No new articles is an acceptable
-   outcome if no papers meet the editorial threshold.
+7. Run again on the **default branch** with `dry_run=false`; inspect **Build**, **Commit**,
+   and the Vercel production deployment corresponding to the new commit. Manual
+   publication from other branches is intentionally rejected.
+8. If Actions pushes successfully but Vercel fails to start a new build, create
+   a **Vercel Project → Settings → Git → Deploy Hooks** production hook targeting
+   the default branch and save its URL to the GitHub Actions **secret**
+   `VERCEL_DEPLOY_HOOK`. The workflow will call the hook following a successful
+   content push. This is optional if normal Git integration deployments already work.
+   Confirm Vercel completes the deployment; a successful hook response is not proof
+   that the build completed. No new articles is acceptable if none meet the threshold.
 
 ### Defaults
 
@@ -68,7 +77,10 @@ unless intentionally re-screening old rejects** (`--reset-ledger`). Already publ
 
 | Symptom | Check / remedy |
 |---|---|
-| Site shows only sample/demo cards | Confirm Actions executed, an article passed relevance, a JSON file was committed, and Vercel deployed that commit. Sample files remain checked in intentionally. |
+| Site shows sample/demo cards after updating code | Ensure the new Vercel production deployment corresponds to the repaired default-branch commit; the repaired loader excludes samples, even if legacy sample JSON remains on the branch. Hard refresh after deployment. |
+| No research cards after repair | The old ZIP contained only demo JSON; the repair archives it under `examples/research/`. Check the **current** GitHub default branch for real `content/research/*.json`. Merge the repair into that latest branch and preserve genuine articles. Never fabricate articles from screenshot text. |
+| Real article JSON is in GitHub but not shown on Vercel | Compare commit hashes. Confirm the Vercel production deployment used the same/default-branch commit; if Actions pushes do not cause new Vercel builds, configure the optional production `VERCEL_DEPLOY_HOOK` GitHub Actions secret. |
+| Latest research is not featured | The old sample was pinned with `featured: true`. It is now excluded; newest real paper wins unless another real paper has `featured: true`. |
 | Action never runs | GitHub scheduled jobs run on the default branch and may be delayed. Trigger `workflow_dispatch` manually; check Actions are enabled. |
 | “No model API key found” | Configure a repository **secret** (not Vercel env vars), with correct name. |
 | 401 or invalid model | Verify key ownership, selected `LLM_PROVIDER`, `RESEARCH_MODEL` and API access. |
@@ -77,7 +89,31 @@ unless intentionally re-screening old rejects** (`--reset-ledger`). Already publ
 | Missing/invalid screening entries | Output DOI/category/score validation rejects them; those candidates are not ledgered and will be reconsidered next run. |
 | Article JSON committed but not displayed | Check build/deploy status, JSON schema, `draft`, `content/research`, and file-name/slug. See `src/lib/research/articles.ts`. |
 | Git push rejected | Set `contents: write`, enable Actions write access, and check branch rules/default branch. |
+| Wrong-branch error | In Actions → Run workflow, choose the default branch for real publication. Dry runs may be started from other branches. |
+| Deploy-hook failure | Make sure `VERCEL_DEPLOY_HOOK` is a secret containing the entire URL of a production deploy hook targeting your default branch; use the Vercel dashboard to verify status. |
 
 This is an automated *research discovery and summarisation* workflow, not a general
 web-browsing research agent. Index results can be delayed, incomplete or incorrect;
 publishing from an abstract cannot replace checking the original study.
+
+## Preservation and visibility rule
+
+`examples/research/*.json` contains the three historical demonstration articles. They are
+not syndicated to the public site. `content/research/*.json` is reserved for real papers
+published by GitHub Actions. The loader rejects sample/demo markers even if a legacy
+file is still present, and the feature-selector also rejects them defensively. This
+hides the sample cards, the pinned sample spotlight, direct sample article URLs, and
+sample sitemap entries. If the research feed is truly empty, the page tells visitors
+so rather than rendering made-up articles.
+
+To verify an existing deployment, look at two independent facts:
+
+1. Does the latest GitHub default-branch commit contain genuine article JSON under
+   `content/research/`? (An Actions run completing without committing content is not
+   publication.)
+2. Did Vercel build and deploy **that** commit? The Next.js site reads local research
+   JSON at **build time**, not directly from GitHub at request time.
+
+The user's October 9 PDF showed real article cards alongside old demo cards. Those
+real articles were not present in the earlier source ZIP, so they must be preserved
+from the live branch before applying these changes.
