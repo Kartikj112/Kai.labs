@@ -2,8 +2,9 @@
 
 ## Design
 
-After the autonomous research ingester writes its article JSON, the **same GitHub
-Actions run** invokes `scripts/research_images.py`. The image step **does not call
+The image script runs in **two** workflows: after the weekly AI ingester **and**
+in a standalone `Research Paper Previews` Action triggered by relevant human pushes
+or manual dispatch. New deployments no longer wait for the AI agent. The image step **does not call
 the AI model**. It looks up the published article DOI through Europe PMC's JSON
 search API, requiring a matching DOI, `isOpenAccess=Y`, and a valid PMCID.
 It then downloads OA full-text **JATS XML** through the public Europe PMC REST API.
@@ -12,7 +13,7 @@ The script explicitly checks the **article's** `<article-meta><permissions><lice
 record for Creative Commons **CC BY, CC BY-SA (3.0/4.0/2.0), or CC0**. Other
 licences (including NC, ND, absent, unclear, or custom terms) are **not** assumed
 reusable. It refuses figures carrying separate permissions/copyright statements
-or captions identifying third-party material. These are automated, conservative
+or captions identifying third-party material, including explicit BioRender credits. These are automated, conservative
 checks; a human should still review licence and attribution before publication.
 
 The agent ranks in-article `<fig>` elements, preferring graphical abstracts and
@@ -35,7 +36,9 @@ licence link are displayed beneath the hero on the article detail page.
 
 If anything fails (no PMC OA full text, incompatible licence, no bin file,
 failed API call, invalid image, oversize image, etc.), it leaves the JSON
-unchanged with existing category illustration. Research articles are always
+unchanged; **the site renders a paper-specific citation cover using the article
+title, journal, year, author and DOI.** This is NOT a figure or PDF screenshot.
+It replaces legacy category illustrations everywhere on the public research UI. Research articles are always
 published even when artwork is unavailable.
 
 ## Enabling and backfilling
@@ -43,14 +46,15 @@ published even when artwork is unavailable.
 **No new secrets and no Vercel environment variables** are required.
 GitHub Actions installs Python 3.12 + Pillow and invokes image enrichment after
 research ingestion, before the Next.js build and content/image commit.
-Scheduled and manually triggered real runs automatically examine existing
+Standalone pushes, manually triggered preview runs, and the weekly ingester examine existing
 articles (including ones produced by earlier runs). The source ZIP did **not**
 include the real articles present on your current default branch: preserve
 those existing JSON files when committing updated code. Once on the branch,
 Actions can enrich them on subsequent scheduled/manual real runs.
 
-The script prioritises newest papers and examines at most 12 per run (`IMAGE_LOOKUP_LIMIT`
-GitHub Actions variable, optional). It keeps a retry ledger in
+The script prioritises newest papers. The weekly ingestion Action defaults to 12
+lookups (`IMAGE_LOOKUP_LIMIT` variable); the standalone preview Action defaults
+to 40, adjustable by manual input. It keeps a retry ledger in
 `content/.research-image-checks.json` to avoid repeated lookups for unsuccessful
 papers within 30 days (temporary API failures retry after 1 day). A whole run has a ~210 second image-work ceiling and
 individual figure retrieval is bounded. Images are stored with the project:
@@ -85,8 +89,33 @@ articles, or the check ledger. `--slug` limits work to one article.
 6. `content/.research-image-checks.json` records unsuccessful attempts. Force
    a single recheck with `--slug ... --force` locally or wait 30 days.
 
-A card with category artwork is **not proof of a broken ingest**; the upstream
-paper may be inaccessible for lawful figure reuse. Tests use mocked API payloads
+A citation-cover card means no licensed paper figure is available in the
+current deployed JSON or its referenced file is absent; it is the intentional
+truthful fallback, not proof the AI ingester failed. The old generic category
+art is never presented as the paper’s figure. Tests use mocked API payloads
 and generated local test images. The final code was not live-tested against
 Europe PMC from this offline packaging environment, so actual retrieval
 coverage will only be known from Actions logs after deployment.
+
+## Why screenshots showed old generic illustrations (2026-10-09 repair)
+
+1. The former image pipeline searched **only** Europe PMC OA JATS records with
+   an explicit CC licence and downloadable graphics; many DOIs do not qualify.
+2. Until a **weekly ingestion run** or manual dispatch, the image step would not
+   run at all after pushing the new image code.
+3. Its previous fallback left the generated category illustration unchanged,
+   so the website appeared to be ignoring the update even after a lookup.
+4. The uploaded source ZIP predates later Actions-created `content/research/`
+   articles. Their JSON is only in the remote branch, **not in this archive**.
+
+**Now:** on the first deploy of the updated UI, paper-specific citation covers
+replace those placeholders. A separate image Action attempts genuine figures
+on relevant pushes without an AI key. Since the past failure ledger might
+suppress rechecks for 30 days, the image extractor's cache version was bumped
+so older negative decisions are attempted anew once. Actual figure coverage
+still depends on accessible assets and rights; no licence is invented.
+
+Check the separate `Research Paper Previews` workflow logs for a per-paper reason.
+If it publishes WebP files but Vercel remains unchanged, compare the Vercel
+production SHA to the image bot's commit SHA and use the optional
+`VERCEL_DEPLOY_HOOK` secret if necessary.

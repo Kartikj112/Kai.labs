@@ -1,36 +1,39 @@
-# Kai Labs — science-figure enrichment release (2026-10-09)
+# Kai Labs — paper-preview reliability repair (2026-10-09)
 
-This is the **complete repository source**, not a patch. It contains the
-previously repaired research feed, the live workshop badge/registration link,
-and the new research-image enrichment workflow.
+## Why the previous image change appeared ineffective
 
-## New behaviour
+The earlier figure fetcher had a narrow, licence-safe eligibility requirement,
+so figures were often unavailable. It ran only after weekly AI ingestion or a
+manual research ingest and left legacy category illustrations displayed. Also,
+this ZIP is based on an older source snapshot without the live articles that
+GitHub Actions has since published.
 
-- GitHub Actions runs a rights-checked image lookup after research ingestion.
-- Only explicitly reusable Europe PMC OA figures are downloaded and committed
-  as optimised WebP files, with image credits/licence on article pages.
-- Graphical abstracts and scientific workflow diagrams are ranked first.
-- Existing real-paper articles are backfilled incrementally on future runs.
-- Failures preserve the original category artwork and **never suppress a paper**.
-- Paper figures use `object-fit: contain` so scientific axes and labels aren't cropped.
-- Offline unit tests cover licensing, safe URLs, image validation and backfill.
+## What changes now
 
-## Publishing this ZIP
+- The research index, featured story, and detail pages render a designed **citation
+  preview** (real paper title, author, journal, date, DOI) when no eligible real
+  figure is available. These are explicitly marked as citation previews and do
+  not falsely present fabricated imagery as scientific figures.
+- Actual, locally committed, licensed scientific paper figures still replace
+  citation covers when available, preserving caption, author and licence links.
+- Independent GitHub Action `Research Paper Previews` starts on relevant human
+  pushes or via manual dispatch; no Gemini/Claude key is required to backfill.
+- Previously cached negative results recheck once (pipeline cache v2).
+- GitHub Actions keeps a short diagnosis for inaccessible/restricted papers.
+- Figure failures cannot block publishing valid research papers.
 
-Commit this repository's files to the existing GitHub default branch attached
-to Vercel. **Keep real `content/research/*.json` files already produced by
-GitHub Actions on that branch.** The previously supplied snapshot did not
-contain them; the current ZIP does not recreate or replace those missing
-publications. Do not wipe the existing `content/research/` folder to install
-these changes.
+## Publishing
 
-A subsequent real (non-dry-run) Research Intelligence Actions run will attempt
-to enrich both old and new papers; no new API keys are needed for images.
-Review the `Find reusable paper figures and backfill older articles` logs for
-per-paper decisions, and verify Vercel deployed the resulting commit.
+Overlay this repository's code on your existing GitHub default branch. Do not
+remove real `content/research/*.json` records or the DOI ledger already present
+on GitHub; they are absent from the older ZIP snapshot. On the next Vercel build,
+citation previews appear automatically even if no action has yet run. The
+new Action can then commit approved figures; Vercel must deploy that subsequent
+bot commit to display them (`VERCEL_DEPLOY_HOOK` is an optional secret).
 
-Open-access status alone is **not** permission to republish arbitrary figures.
-This workflow checks explicit CC licences and returns to normal artwork when
-reuse or image availability cannot be established.
+## Verification
 
-See `docs/RESEARCH-IMAGES.md` and `docs/ARCHITECTURE.md` for details.
+Offline tests cover paper selection, licence checking, image conversion,
+backfill behaviour and suppression of legacy category art. A live OA download
+and the full Next.js production build were not possible from the packaging
+sandbox and must be observed in GitHub Actions.

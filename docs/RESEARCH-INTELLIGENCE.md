@@ -66,7 +66,7 @@ default **12**) sets the number of articles it attempts per run. This step
 commits `public/research/images/papers/*.webp` **together with** their updated
 `content/research/*.json` and the retry ledger. A scheduled run that discovers
 no papers can still enrich older ones. Original papers may lack reusable figures;
-article ingestion continues with category artwork. Details, licence safeguards
+article ingestion continues with a metadata-based citation preview (not fake scientific imagery). Details, licence safeguards
 and manual backfill commands: [RESEARCH-IMAGES.md](RESEARCH-IMAGES.md).
 
 ## Local checks
@@ -134,3 +134,13 @@ To verify an existing deployment, look at two independent facts:
 The user's October 9 PDF showed real article cards alongside old demo cards. Those
 real articles were not present in the earlier source ZIP, so they must be preserved
 from the live branch before applying these changes.
+
+### Image backfill does not require running the AI ingester
+
+`.github/workflows/research-images.yml` automatically runs on relevant human
+pushes and supports manual dispatch (`limit`, `force`); it has no LLM/API key
+requirements. It checks the **real `content/research/*.json` on the publishing
+branch** and writes permitted WebP files and attribution. The website shows a
+paper-specific citation preview immediately after deploying these UI changes,
+even if the image step has no reusable candidate. See
+[RESEARCH-IMAGES.md](RESEARCH-IMAGES.md).

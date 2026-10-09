@@ -48,7 +48,7 @@ the discovery code calls research-index REST APIs, and the LLM uses returned abs
 | Engine | `src/lib/engines/*`, `/engine` | Static typed decision graphs | Prebuild `validate-engines.mts` |
 
 The `src/lib/research/articles.ts` loader is server-only, validates a minimum article
-schema, excludes drafts **and samples**, selects local fallback images, and sorts by
+schema, excludes drafts **and samples**, selects actual figures or metadata-based citation previews, and sorts by
 publication date. Sample fixtures were moved to `examples/research` so real ingestion
 JSON is the only content in the live feed. As defense in depth, the shared helper
 `isPublicResearchArticle()` also hides any legacy `isSample` or `Sample Entry` JSON
@@ -134,3 +134,18 @@ under `content/.research-image-checks.json`; its failures cannot suppress an
 otherwise valid paper. The preview is bundled in the static site and is never
 fetched from publisher sites by a visitor's browser. See
 [Research images](RESEARCH-IMAGES.md) for licensing conditions and retry limits.
+
+### Independent figure-backfill delivery
+
+A second Action, `.github/workflows/research-images.yml`, runs on human pushes
+of image-relevant code and research JSON or can be dispatched independently.
+It needs Python/Pillow but **no model key**. Both Actions use one concurrency
+group, and both push only to the default publishing branch. The backfill Action
+commits licensed images, article metadata and the lookup ledger together and can
+optionally trigger Vercel through `VERCEL_DEPLOY_HOOK` after bot commits.
+
+**Runtime fallback:** `src/lib/research/articles.ts` excludes generated default
+category JPEGs from `resolvedImage`; `PaperCitationPreview.tsx` instead renders
+a text-based citation cover from verified local article metadata. This happens
+in the Next.js UI even if the backfill never runs and works for older JSON
+without touching existing articles. A real eligible figure still wins.

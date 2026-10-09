@@ -40,6 +40,8 @@ MAX_XML_BYTES = 4_000_000
 MAX_IMAGE_BYTES = 5_000_000
 MAX_WEBP_BYTES = 900_000
 RECHECK_DAYS = 30
+# Re-attempt older negative results after significant improvements to resolution.
+IMAGE_PIPELINE_VERSION = 2
 MAX_FIGURES = 3
 MAX_IMAGE_RUN_SECONDS = 210
 MAX_PAPER_SECONDS = 42
@@ -93,6 +95,10 @@ def looks_third_party(figure: ET.Element) -> bool:
     if any(tag_name(n.tag) in ('permissions', 'copyright-statement', 'copyright-holder', 'attrib') for n in figure.iter()):
         return True
     caption = text_content(figure).lower()
+    # BioRender artwork can carry separate third-party licence conditions even
+    # when the surrounding Frontiers article is CC BY. Never assume reuse.
+    if 'biorender' in caption:
+        return True
     return bool(re.search(r'\b(reproduced|reprinted|adapted|modified)\s+(?:with permission|from|after)\b|\bcopyright\b|\bpermission of\b|\bthird.party\b', caption))
 
 
@@ -254,6 +260,8 @@ def process(args: argparse.Namespace) -> int:
     if args.limit < 1 or args.limit > 100:
         raise ValueError('--limit must be 1-100')
     files = sorted(CONTENT_DIR.glob('*.json')) if CONTENT_DIR.exists() else []
+    if not files:
+        print('  No article JSON files in content/research/. Preserve your published article files when uploading the ZIP.')
     if args.slug:
         files = [f for f in files if f.stem == args.slug]
     # Work on newest papers first; a new weekly paper must not get stuck
@@ -285,7 +293,7 @@ def process(args: argparse.Namespace) -> int:
         if is_existing_paper_image(article) and not args.force:
             continue
         key = normalise_doi(str(article['doi']))
-        if not args.force and key in checks:
+        if not args.force and key in checks and checks[key].get('version') == IMAGE_PIPELINE_VERSION:
             try:
                 last = dt.date.fromisoformat(checks[key]['lastChecked'])
                 # Transient provider outages should retry the next day;
@@ -323,7 +331,7 @@ def process(args: argparse.Namespace) -> int:
             print(f'    ✓ paper figure ({len(data) // 1024} KiB; {meta["license"]})')
             added += 1
         if not args.dry_run:
-            checks[key] = {'lastChecked': today.isoformat(), 'status': 'figure' if found else ('temporary-error' if temporary_error else 'unavailable')}
+            checks[key] = {'lastChecked': today.isoformat(), 'version': IMAGE_PIPELINE_VERSION, 'status': 'figure' if found else ('temporary-error' if temporary_error else 'unavailable')}
         # Respect provider infrastructure rather than burst API requests.
         if not args.no_delay:
             time.sleep(0.4)

@@ -47,6 +47,11 @@ class ImageEnrichmentTests(unittest.TestCase):
         <fig id="good"><caption><p>Method overview</p></caption><graphic xlink:href="good.jpg"/></fig>'''
         self.assertEqual([row[0] for row in images.figure_candidates(ET.fromstring(xml(body)))], ['good.jpg'])
 
+    def test_biorender_caption_is_not_assumed_reusable(self):
+        body = '''<fig id="f1"><caption><p>Created with BioRender</p></caption><graphic xlink:href="complex-pipeline.png"/></fig>
+        <fig id="f2"><caption><p>New experiment results</p></caption><graphic xlink:href="results.png"/></fig>'''
+        self.assertEqual([row[0] for row in images.figure_candidates(ET.fromstring(xml(body)))], ['results.png'])
+
     def test_rejects_path_injection_and_doi_redirect(self):
         self.assertEqual(images.figure_candidates(ET.fromstring(xml('<fig><graphic xlink:href="../../etc/passwd"/></fig>'))), [])
         self.assertEqual(images.normalise_doi('https://doi.org/10.12/ABC'), '10.12/abc')
