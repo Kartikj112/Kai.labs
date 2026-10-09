@@ -10,6 +10,7 @@
     "validate:engines": "tsx scripts/validate-engines.mts",
     "prebuild": "tsx scripts/validate-engines.mts",
     "research:ingest": "tsx scripts/research-ingest.mts",
+    "test:research": "node --experimental-strip-types --test scripts/research-core.test.mts",
     "blog:new": "tsx scripts/new-post.mts"
   },
   "dependencies": {

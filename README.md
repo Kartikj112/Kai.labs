@@ -24,7 +24,7 @@ Live at [kai-genomics.vercel.app](https://kai-genomics.vercel.app/).
 | Deployment   | Vercel                                                   |
 | Analytics    | Google Analytics 4                                       |
 
-**No runtime dependencies beyond `next`, `react` and `react-dom`.** (`@anthropic-ai/sdk`
+**No runtime dependencies beyond `next`, `react` and `react-dom`.** (`@anthropic-ai/sdk`, `@google/genai`
 and `zod` are devDependencies — they are used by the research ingest script in CI and never
 reach the browser bundle.) Supabase and Resend are
 reached with plain `fetch` against their REST APIs rather than SDKs, and the one non-Google
@@ -42,10 +42,17 @@ npm run build        # production build (runs engine validation first)
 npm start            # serve the production build
 npm run lint
 npm run validate:engines   # graph-check all 21 decision trees
+npm run test:research      # pure research ingest regression tests
 ```
 
 No environment variables are required. The site renders fully without any: Kai Exchange
 falls back to seed data and the admin console reports that it is unconfigured.
+
+**Workshop notice:** `Introduction to Bioinformatics` is now flagged `isLive: true`,
+which uses the same LIVE pill as the existing live workshop cards. The detail view's
+**Register Now** link points to the attendee-facing `/viewform` variant of the supplied
+Google Form. Before launch, confirm that the form is published and accepts responses;
+an `/edit` link is owner-only and must not be shared with participants.
 
 ---
 
@@ -82,7 +89,7 @@ its own slim header, and admin has its own shell.
 ```
 content/
   research/*.json             One JSON file per article — the entire research CMS
-  .processed-dois.json        Ledger so the n8n automation doesn't republish a DOI
+  .processed-dois.json        Ledger of decisions by the GitHub Actions ingest workflow
   blog/*.md                   One Markdown file per Kai Blogs post
 
 public/
@@ -94,6 +101,8 @@ public/
 scripts/
   validate-engines.mts        Graph-validates every decision tree; runs on prebuild
   research-ingest.mts         Finds, screens and writes up new papers; runs weekly in CI
+  research-core.mts           Testable DOI, date, abstract and screening validators
+  research-core.test.mts      Built-in Node regression tests
 
 supabase/
   schema.sql                  Kai Exchange schema, RLS policies, demo rows
@@ -121,6 +130,9 @@ src/
     data/                     Workshops, publications, about copy
     hooks/                    Scroll reveal, cursor, element size, reduced motion
 ```
+
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the complete system diagram,
+runtime boundaries, and the research pipeline's failure modes.
 
 ---
 
@@ -276,86 +288,53 @@ components lives in `lib/research/helpers.ts`. Don't import the former from a cl
 
 ### Autonomous ingest
 
-`scripts/research-ingest.mts` is the producer. It runs weekly in GitHub Actions
-(`.github/workflows/research-ingest.yml`), finds newly published papers, writes up the ones
-worth writing up, and commits them. The commit is what publishes — Vercel redeploys on push,
-and the new files are picked up because the folder *is* the CMS.
+**The Research Intelligence "agent" runs in GitHub Actions — not on Vercel and not in
+visitors' browsers.** `scripts/research-ingest.mts` calls research metadata APIs, uses
+Gemini or Claude to score and summarise abstracts, writes
+`content/research/<slug>.json`, and commits the changes. Vercel publishes new articles
+**only after that commit is pushed and a new deployment succeeds**. There is no live
+search performed when someone opens `/research`.
 
+```text
+DISCOVER  Crossref + Europe PMC independently, 9 genomics-adjacent research topics
+DEDUPE    normalised DOIs; both decision ledger and existing published articles
+ENRICH    Europe PMC fills in missing/short Crossref abstracts, bounded concurrency
+SCREEN    Gemini OR Anthropic scores limited batches; verify each returned DOI
+WRITE     up to --limit evidence-grounded summaries from abstracts + metadata
+PERSIST   save article JSON and accepted/rejected DOI decisions
+VERIFY    reload from the site's production article loader
+PUBLISH   GitHub Action builds and commits → Vercel redeploys on push
 ```
-DISCOVER  Crossref, one query per topic in TOPICS       (no key — a contact email)
-DEDUPE    drop DOIs already in content/.processed-dois.json
-ENRICH    Europe PMC fills abstracts Crossref omits     (no key)
-SCREEN    one Claude call scores every candidate 1-10 and assigns a category
-WRITE     one Claude call per selected paper
-PERSIST   write content/research/<slug>.json, extend the ledger
-VERIFY    re-read through getAllArticles() and assert the new slugs parse
-```
 
-Only papers scoring `MIN_RELEVANCE` or above are written, capped at `--limit` per run, so a
-quiet week publishes nothing — that is a normal outcome, not a failure.
+The workflow runs Mondays 06:00 UTC and can be manually dispatched under **Actions →
+Research Intelligence → Run workflow**. A quiet week may publish **zero** articles.
+The default discovery window is 45 days to cover delayed indexing. Discovery HTTP
+requests have timeouts and retries; one upstream provider can fail without blocking
+the other. An incomplete model screening result is not treated as a completed
+research decision, so its DOI remains eligible next run. Model calls have an explicit
+per-run budget; retries consume that budget. This pipeline cannot read paywalled full
+text and generated summaries should be editorially checked against the cited DOI.
 
-**Requests, not tokens, are the budget.** Free tiers meter calls — Gemini allows roughly 20 a
-day for a current flash model — so the pipeline is built to spend as few as possible. Only the
-newest `MAX_SCREEN` candidates (50) reach the model, screened in batches of `SCREEN_BATCH`
-(25), which puts a normal run at **2 screening calls plus up to 3 writes — about 5 of 20**.
-Scores are measured against a fixed rubric rather than against each other, so batching changes
-nothing about the result; it just keeps any one request from being large enough to be
-load-shed.
-
-Transient failures (429, 5xx, quota, "high demand") retry, preferring the provider's own
-stated delay — a quota window that resets in 41s is not helped by a 4s backoff — and falling
-back to exponential with jitter. A 400 or 401 rethrows immediately rather than burning minutes
-on an error that will never clear. A **daily** quota 429 ("per day", "exceeded your current
-quota") is not retried at all — it won't clear until tomorrow — and stops the run. Both SDKs'
-built-in retries are switched off so `withRetry` is the only retry layer: stacked, the Gemini
-SDK's own four retries turned one call into as many as 25 requests, which is how the first
-runs spent a 20-a-day free quota before screening a single paper. Retries spend the same metered budget as real work, so
-`MODEL_CALL_BUDGET` (18) caps total calls per run including them; hitting it stops the run
-cleanly rather than exhausting a daily quota. A skipped batch's DOIs never reach the ledger,
-so the next run reconsiders them. **Every DOI that
-reaches the screening step enters the ledger whether it was published or rejected**, so no
-paper is ever paid to screen twice. The exception is a paper that was selected but never
-written (the budget ran out, or the write failed): it stays out of the ledger, so the best
-candidates of a run aren't lost to a quota window.
-
-Articles are written from the abstract alone, and the system prompt forbids inventing
-numbers, organisms, or claims the abstract doesn't contain. `heroImage` points at the
-per-category default, so artwork needs no generation step.
-
-The writing step is provider-agnostic. It needs **one** model key, and uses whichever is
-present — Gemini first when both are:
-
-| Setting | Where | Required |
-|---|---|---|
-| `GEMINI_API_KEY` *or* `ANTHROPIC_API_KEY` | repo secret | **yes** — one of the two |
-| Workflow permissions: *Read and write* | Settings → Actions → General | **yes** — the job pushes |
-| `LLM_PROVIDER` | repo variable | no — force `gemini` or `anthropic` when both keys exist |
-| `RESEARCH_MODEL` | repo variable | no — override the model id |
-| `CROSSREF_CONTACT_EMAIL` | repo variable | no — only sets the Crossref polite pool |
-| `MAX_SCREEN` / `MODEL_CALL_BUDGET` | repo variable | no — tune if your free-tier allowance differs |
-
-Defaults are `gemini-3.8-flash` and `claude-opus-5`. Gemini has a free tier and this pipeline
-makes about four model calls a week, so it sits comfortably inside it.
-
-Both keys are **API keys, not subscriptions** — an Anthropic Console key or a Google AI Studio
-key, billed (or not) per token. Neither is tied to a Claude.ai or Claude Code plan, and the
-workflow runs on GitHub's servers, so nothing here depends on a local machine or a seat
-somewhere lapsing. Swapping provider is a repository-variable change, never a code change.
-
-> Google's free tier may use submitted prompts and responses to improve their products. These
-> are public paper summaries, so that's a fair trade here — but it is the reason to use the
-> paid Anthropic path for anything unpublished.
-
-Widen or narrow what the pipeline is interested in by editing `TOPICS` and `LAB_FOCUS` in
-the script; `CATEGORY_ORDER` is imported from `lib/research/helpers.ts` so the categories the
-model may assign can never drift from the ones the filter row renders.
+**Required GitHub setup:** add at least one Actions repository **secret**
+(`GEMINI_API_KEY` or `ANTHROPIC_API_KEY`). Give GitHub Actions **Read and write** workflow
+permissions so it can push content. Optionally add repository **variables**
+`CROSSREF_CONTACT_EMAIL`, `LLM_PROVIDER`, `RESEARCH_MODEL`, `MAX_ENRICH`,
+`MAX_SCREEN`, and `MODEL_CALL_BUDGET`. Defaults are `gemini-3.8-flash` and
+`claude-sonnet-5-5`. Models and provider quota/pricing are subject to change;
+chat subscriptions do not substitute for API credentials. Gemini is selected first
+when both keys are set, unless `LLM_PROVIDER` selects otherwise.
 
 ```bash
-npm run research:ingest -- --discover-only          # Crossref only, no API key needed
-npm run research:ingest -- --dry-run --verbose      # full run, writes nothing
-npm run research:ingest -- --limit 1                # publish at most one
-npm run research:ingest -- --reset-ledger           # forget every past decision
+npm run test:research
+npm run research:ingest -- --discover-only         # Crossref + Europe PMC only; no key
+npm run research:ingest -- --dry-run --limit 1     # requires key; does not write
+npm run research:ingest -- --limit 1               # writes at most one local article
+npm run research:ingest -- --since 2026-09-01      # manual publication lower bound
 ```
+
+See [`docs/RESEARCH-INTELLIGENCE.md`](docs/RESEARCH-INTELLIGENCE.md) for configuration,
+logs, rate limits, failure diagnosis and manual runs. The system-wide architecture
+and data flow live in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ---
 
