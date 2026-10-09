@@ -79,11 +79,10 @@ function resolveImage(article: ResearchArticle, heroExists: boolean): ResearchIm
   if (publicFileExists(fallbackSrc)) {
     return {
       src: fallbackSrc,
-      // Keep the author's alt text when they wrote one — it describes the
-      // article, which is more useful than describing the stock image.
-      alt: article.heroImage.alt || `${article.category} — illustrative image`,
-      caption: article.heroImage.caption,
-      credit: article.heroImage.credit ?? 'Kai Genomics',
+      // This is fallback art, NOT the paper figure. Never carry the missing
+      // image's caption/credit/licence onto a different illustration.
+      alt: `${article.category} — illustrative image`,
+      credit: 'Kai Genomics',
     }
   }
 

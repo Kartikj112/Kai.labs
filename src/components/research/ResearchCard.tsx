@@ -28,7 +28,7 @@ export function ResearchCard({ article, revealDelay }: ResearchCardProps) {
             alt={article.resolvedImage.alt}
             fill
             sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
-            style={{ objectFit: 'cover' }}
+            style={{ objectFit: article.resolvedImage.kind === 'paper-figure' ? 'contain' : 'cover', backgroundColor: article.resolvedImage.kind === 'paper-figure' ? '#f9f9f7' : undefined }}
             loading="lazy"
           />
         ) : (

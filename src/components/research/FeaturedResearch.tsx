@@ -43,7 +43,7 @@ export function FeaturedResearch({ article }: FeaturedResearchProps) {
             fill
             priority
             sizes="(max-width: 900px) 100vw, 50vw"
-            style={{ objectFit: 'cover' }}
+            style={{ objectFit: article.resolvedImage.kind === 'paper-figure' ? 'contain' : 'cover', backgroundColor: article.resolvedImage.kind === 'paper-figure' ? '#f9f9f7' : undefined }}
           />
         ) : (
           <div className="research-placeholder-media" aria-hidden>

@@ -12,8 +12,14 @@ export interface ResearchImage {
   caption?: string
   /** Optional attribution, e.g. "Kai Genomics" or "NASA/JPL". */
   credit?: string
-  /** Optional link to where the image originally came from. */
+  /** Link to the originating paper figure (DOI-linked source). */
   source?: string
+  /** Recorded reuse licence, e.g. "CC BY 4.0". */
+  license?: string
+  /** Source licence URL for verifiable attribution. */
+  licenseUrl?: string
+  /** Paper-specific artwork should never be cropped like decorative category art. */
+  kind?: 'paper-figure' | 'paper-preview' 
 }
 
 export interface ResearchArticle {
