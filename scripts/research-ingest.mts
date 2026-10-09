@@ -6,12 +6,12 @@
  * knows how to read: one JSON file per article in `content/research/`.
  *
  * Pipeline:
- *   1. DISCOVER  Crossref, one query per topic. No API key — Crossref asks only
- *                for a contact address so it can put you in the polite pool.
+ *   1. DISCOVER  Crossref and Europe PMC independently, one query per topic,
+ *                both without keys (a Crossref contact email is recommended).
  *   2. DEDUPE    Drop anything whose DOI is already in content/.processed-dois.json.
- *   3. ENRICH    Crossref omits many abstracts; Europe PMC fills the gaps. Also
- *                keyless. A candidate with no abstract is dropped — the model
- *                must never write up a paper it hasn't read.
+ *   3. ENRICH    Europe PMC fills the gaps in publisher abstracts. A candidate
+ *                without enough source text is dropped. Enrichment is capped
+ *                and concurrent so one unresponsive source cannot hang CI.
  *   4. SCREEN    The newest MAX_SCREEN candidates are scored against the lab's
  *                focus and given a category, in batches. Most are rejected here,
  *                which is the point: cheap calls decide, and only the winners
@@ -22,18 +22,16 @@
  *                actually parse. A file that the site would skip is a failure
  *                here, not a silent no-op in production.
  *
- * Every DOI that reaches step 4 is added to the ledger whether it was published
- * or rejected — "processed" means decided, so a rejected paper is never paid to
- * screen twice. The one exception is a paper selected for writing that never got
- * written; it stays out so the next run can try again.
+ * Every successfully screened DOI is added to the ledger, whether accepted or
+ * rejected. DOIs missing from failed/partial batches remain eligible later.
+ * A paper selected for writing but not written is also left for next time.
  *
  * Needs exactly one model key — GEMINI_API_KEY (free tier) or ANTHROPIC_API_KEY
  * (paid). Whichever is present is used; Gemini wins if both are. Everything else
  * in the pipeline is keyless.
  *
- * Free tiers meter *requests*, so that — not tokens — is the budget this is
- * built around. A normal run spends about five calls: two screening batches plus
- * up to three writes, against a Gemini free allowance of roughly twenty a day.
+ * Providers meter requests and tokens differently by plan; the script caps
+ * attempted model requests. Check your actual provider quota before enabling.
  *
  * Run with:
  *   npx tsx scripts/research-ingest.mts --discover-only # no key needed at all
@@ -49,6 +47,8 @@ import { z } from 'zod'
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
 import { CATEGORY_ORDER, slugifyCategory } from '../src/lib/research/helpers'
 import type { ResearchArticle } from '../src/lib/research/types'
+import { crossrefDate, inPublicationWindow, mergeCandidates, MIN_ABSTRACT_CHARS, normaliseDoi, parseDate, publishedDoisFromFiles, stripMarkup, vetScreening } from './research-core.mts'
+import type { Candidate } from './research-core.mts'
 
 // ── Config ───────────────────────────────────────────────────────────────────
 
@@ -88,6 +88,7 @@ const TOPICS = [
   'protein language model structure prediction',
   'natural product discovery bioinformatics',
   'microbial genomics computational pipeline',
+  'origin of life autocatalytic sets',
 ]
 
 /**
@@ -104,34 +105,26 @@ const DOMAIN_TERMS = [
   'protein', 'proteom', 'sequenc', 'bioinformatic', 'phylogen',
   'holobiont', 'symbion', 'mag ', 'metagenome-assembled',
   'machine learning', 'deep learning', 'neural network', 'language model',
+  'autocatalytic', 'origin of life', 'prebiotic', 'protocell',
+  'assembly theory', 'self-replicat', 'chemical reaction network',
 ]
 
-/** Papers older than this are not "emerging research". */
-const LOOKBACK_DAYS = 30
-/** Per topic. 8 topics × 12 = up to ~96 candidates before dedupe. */
+/** Overlap index delays and missed weekly schedules; the DOI ledger prevents repeats. */
+const LOOKBACK_DAYS = 45
+/** Per topic; candidates are combined across both independent indexes. */
 const ROWS_PER_TOPIC = 12
+const EUROPEPMC_ROWS_PER_TOPIC = 8
+/** Cap enrichment work; do not make unbounded sequential remote calls. */
+const MAX_ENRICH = posIntEnv('MAX_ENRICH', 80)
 /**
- * How many candidates actually reach the model, newest first.
- *
- * Free tiers meter requests, not tokens — Gemini's free allowance for a current
- * flash model is around 20 a day — so the number of *calls* is the budget that
- * matters, and screening every paper found is a waste of it. Publishing three a
- * week out of fifty recent candidates is not meaningfully worse than out of
- * ninety, and it halves the requests.
+ * How many candidates actually reach the model, newest first. Keep the
+ * screening prompts small enough to return one result per DOI consistently.
  */
-const MAX_SCREEN = posIntEnv('MAX_SCREEN', 50)
+const MAX_SCREEN = posIntEnv('MAX_SCREEN', 36)
 /** Articles published per run. Kept low deliberately — this is a digest. */
 const DEFAULT_LIMIT = 3
 /** Below this, a paper isn't worth a page. */
 const MIN_RELEVANCE = 6
-/**
- * Minimum abstract length to write from. A real research abstract runs
- * 1200-2500 characters; the ~380-character "Microbiology Resource Announcement"
- * genre is a deposit notice, not a finding, and there is nothing in it to
- * summarise honestly.
- */
-const MIN_ABSTRACT_CHARS = 600
-
 /**
  * Crossref's "polite pool" is faster and more reliable, and asks only for a real
  * contact address. Unset is fine — you land in the public pool. A fabricated
@@ -154,7 +147,7 @@ const valueOf = (f: string, fallback: string) => {
 const DRY_RUN = has('--dry-run')
 const VERBOSE = has('--verbose')
 const RESET_LEDGER = has('--reset-ledger')
-/** Stop after discovery. Needs no API key — use it to check the Crossref side alone. */
+/** Stop after discovery. Needs no API key — use to check both public indexes. */
 const DISCOVER_ONLY = has('--discover-only')
 const LIMIT = Number(valueOf('--limit', String(DEFAULT_LIMIT)))
 const SINCE = valueOf(
@@ -190,7 +183,7 @@ const PROVIDER: ProviderId | null = FORCED
 
 const DEFAULT_MODELS: Record<ProviderId, string> = {
   gemini: 'gemini-3.8-flash',
-  anthropic: 'claude-opus-5',
+  anthropic: 'claude-sonnet-5-5',
 }
 
 const MODEL =
@@ -201,54 +194,30 @@ const MODEL =
 const log = (...a: unknown[]) => console.log(...a)
 const debug = (...a: unknown[]) => VERBOSE && console.log('   ', ...a)
 
-// ── Types ────────────────────────────────────────────────────────────────────
-
-interface Candidate {
-  doi: string
-  title: string
-  abstract: string
-  journal?: string
-  authors: string[]
-  date: string
-  url: string
-}
-
 // ── HTTP ─────────────────────────────────────────────────────────────────────
 
-async function getJson<T>(url: string): Promise<T | null> {
-  for (let attempt = 0; attempt < 3; attempt++) {
+async function getJson<T>(url: string): Promise<T> {
+  let failure: unknown
+  for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' } })
+      const res = await fetch(url, {
+        signal: AbortSignal.timeout(10_000),
+        headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' },
+      })
       if (res.status === 429 || res.status >= 500) {
-        // Crossref and Europe PMC both throttle by slowing you down, not by
-        // failing outright — backing off is usually enough.
-        await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)))
+        failure = new Error(`HTTP ${res.status} for ${new URL(url).host}`)
+        if (attempt < 1) await sleep(1500 * (attempt + 1))
         continue
       }
-      if (!res.ok) {
-        debug(`HTTP ${res.status} for ${url}`)
-        return null
-      }
+      if (!res.ok) throw new Error(`HTTP ${res.status} for ${new URL(url).host}`)
       return (await res.json()) as T
     } catch (err) {
+      failure = err
       debug(`fetch failed (attempt ${attempt + 1}):`, (err as Error).message)
-      await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)))
+      if (attempt < 1) await sleep(1500 * (attempt + 1))
     }
   }
-  return null
-}
-
-/** Crossref returns abstracts as JATS XML; Europe PMC sometimes returns HTML. */
-function stripMarkup(raw: string): string {
-  return raw
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#x?[0-9a-fA-F]+;/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
+  throw failure instanceof Error ? failure : new Error('Request failed')
 }
 
 // ── 1. Discover ──────────────────────────────────────────────────────────────
@@ -260,14 +229,17 @@ interface CrossrefItem {
   author?: { given?: string; family?: string }[]
   'container-title'?: string[]
   published?: { 'date-parts'?: number[][] }
-  URL?: string
+  'published-online'?: { 'date-parts'?: number[][] }
 }
 
-function dateFromParts(parts?: number[][]): string | null {
-  const p = parts?.[0]
-  if (!p || !p[0]) return null
-  const [y, m = 1, d = 1] = p
-  return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+interface EuropePmcResult {
+  doi?: string
+  title?: string
+  abstractText?: string
+  journalTitle?: string
+  authorString?: string
+  firstPublicationDate?: string
+  firstIndexDate?: string
 }
 
 function looksInField(title: string, abstract: string): boolean {
@@ -276,57 +248,87 @@ function looksInField(title: string, abstract: string): boolean {
 }
 
 async function discover(): Promise<Candidate[]> {
-  const byDoi = new Map<string, Candidate>()
+  const all: Candidate[] = []
   const today = new Date().toISOString().slice(0, 10)
-  let rejected = 0
+  let succeeded = 0
+  let failed = 0
+  let filtered = 0
 
+  // Independent discovery indexes: Crossref includes many publisher deposits;
+  // Europe PMC includes biomedical papers with abstracts absent from Crossref.
+  // A failure of one index must not silently suppress results from the other.
   for (const topic of TOPICS) {
-    // until-pub-date matters: a lot of Crossref records carry a placeholder
-    // issue date years in the future (2100, 2121), and without an upper bound
-    // those dominate a date sort. Relevance order plus a bounded window is
-    // steadier. has-abstract:true does the Europe PMC's job up front.
-    const url =
-      'https://api.crossref.org/works' +
-      `?query.bibliographic=${encodeURIComponent(topic)}` +
-      `&filter=from-pub-date:${SINCE},until-pub-date:${today},type:journal-article,has-abstract:true` +
-      `&rows=${ROWS_PER_TOPIC}` +
-      '&select=DOI,title,abstract,author,container-title,published,URL' +
-      (CONTACT_EMAIL ? `&mailto=${encodeURIComponent(CONTACT_EMAIL)}` : '')
-
-    const body = await getJson<{ message?: { items?: CrossrefItem[] } }>(url)
-    const items = body?.message?.items ?? []
-    debug(`${topic} → ${items.length} hits`)
-
-    for (const it of items) {
-      const doi = it.DOI?.toLowerCase()
-      const title = it.title?.[0]?.trim()
-      const date = dateFromParts(it.published?.['date-parts'])
-      if (!doi || !title || !date || byDoi.has(doi)) continue
-
-      const cleanTitle = stripMarkup(title)
-      const cleanAbstract = it.abstract ? stripMarkup(it.abstract) : ''
-      if (!looksInField(cleanTitle, cleanAbstract)) {
-        rejected++
-        continue
+    const url = new URL('https://api.crossref.org/works')
+    url.searchParams.set('query', topic)
+    url.searchParams.set('filter', `from-pub-date:${SINCE},until-pub-date:${today},type:journal-article`)
+    url.searchParams.set('rows', String(ROWS_PER_TOPIC))
+    url.searchParams.set('select', 'DOI,title,abstract,author,container-title,published,published-online')
+    if (CONTACT_EMAIL) url.searchParams.set('mailto', CONTACT_EMAIL)
+    try {
+      const body = await getJson<{ message?: { items?: CrossrefItem[] } }>(url.toString())
+      const items = body.message?.items ?? []
+      succeeded++
+      debug(`Crossref ${topic} → ${items.length} hits`)
+      for (const it of items) {
+        const doi = normaliseDoi(it.DOI)
+        const title = it.title?.[0]?.trim()
+        const date = crossrefDate(it)
+        if (!doi || !title || !date || !inPublicationWindow(date, SINCE, today)) continue
+        const cleanTitle = stripMarkup(title)
+        const abstract = stripMarkup(it.abstract || '')
+        // With no abstract, do not reject by title alone — Europe PMC can fill
+        // it in later. The final screening still demands adequate source text.
+        if (!looksInField(cleanTitle, abstract)) { filtered++; continue }
+        all.push({
+          doi, title: cleanTitle, abstract,
+          journal: it['container-title']?.[0],
+          authors: (it.author ?? []).map((a) => [a.given, a.family].filter(Boolean).join(' ').trim()).filter(Boolean).slice(0, 8),
+          date, url: `https://doi.org/${doi}`,
+        })
       }
-
-      byDoi.set(doi, {
-        doi,
-        title: cleanTitle,
-        abstract: cleanAbstract,
-        journal: it['container-title']?.[0],
-        authors: (it.author ?? [])
-          .map((a) => [a.given, a.family].filter(Boolean).join(' ').trim())
-          .filter(Boolean)
-          .slice(0, 8),
-        date,
-        url: it.URL || `https://doi.org/${doi}`,
-      })
+    } catch (err) {
+      failed++
+      console.warn(`      ! Crossref / ${topic}: ${(err as Error).message}`)
     }
   }
 
-  debug(`${rejected} hits dropped by the domain pre-filter`)
-  return [...byDoi.values()]
+  for (const topic of TOPICS) {
+    const url = new URL('https://www.ebi.ac.uk/europepmc/webservices/rest/search')
+    // The search terms are a field-limited query; NOT a request for full text
+    // or for a model to browse publishers. The DOI is independently verified.
+    const terms = topic.split(/\s+/).filter(Boolean).slice(0, 3)
+    url.searchParams.set('query', `TITLE_ABS:(${terms.join(' AND ')}) AND FIRST_PDATE:[${SINCE} TO ${today}]`)
+    url.searchParams.set('format', 'json')
+    url.searchParams.set('resultType', 'core')
+    url.searchParams.set('pageSize', String(EUROPEPMC_ROWS_PER_TOPIC))
+    url.searchParams.set('sort', 'FIRST_PDATE_D desc')
+    try {
+      const body = await getJson<{ resultList?: { result?: EuropePmcResult[] } }>(url.toString())
+      const items = body.resultList?.result ?? []
+      succeeded++
+      debug(`Europe PMC ${topic} → ${items.length} hits`)
+      for (const it of items) {
+        const doi = normaliseDoi(it.doi)
+        const date = parseDate(it.firstPublicationDate)
+        if (!doi || !date || !it.title || !inPublicationWindow(date, SINCE, today)) continue
+        const title = stripMarkup(it.title)
+        const abstract = stripMarkup(it.abstractText ?? '')
+        if (!looksInField(title, abstract)) { filtered++; continue }
+        all.push({
+          doi, title, abstract,
+          journal: it.journalTitle,
+          authors: (it.authorString ?? '').split(/,\s*/).map((a) => a.trim()).filter(Boolean).slice(0, 8),
+          date, url: `https://doi.org/${doi}`,
+        })
+      }
+    } catch (err) {
+      failed++
+      console.warn(`      ! Europe PMC / ${topic}: ${(err as Error).message}`)
+    }
+  }
+  log(`      source requests: ${succeeded} succeeded, ${failed} failed; ${filtered} off-topic hits rejected`)
+  if (succeeded === 0) throw new Error('All discovery sources failed; not treating this as a zero-paper week')
+  return mergeCandidates(all)
 }
 
 // ── 3. Enrich ────────────────────────────────────────────────────────────────
@@ -334,14 +336,36 @@ async function discover(): Promise<Candidate[]> {
 async function fillAbstract(c: Candidate): Promise<Candidate> {
   if (c.abstract.length >= MIN_ABSTRACT_CHARS) return c
 
-  const url =
-    'https://www.ebi.ac.uk/europepmc/webservices/rest/search' +
-    `?query=${encodeURIComponent(`DOI:"${c.doi}"`)}&format=json&resultType=core&pageSize=1`
-
-  const body = await getJson<{ resultList?: { result?: { abstractText?: string }[] } }>(url)
-  const text = body?.resultList?.result?.[0]?.abstractText
-  if (text) c.abstract = stripMarkup(text)
+  const url = new URL('https://www.ebi.ac.uk/europepmc/webservices/rest/search')
+  url.searchParams.set('query', `DOI:"${c.doi}"`)
+  url.searchParams.set('format', 'json')
+  url.searchParams.set('resultType', 'core')
+  url.searchParams.set('pageSize', '1')
+  try {
+    const body = await getJson<{ resultList?: { result?: EuropePmcResult[] } }>(url.toString())
+    const result = body.resultList?.result?.[0]
+    if (normaliseDoi(result?.doi) === c.doi && result?.abstractText) {
+      const recovered = stripMarkup(result.abstractText)
+      if (recovered.length > c.abstract.length) return { ...c, abstract: recovered }
+    }
+  } catch (err) {
+    debug(`could not enrich ${c.doi}: ${(err as Error).message}`)
+  }
   return c
+}
+
+/** Bound latency while respecting biomedical API rate limits. */
+async function enrichCandidates(candidates: Candidate[]): Promise<Candidate[]> {
+  const out = new Array<Candidate>(candidates.length)
+  let cursor = 0
+  async function worker() {
+    while (cursor < candidates.length) {
+      const index = cursor++
+      out[index] = await fillAbstract(candidates[index])
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(3, candidates.length) }, () => worker()))
+  return out
 }
 
 // ── Provider adapter ─────────────────────────────────────────────────────────
@@ -379,7 +403,7 @@ interface Ask {
  */
 function isDailyQuota(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err)
-  return /per ?day|PerDay|exceeded your current quota|check your plan and billing/i.test(msg)
+  return /per[ _-]?day|daily[ _-]?(?:limit|quota)|requestsperday|requests_per_day/i.test(msg)
 }
 
 function isTransient(err: unknown): boolean {
@@ -545,14 +569,11 @@ bioinformatics method papers, metagenomic tooling — also counts.`
  * Screening is classification against a fixed rubric — it doesn't need deep
  * reasoning, so it runs at low effort. The writing calls use the default.
  *
- * It runs in batches rather than one request. Scores are independent of each
- * other (each paper is measured against the rubric, not against its neighbours),
- * so batching changes nothing about the result — but a single request carrying
- * ninety abstracts is the most likely thing in this pipeline to be load-shed,
- * and when it fails the whole run dies. Smaller requests survive, and a batch
- * that fails anyway costs one batch instead of everything.
+ * Smaller batches reduce response truncation and isolate provider failures.
+ * Each result must correspond to a supplied DOI; incomplete batches are retried
+ * next run rather than being marked as processed.
  */
-const SCREEN_BATCH = 25
+const SCREEN_BATCH = 12
 
 async function screen(ask: Ask, candidates: Candidate[]) {
   const batches: Candidate[][] = []
@@ -598,7 +619,11 @@ async function screen(ask: Ask, candidates: Candidate[]) {
       continue
     }
 
-    if (out?.selections) all.push(...out.selections)
+    if (out?.selections) {
+      const vetted = vetScreening(out.selections, batch, CATEGORY_ORDER)
+      all.push(...vetted)
+      if (vetted.length !== batch.length) console.warn(`      ! batch ${n + 1}: ${batch.length - vetted.length} entries missing/invalid; will retry next run`)
+    }
     log(`      batch ${n + 1}/${batches.length} → ${out?.selections?.length ?? 0} scored`)
 
     // Free tiers meter by requests per minute; a short pause is cheaper than
@@ -628,7 +653,7 @@ const ArticleSchema = z.object({
 })
 
 async function writeArticle(ask: Ask, c: Candidate, category: string) {
-  return ask({
+  const body = await ask({
     system: `You write for Kai Genomics Research Intelligence — a digest that summarises new papers for researchers, collaborators, and informed non-specialists.
 
 ${LAB_FOCUS}
@@ -646,6 +671,13 @@ Rules:
       `Abstract:\n${c.abstract}`,
     schema: ArticleSchema,
   })
+  // Keep the wire JSON Schema simple for both providers; perform additional
+  // editorial completeness checks locally so a sparse response is retried.
+  if (!body || !body.title?.trim() || !body.excerpt?.trim()) return null
+  const sections = [body.summary, body.whyItMatters, body.keyFindings,
+    body.methods, body.kaiGenomicsPerspective, body.implications]
+  if (sections.some((list) => !list.length || !list.some((v) => v.trim()))) return null
+  return body
 }
 
 // ── 6. Persist ───────────────────────────────────────────────────────────────
@@ -680,6 +712,11 @@ function readLedger(): string[] {
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
+  if (!Number.isInteger(LIMIT) || LIMIT < 1 || LIMIT > 20) throw new Error('--limit must be an integer from 1 to 20')
+  if (!parseDate(SINCE)) throw new Error('--since must be a real date in YYYY-MM-DD format')
+  if (FORCED && FORCED !== 'gemini' && FORCED !== 'anthropic') throw new Error('LLM_PROVIDER must be gemini or anthropic')
+  if (!DISCOVER_ONLY && PROVIDER === 'gemini' && !HAS_GEMINI) throw new Error('Selected Gemini but GEMINI_API_KEY is missing')
+  if (!DISCOVER_ONLY && PROVIDER === 'anthropic' && !HAS_ANTHROPIC) throw new Error('Selected Anthropic but ANTHROPIC_API_KEY is missing')
   if (!DISCOVER_ONLY && !PROVIDER) {
     console.error('✗ No model API key found. Set one of:')
     console.error('    GEMINI_API_KEY     — Google Gemini, has a free tier')
@@ -707,7 +744,11 @@ async function main() {
 
   // 2. Dedupe
   const ledger = readLedger()
-  const seen = new Set(ledger.map((d) => d.toLowerCase()))
+  // Seed deduplication from actual published files too: a deleted/corrupt
+  // ledger must never allow a second write-up of the same DOI.
+  const { getAllArticles } = await import('../src/lib/research/articles')
+  const published = publishedDoisFromFiles(getAllArticles().filter((a) => !a.isSample))
+  const seen = new Set([...ledger.map((d) => d.toLowerCase()), ...published])
   const fresh = found.filter((c) => !seen.has(c.doi))
   log(`\n[2/6] ${fresh.length} not yet processed (${found.length - fresh.length} already decided)`)
   if (fresh.length === 0) {
@@ -717,8 +758,9 @@ async function main() {
 
   // 3. Enrich
   log(`\n[3/6] Fetching missing abstracts from Europe PMC…`)
-  const enriched: Candidate[] = []
-  for (const c of fresh) enriched.push(await fillAbstract(c))
+  const toEnrich = [...fresh].sort((a, b) => b.date.localeCompare(a.date)).slice(0, MAX_ENRICH)
+  log(`      enriching up to ${toEnrich.length} candidates (cap: ${MAX_ENRICH})`)
+  const enriched = await enrichCandidates(toEnrich)
   const readable = enriched.filter((c) => c.abstract.length >= MIN_ABSTRACT_CHARS)
   log(`      ${readable.length} have an abstract worth writing from (${enriched.length - readable.length} too thin)`)
   if (readable.length === 0) {
@@ -783,9 +825,8 @@ async function main() {
         console.warn(`      ! ${err.message}`)
         break
       }
-      // One article lost is one article. The DOI still enters the ledger below,
-      // so it won't be reconsidered — that's the right trade for a digest: a
-      // paper missed is not a paper wrong.
+      // A failed write is not a final research decision: the DOI remains
+      // eligible for screening again next run.
       console.warn(`      ✗ ${c.doi}: ${(err as Error).message?.slice(0, 120)}`)
       continue
     }
@@ -794,7 +835,7 @@ async function main() {
       continue
     }
 
-    const slug = uniqueSlug(slugify(body.title))
+    const slug = uniqueSlug(slugify(body.title) || slugify(c.doi.replace(/^10\./, 'research-10-')))
     const categorySlug = slugifyCategory(sel.category)
     const article: ResearchArticle = {
       slug,
@@ -857,6 +898,7 @@ async function main() {
   const decided = [
     ...new Set([
       ...ledger,
+      ...published,
       ...ranked.map((s) => s.doi.toLowerCase()).filter((d) => !unwritten.has(d)),
     ]),
   ]
