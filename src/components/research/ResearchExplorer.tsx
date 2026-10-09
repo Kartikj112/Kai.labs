@@ -31,8 +31,9 @@ export function ResearchExplorer({ articles, categories }: ResearchExplorerProps
         }}
       >
         <p style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 13, color: 'var(--muted)', lineHeight: 1.9 }}>
-          No research articles published yet. New analyses will appear here automatically
-          as they&apos;re added to <code>content/research/</code>.
+          No verified research analyses are published yet. Research Intelligence will display
+          genuine papers here after its GitHub Actions run commits article JSON and Vercel
+          deploys that commit. Demonstration articles are intentionally not shown.
         </p>
       </div>
     )
