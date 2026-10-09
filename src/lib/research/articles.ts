@@ -5,9 +5,9 @@
 // component consumes plain, already-validated data from the functions below.
 //
 // This is intentionally a flat, dependency-free filesystem reader (no CMS,
-// no database) so an external automation (n8n) can publish a new article by
-// committing one JSON file + one image to the repo — nothing here needs to
-// change for that to work.
+// no database) so the GitHub Actions research ingest workflow can publish a new
+// article by committing a JSON file. Default category artwork makes a new
+// image optional; no site code changes are needed.
 //
 // SERVER-ONLY: relies on Node's `fs`. Never import this from a Client
 // Component — import from `./helpers` instead for pure/shared logic.

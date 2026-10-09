@@ -3,6 +3,8 @@ import type { Workshop } from '@/lib/types'
 export const workshops: Workshop[] = [
   {
     id: 'intro_bio',
+    isLive: true,
+    registrationUrl: 'https://docs.google.com/forms/d/1nUd8qOKq0E2tLl5rvkUskMMGduFcz2Bc-bGnN4em4A4/viewform',
     number: '01',
     title: 'Introduction to Bioinformatics',
     description:

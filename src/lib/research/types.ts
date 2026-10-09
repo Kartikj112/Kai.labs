@@ -1,5 +1,5 @@
 // ── Kai Genomics Research Intelligence — content schema ─────────────────────
-// This is the contract between the website and any automated writer (n8n).
+// This is the contract between the website and the GitHub Actions ingester.
 // A new article is just a new JSON file in `content/research/` that matches
 // this shape — no React/TypeScript changes are ever required to publish it.
 
