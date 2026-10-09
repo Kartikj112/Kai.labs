@@ -3,7 +3,7 @@
 // module can be safely imported from both Server and Client Components.
 // Filesystem access lives exclusively in `./articles.ts`.
 
-import type { LoadedResearchArticle, ResearchArticle } from './types'
+import type { LoadedResearchArticle, ResearchArticle, ResearchImage } from './types'
 
 // Preferred display order for known categories. Anything not in this list
 // (a brand-new category an automation invents) is appended automatically —
@@ -51,6 +51,11 @@ export function getCategories(articles: ResearchArticle[]): string[] {
   const ordered = CATEGORY_ORDER.filter((c) => present.has(c))
   const extras = [...present].filter((c) => !CATEGORY_ORDER.includes(c)).sort()
   return [...ordered, ...extras]
+}
+
+/** Never render generic ingestion artwork as if it were a paper figure. */
+export function shouldRenderResearchImage(image: ResearchImage, existsOnDisk: boolean): boolean {
+  return existsOnDisk && !image.src.startsWith('/research/images/_defaults/')
 }
 
 /**

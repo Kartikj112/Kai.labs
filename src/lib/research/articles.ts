@@ -7,7 +7,7 @@
 // This is intentionally a flat, dependency-free filesystem reader (no CMS,
 // no database) so the GitHub Actions research ingest workflow can publish a new
 // article by committing a JSON file. Default category artwork makes a new
-// image optional; no site code changes are needed.
+// image optional; without a licensed figure the UI renders a citation cover.
 //
 // SERVER-ONLY: relies on Node's `fs`. Never import this from a Client
 // Component — import from `./helpers` instead for pure/shared logic.
@@ -19,12 +19,12 @@ import {
   estimateReadingTime,
   getFeaturedArticle as getFeaturedArticlePure,
   isPublicResearchArticle,
+  shouldRenderResearchImage,
   slugifyCategory,
 } from './helpers'
 
 const CONTENT_DIR = path.join(process.cwd(), 'content', 'research')
 const PUBLIC_DIR = path.join(process.cwd(), 'public')
-const DEFAULTS_DIR = '/research/images/_defaults'
 
 function isNonEmptyString(v: unknown): v is string {
   return typeof v === 'string' && v.trim().length > 0
@@ -68,25 +68,14 @@ function publicFileExists(src: string): boolean {
 }
 
 /**
- * Picks the image to actually render. A per-category default ships for every
- * category in CATEGORY_ORDER, so an article published without artwork still
- * gets something on-brand instead of the bare SVG placeholder.
+ * Only display an existing paper-specific or editor-provided image. Older
+ * agent-written category illustrations are NOT paper figures, and rendering
+ * them kept making the research feed look like no image work had happened.
+ * Missing/unlicensed figures use an accurate citation cover in the UI.
  */
 function resolveImage(article: ResearchArticle, heroExists: boolean): ResearchImage | null {
-  if (heroExists) return article.heroImage
-
-  const fallbackSrc = `${DEFAULTS_DIR}/${slugifyCategory(article.category)}.jpg`
-  if (publicFileExists(fallbackSrc)) {
-    return {
-      src: fallbackSrc,
-      // This is fallback art, NOT the paper figure. Never carry the missing
-      // image's caption/credit/licence onto a different illustration.
-      alt: `${article.category} — illustrative image`,
-      credit: 'Kai Genomics',
-    }
-  }
-
-  return null
+  if (!shouldRenderResearchImage(article.heroImage, heroExists)) return null
+  return article.heroImage
 }
 
 function load(filename: string): LoadedResearchArticle | null {
