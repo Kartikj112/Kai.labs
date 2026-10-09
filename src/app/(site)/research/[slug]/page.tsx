@@ -122,7 +122,7 @@ export default async function ResearchArticlePage({ params }: Props) {
               fill
               priority
               sizes="(max-width: 1100px) 100vw, 1100px"
-              style={{ objectFit: 'cover' }}
+              style={{ objectFit: article.resolvedImage.kind === 'paper-figure' ? 'contain' : 'cover', backgroundColor: article.resolvedImage.kind === 'paper-figure' ? '#f9f9f7' : undefined }}
             />
           ) : (
             <div className="research-placeholder-media" aria-hidden>
@@ -147,6 +147,12 @@ export default async function ResearchArticlePage({ params }: Props) {
             {article.resolvedImage.caption}
             {article.resolvedImage.caption && article.resolvedImage.credit ? ' — ' : ''}
             {article.resolvedImage.credit && <span>Credit: {article.resolvedImage.credit}</span>}
+            {article.resolvedImage.source && (
+              <> · <a href={article.resolvedImage.source} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline' }}>Original figure ↗</a></>
+            )}
+            {article.resolvedImage.license && article.resolvedImage.licenseUrl && (
+              <> · <a href={article.resolvedImage.licenseUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline' }}>{article.resolvedImage.license}</a></>
+            )}
           </p>
         )}
       </div>
