@@ -1,3 +1,4 @@
+import { PaperCitationPreview } from '@/components/research/PaperCitationPreview'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -125,16 +126,7 @@ export default async function ResearchArticlePage({ params }: Props) {
               style={{ objectFit: article.resolvedImage.kind === 'paper-figure' ? 'contain' : 'cover', backgroundColor: article.resolvedImage.kind === 'paper-figure' ? '#f9f9f7' : undefined }}
             />
           ) : (
-            <div className="research-placeholder-media" aria-hidden>
-              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="1.1">
-                <circle cx="12" cy="12" r="3.2" />
-                <circle cx="4.5" cy="7" r="1.6" />
-                <circle cx="19.5" cy="7" r="1.6" />
-                <circle cx="4.5" cy="17" r="1.6" />
-                <circle cx="19.5" cy="17" r="1.6" />
-                <path d="M9.2 10.2 5.7 8M14.8 10.2l3.5-2.2M9.2 13.8 5.7 16M14.8 13.8l3.5 2.2" />
-              </svg>
-            </div>
+            <PaperCitationPreview article={article} variant="detail" />
           )}
         </div>
         {article.resolvedImage && (article.resolvedImage.caption || article.resolvedImage.credit) && (
