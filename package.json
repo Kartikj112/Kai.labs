@@ -12,6 +12,7 @@
     "research:ingest": "tsx scripts/research-ingest.mts",
     "research:images": "python3 scripts/research_images.py --backfill",
     "test:research": "node --experimental-strip-types --test scripts/research-core.test.mts scripts/research-feed.test.mts",
+    "test:social": "node --experimental-strip-types --test scripts/social-gallery.test.mts",
     "blog:new": "tsx scripts/new-post.mts"
   },
   "dependencies": {
