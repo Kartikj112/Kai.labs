@@ -1,6 +1,6 @@
 # Kai Labs — architecture
 
-_Last reviewed: 2026-10-09. This describes the checked-in repository, not the live Vercel deployment configuration._
+_Last reviewed: 2026-10-11. This describes the checked-in repository, not the live Vercel deployment configuration._
 
 ## Boundaries and runtime
 
@@ -8,7 +8,8 @@ _Last reviewed: 2026-10-09. This describes the checked-in repository, not the li
 Browser
   ├── /genomics ─── React workshop cards, static curriculum & registration links
   ├── /research ─── statically rendered JSON research digest
-  ├── /blog ─────── Markdown posts
+  ├── /blog ─────── Markdown posts + curated LinkedIn embeds + local PDFs
+  ├── / ─────────── Home photo gallery (local JPGs, build-time scan)
   ├── /engine ────── 21 client-interactive decision-support graphs
   └── /exchange ─── public listings and forms
                          │ server actions / server-side REST fetch
@@ -42,7 +43,8 @@ the discovery code calls research-index REST APIs, and the LLM uses returned abs
 | Research | `src/app/(site)/research/{page.tsx,[slug]/page.tsx}` | `src/lib/research/articles.ts` → `content/research/*.json` | Node `fs` during build |
 | Research producer | `scripts/research-ingest.mts`, `scripts/research-core.mts` | Crossref, Europe PMC, model API → research JSON + ledger | Node/tsx in Actions only |
 | Publishing | `.github/workflows/research-ingest.yml` | Commits content to default branch | GitHub Actions write permission |
-| Kai Blogs | `src/lib/blog/posts.ts`, `(site)/blog/` | `content/blog/*.md` | Local Markdown parser |
+| Kai Blogs | `src/lib/blog/posts.ts`, `(site)/blog/`, `src/components/social/LinkedInShowcase.tsx` | `content/blog/*.md`, `content/social/linkedin-posts.json`, `public/LinkedIn_carousels/*.pdf` | Markdown parser, LinkedIn iframe for verified public URLs |
+| Home photo showcase | `src/components/labs/DisplayGallery.tsx`, `src/lib/social/asset-loader.ts` | `public/Display_pictures/*.{jpg,jpeg}` | Build-time filesystem scan + client carousel; no upload service |
 | Exchange | `src/lib/exchange/*`, `/exchange`, `/admin` | Supabase + server actions; seed fallback | `SUPABASE_*`, `ADMIN_PASSWORD` |
 | Email | `src/lib/email/*` | Resend REST | `RESEND_*` |
 | Engine | `src/lib/engines/*`, `/engine` | Static typed decision graphs | Prebuild `validate-engines.mts` |
@@ -149,3 +151,27 @@ category JPEGs from `resolvedImage`; `PaperCitationPreview.tsx` instead renders
 a text-based citation cover from verified local article metadata. This happens
 in the Next.js UI even if the backfill never runs and works for older JSON
 without touching existing articles. A real eligible figure still wins.
+
+
+## Kai Blogs LinkedIn and homepage photo delivery (2026-10-11)
+
+```text
+content/social/linkedin-posts.json ─┐
+public/LinkedIn_carousels/*.pdf ───┤ server-side read at Next.js build
+                                    ↓ props (no runtime filesystem access)
+                                  /blog reading shelf (client)
+                                    ├─ official LinkedIn iframe for public post
+                                    └─ local PDF inline browser viewer + open link
+
+public/Display_pictures/*.jpg|jpeg → build-time sorted file list
+                                    ↓
+                                  / homepage DisplayGallery (client)
+                                    └─ lazy/static local image URLs, fades and swipe
+```
+
+Neither reader uses LinkedIn account scraping or credentials. The public iframe
+is LinkedIn-hosted and can be blocked by LinkedIn, browser privacy settings or
+post visibility. The PDF viewer displays originals owned/published by Kai Labs.
+The home gallery and PDF drop folder refresh **only after files are committed
+and Vercel deploys the new build**. Automatic rotation respects reduced motion
+and pauses on focus/hover. Source and operations: [Social + gallery](LINKEDIN-AND-HOMEPAGE-GALLERY.md).
