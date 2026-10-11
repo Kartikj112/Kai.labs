@@ -1,8 +1,11 @@
 import Link from 'next/link'
 import { FeatureCard } from '@/components/labs/FeatureCard'
 import { InteractiveNetwork } from '@/components/experiments/InteractiveNetwork/InteractiveNetwork'
+import { DisplayGallery } from '@/components/labs/DisplayGallery'
+import { getHomeDisplayPictures } from '@/lib/social/asset-loader'
 
 export default function KaiLabsHome() {
+  const galleryPhotos = getHomeDisplayPictures()
   return (
     <main>
       {/*
@@ -130,6 +133,9 @@ export default function KaiLabsHome() {
           />
         </div>
       </section>
+
+      {/* Auto-populated from public/Display_pictures at build time. */}
+      <DisplayGallery photos={galleryPhotos} />
     </main>
   )
 }

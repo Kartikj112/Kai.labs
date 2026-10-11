@@ -3,6 +3,9 @@ import Link from 'next/link'
 import { getAllPosts } from '@/lib/blog/posts'
 import { formatDate } from '@/lib/research/helpers'
 import type { BlogPost } from '@/lib/blog/types'
+import { LinkedInShowcase } from '@/components/social/LinkedInShowcase'
+import { getLinkedInCarouselPdfs } from '@/lib/social/asset-loader'
+import { getCuratedLinkedInPosts, LINKEDIN_PROFILE } from '@/lib/social/linkedin'
 
 export const metadata: Metadata = {
   title: 'Kai Blogs — Kai Labs',
@@ -71,7 +74,13 @@ export default function BlogIndexPage() {
         </div>
       </section>
 
-      <section style={{ padding: '0 40px 140px', maxWidth: 1200, margin: '0 auto' }}>
+      <LinkedInShowcase
+        posts={getCuratedLinkedInPosts()}
+        pdfs={getLinkedInCarouselPdfs()}
+        profileUrl={LINKEDIN_PROFILE}
+      />
+
+      <section style={{ padding: '72px 40px 140px', maxWidth: 1200, margin: '0 auto' }}>
         {posts.length === 0 ? (
           <EmptyState />
         ) : (
