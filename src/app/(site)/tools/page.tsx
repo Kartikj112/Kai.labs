@@ -61,16 +61,42 @@ export default function ToolsPage() {
           </span>
         </Link>
 
-        <div
+        <Link
+          href="/tools/amp-agent"
           className="feature-card animate-fade-up"
           style={{
             animationDelay: '0.4s', display: 'flex', flexDirection: 'column', gap: 14,
+            padding: '28px 26px', border: '1px solid var(--border-color)', borderRadius: 14,
+            textDecoration: 'none', background: 'var(--surface)',
+            transition: 'border-color 0.4s, transform 0.4s',
+          }}
+        >
+          <span style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 11, color: 'var(--accent)', letterSpacing: '0.16em' }}>
+            02 · Research prototype
+          </span>
+          <h3 style={{ fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif', fontWeight: 400, fontSize: 28, lineHeight: 1.1 }}>
+            KAI AMP-ASM
+          </h3>
+          <p style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 12, color: 'var(--muted)', lineHeight: 1.8 }}>
+            Antimicrobial peptide candidate screening with physicochemical descriptors,
+            Markov transitions, assembly-inspired sequence complexity, and graph features.
+            Experimental rankings, not validated activity predictions.
+          </p>
+          <span style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 11, letterSpacing: '0.1em', color: 'var(--text)', marginTop: 4 }}>
+            Open AMP-ASM →
+          </span>
+        </Link>
+
+        <div
+          className="feature-card animate-fade-up"
+          style={{
+            animationDelay: '0.5s', display: 'flex', flexDirection: 'column', gap: 14,
             padding: '28px 26px', border: '1px solid var(--border-color)', borderRadius: 14,
             background: 'var(--surface)',
           }}
         >
           <span style={{ fontFamily: 'var(--font-mono), DM Mono, monospace', fontSize: 11, color: 'var(--accent)', letterSpacing: '0.16em' }}>
-            02 · Coming soon
+            03 · Coming soon
           </span>
           <h3 style={{ fontFamily: 'var(--font-display), Cormorant Garamond, Georgia, serif', fontWeight: 400, fontSize: 28, lineHeight: 1.1 }}>
             Kai Agents
