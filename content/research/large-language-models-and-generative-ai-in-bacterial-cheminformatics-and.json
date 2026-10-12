@@ -1,0 +1,50 @@
+{
+  "slug": "large-language-models-and-generative-ai-in-bacterial-cheminformatics-and",
+  "title": "Large Language Models and Generative AI in Bacterial Cheminformatics and Genome Mining",
+  "date": "2026-10-02",
+  "category": "AI × Biology",
+  "excerpt": "An opinion article explores how transformer models, discrete diffusion, and autonomous agents are reshaping antimicrobial discovery and cryptic biosynthetic gene cluster identification.",
+  "heroImage": {
+    "src": "/research/images/_defaults/ai-biology.jpg",
+    "alt": "AI × Biology — illustrative image",
+    "credit": "Kai Genomics"
+  },
+  "tags": [
+    "Cheminformatics",
+    "Large Language Models",
+    "Biosynthetic Gene Clusters",
+    "Antimicrobial Resistance",
+    "Generative AI"
+  ],
+  "authors": [
+    "Sablok G."
+  ],
+  "doi": "10.20944/preprints202610.0128.v1",
+  "sourceUrl": "https://doi.org/10.20944/preprints202610.0128.v1",
+  "summary": [
+    "In this opinion article, Sablok explores the evolving role of large language models (LLMs) and foundational transformer architectures in bacterial cheminformatics. The author argues that the field is shifting away from traditional discriminative modelling towards generative and agentic systems capable of tackling the ongoing antimicrobial resistance (AMR) crisis.",
+    "By treating chemical representations as a linguistic medium, LLMs enable computational exploration of structurally novel chemotypes that were previously inaccessible through conventional approaches. The article also discusses how treating microbial genomes as biological language facilitates the decoding of sequence data to identify cryptic biosynthetic gene clusters (BGCs).",
+    "The piece highlights technological progress including foundational discrete diffusion models and autonomous discovery agents, while cautioning that multi-modal systems must be paired with high-quality data and rigorous biological validation to deliver functional therapeutics."
+  ],
+  "whyItMatters": [
+    "Antimicrobial resistance poses an escalating global health threat. Traditional discovery approaches rely heavily on hand-crafted molecular descriptors and low-throughput screening, which increasingly fail to yield novel chemical scaffolds capable of overcoming multidrug-resistant pathogens.",
+    "Applying generative transformer architectures to both chemical structures and genomic sequences offers a potential path forward to systematically uncover uncharacterised secondary metabolites and traverse unexplored bacterial chemical space."
+  ],
+  "keyFindings": [
+    "Bacterial cheminformatics is transitioning from discriminative computational models toward generative and agentic discovery systems.",
+    "Treating chemical structures as a linguistic medium allows language models to generate and explore structurally novel bacterial chemotypes.",
+    "Language models can be deployed to decode microbial genomic sequence patterns and identify cryptic biosynthetic gene clusters.",
+    "The successful adoption of multi-modal, foundational discovery tools depends heavily on resolving data quality limitations and conducting rigorous biological validation."
+  ],
+  "methods": [
+    "This work is an opinion piece that synthesises current trends and conceptual shifts in bacterial cheminformatics and computational genomics.",
+    "The author examines the application of transformer architectures, discrete diffusion models, and agent-based workflows to chemical property exploration and microbial genome mining, highlighting key challenges related to benchmark data quality and experimental validation."
+  ],
+  "kaiGenomicsPerspective": [
+    "This conceptual shift directly intersects with our lab's work on genome mining within marine sponge microbiomes. Uncultivated symbionts harbour an immense repertoire of cryptic biosynthetic gene clusters (BGCs) that rule-based tools frequently miss or leave uncharacterised; treating genomic sequences as contextual language offers a compelling route to prioritise functionally relevant clusters from complex metagenome-assembled genomes (MAGs).",
+    "We also appreciate the author's emphasis on data quality and empirical validation. While generative models and discrete diffusion offer exciting avenues for proposing new antimicrobial peptides and small-molecule chemotypes, their utility in combating resistant pathogens remains fundamentally tied to downstream biophysical characterisation and wet-lab confirmation."
+  ],
+  "implications": [
+    "The ongoing integration of multi-modal LLMs into microbiology could lead to unified discovery platforms that directly connect genomic potential in uncultivated microbes with generative molecular design for candidate antibiotics."
+  ]
+}

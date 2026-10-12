@@ -1,0 +1,52 @@
+{
+  "slug": "pepcl-uses-contrastive-learning-for-residue-level-antimicrobial-peptide-activity",
+  "title": "PepCL uses contrastive learning for residue-level antimicrobial peptide activity prediction",
+  "date": "2026-10-01",
+  "category": "Antimicrobial Peptides",
+  "excerpt": "PepCL introduces a two-stage contrastive learning framework that refines residue-level representations to improve antimicrobial peptide identification across three benchmark tasks.",
+  "heroImage": {
+    "src": "/research/images/_defaults/antimicrobial-peptides.jpg",
+    "alt": "Antimicrobial Peptides — illustrative image",
+    "credit": "Kai Genomics"
+  },
+  "tags": [
+    "Antimicrobial peptides",
+    "Contrastive learning",
+    "Machine learning",
+    "Residue representations"
+  ],
+  "journal": "Computational Biology and Chemistry",
+  "authors": [
+    "Ziru Shang",
+    "Tianzhen Shi",
+    "Juntao Liu"
+  ],
+  "doi": "10.1016/j.compbiolchem.2026.109122",
+  "sourceUrl": "https://doi.org/10.1016/j.compbiolchem.2026.109122",
+  "summary": [
+    "Antimicrobial peptides (AMPs) are key candidates for new anti-infectives due to their broad-spectrum activity and lower propensity to select for antimicrobial resistance. However, existing computational classifiers often struggle to capture fine-grained, discriminative information at the individual amino acid level when predicting peptide activity from primary sequence data.",
+    "To address this limitation, the authors developed PepCL, a two-stage machine learning framework. In the first stage, a contrastive learning module pretrains residue-level representations to increase their discriminative capability. In the second stage, a dedicated decoding module uses these pretrained representations to predict antimicrobial activity.",
+    "PepCL was evaluated on three distinct classes of antimicrobial peptides. Across all three tasks, the framework exceeded the performance of existing state-of-the-art baseline methods while yielding residue-level representations that remained interpretable across both stages of the model."
+  ],
+  "whyItMatters": [
+    "Effective in silico screening of AMPs requires representations that capture the subtle biochemical and spatial context of individual residues, such as amphipathicity and charge distribution. Many computational methods aggregate sequence features in ways that lose positional nuance.",
+    "By explicitly refining residue-level representations prior to activity classification, PepCL provides a clearer link between individual sequence features and functional outcomes, supporting more reliable automated peptide identification."
+  ],
+  "keyFindings": [
+    "PepCL implements a two-stage architecture that couples contrastive pretraining of residue-level features with activity decoding.",
+    "Pretraining residue-level representations with contrastive learning enhanced the discriminative power of peptide sequence features.",
+    "The framework outperformed state-of-the-art baseline models across evaluation tasks on three types of antimicrobial peptides.",
+    "The representations learned by PepCL provided interpretability at the residue level across both model stages."
+  ],
+  "methods": [
+    "The authors formulated PepCL as a two-stage framework. The first stage employs a contrastive learning module to pretrain residue-level embeddings from peptide sequences, designed to enhance the discriminative distinction between residues. The second stage feeds these pretrained contrastive features into a decoder module that predicts peptide activity.",
+    "The approach was benchmarked against established state-of-the-art computational baselines across datasets representing three different types of antimicrobial peptides, assessing both predictive accuracy and the interpretability of learned representations."
+  ],
+  "kaiGenomicsPerspective": [
+    "In our work designing antimicrobial peptides and mining uncharacterised candidates from marine metagenomes, standard sequence embeddings often blur localized biophysical properties that dictate membrane insertion or specific target binding. Methods that preserve and sharpen residue-level resolution are central to prioritising viable candidates.",
+    "We read PepCL as a valuable demonstration that contrastive pretraining can extract more functional signal from peptide sequences before downstream classification. If adaptable to broader metagenomic screening pipelines, such architectures could help triage uncharacterised peptide sequences mined from holobiont datasets prior to synthesis."
+  ],
+  "implications": [
+    "Integrating residue-level contrastive pretraining into peptide classification pipelines could improve the accuracy and interpretability of computational candidate discovery, aiding the development of targeted anti-infectives against priority pathogens."
+  ]
+}
