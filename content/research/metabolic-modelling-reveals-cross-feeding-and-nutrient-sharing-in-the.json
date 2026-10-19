@@ -1,0 +1,51 @@
+{
+  "slug": "metabolic-modelling-reveals-cross-feeding-and-nutrient-sharing-in-the",
+  "title": "Metabolic modelling reveals cross-feeding and nutrient sharing in the Phyllospongia foliascens microbiome",
+  "date": "2026-10-14",
+  "category": "Marine Biotechnology",
+  "excerpt": "Genome-scale metabolic modelling of 19 bacterial symbionts in the sponge Phyllospongia foliascens shows how metabolite cross-feeding sustains community structure and yields surplus nutrients for the host.",
+  "heroImage": {
+    "src": "/research/images/_defaults/marine-biotechnology.jpg",
+    "alt": "Marine Biotechnology — illustrative image",
+    "credit": "Kai Genomics"
+  },
+  "tags": [
+    "Sponge microbiome",
+    "Metabolic modelling",
+    "Flux-balance analysis",
+    "Nutrient cross-feeding"
+  ],
+  "journal": "ISME Host Microbe",
+  "authors": [
+    "Zhelun Zhang",
+    "Torsten Thomas"
+  ],
+  "doi": "10.1093/ismehm/aazag016",
+  "sourceUrl": "https://doi.org/10.1093/ismehm/aazag016",
+  "summary": [
+    "Marine sponges depend on complex consortia of microbial symbionts for their survival and health. While multi-omic surveys have documented the broad functional potential encoded across sponge microbiomes, understanding the exact metabolic exchanges that sustain these communities and support the animal host has remained a major challenge.",
+    "Zhang and Thomas investigated these interactions by constructing and curating genome-scale metabolic models (GSMMs) for 19 bacterial symbionts, which together account for 95% of the community abundance in the marine sponge Phyllospongia foliascens. They simulated community behaviour using spatio-temporally resolved flux-balance analysis, applying nutritional constraints based on host-derived substrates identified via metabolomics.",
+    "The simulations identified specific nutrient conditions that reproduced the stable community structures observed in nature. Under these steady-state conditions, cross-feeding between symbionts was essential for maintaining community composition. Furthermore, the mutual exchange of B-vitamins and amino acids produced surplus metabolites that could potentially be transferred to and utilised by the host sponge."
+  ],
+  "whyItMatters": [
+    "Metagenomic sequencing has uncovered immense metabolic potential in sponge-associated microbes, but static gene inventories cannot demonstrate whether or how these pathways operate dynamically in vivo. Because most sponge symbionts remain uncultivated, direct experimental characterisation of their nutritional dependencies is notoriously difficult.",
+    "By establishing an in silico ecosystem constrained by empirical metabolomic data, this study shows how uncultivated microbes can rely on cooperative cross-feeding to maintain stable community architecture and deliver nutritional benefits to the holobiont."
+  ],
+  "keyFindings": [
+    "Curated genome-scale metabolic models for 19 bacterial symbionts represent 95% of the total microbial community abundance in Phyllospongia foliascens.",
+    "Spatio-temporally resolved flux-balance analysis identified nutrient regimes that replicate naturally observed symbiont community structures.",
+    "Inter-species cross-feeding of metabolites is essential for maintaining community equilibrium.",
+    "The shared exchange of amino acids and B-vitamins yielded excess metabolites that are potentially available for host nutrition."
+  ],
+  "methods": [
+    "The authors generated and curated genome-scale metabolic models (GSMMs) for 19 key bacterial symbionts representing 95% of the microbial abundance in Phyllospongia foliascens.",
+    "Community-level simulations were carried out using spatio-temporally resolved flux-balance analysis, with boundary constraints established using sponge-derived substrates characterised through metabolomic analyses."
+  ],
+  "kaiGenomicsPerspective": [
+    "This study directly engages with one of our core focus areas: deciphering the metabolic interdependencies of uncultivable microbes within marine sponge holobionts. Moving beyond static metagenome-assembled genomes (MAGs) to dynamically constrained community models is an essential next step in understanding how complex symbiont networks avoid competitive exclusion.",
+    "The authors' use of host metabolomics data as boundary conditions for flux-balance analysis provides a rigorous template for our own modelling pipelines. It illustrates how auxotrophies—particularly for cofactors such as B-vitamins and essential amino acids—may not be evolutionary liabilities, but rather the metabolic glue holding the holobiont together."
+  ],
+  "implications": [
+    "This modelling approach establishes a mechanistic framework for predicting how sponge microbiomes respond to environmental shifts and provides a transferable workflow for mapping trophic dependencies across other uncultivated, host-associated microbial communities."
+  ]
+}

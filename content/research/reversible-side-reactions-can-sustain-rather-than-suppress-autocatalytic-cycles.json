@@ -1,0 +1,52 @@
+{
+  "slug": "reversible-side-reactions-can-sustain-rather-than-suppress-autocatalytic-cycles",
+  "title": "Reversible side reactions can sustain rather than suppress autocatalytic cycles",
+  "date": "2026-10-14",
+  "category": "Computational Biology",
+  "excerpt": "Algebraic analysis and simulations demonstrate that reversible side reactions do not inevitably destroy autocatalytic cycles, as side products can act as reservoirs to replenish catalysts.",
+  "heroImage": {
+    "src": "/research/images/_defaults/computational-biology.jpg",
+    "alt": "Computational Biology — illustrative image",
+    "credit": "Kai Genomics"
+  },
+  "tags": [
+    "Autocatalytic sets",
+    "Origin of life",
+    "Chemical kinetics",
+    "Metabolism-first"
+  ],
+  "journal": "Journal of the Royal Society Interface",
+  "authors": [
+    "Zhen Peng",
+    "Emily Spencer",
+    "David Baum"
+  ],
+  "doi": "10.1098/rsif.2026.0308",
+  "sourceUrl": "https://doi.org/10.1098/rsif.2026.0308",
+  "summary": [
+    "A central objection to metabolism-first theories for the origin of life is the problem of side reactions: without specific enzymes to guide pathways, unconstrained side reactions are thought to siphon autocatalytic intermediates into dead-end by-products, extinguishing the network. In this study, the authors examine whether this assumption holds across different kinetic regimes using algebraic analysis and numerical simulations of autocatalytic systems coupled to side reactions.",
+    "The analysis reveals that side reactions are uniformly destructive only when component reactions are assumed to be strictly irreversible—a common simplifying assumption in kinetic modelling that is physically inaccurate. When realistic reversibility is introduced, allowing for unequal forward and reverse rate constants, side reactions produce a broad spectrum of outcomes. Depending on conditions, they can be harmful, neutral, entirely beneficial, or transiently harmful before conferring long-term persistence to the autocatalytic system.",
+    "This diverse behaviour occurs because reversible side products do not act solely as drains; they can also function as chemical reservoirs that buffer and regenerate depleted autocatalysts. The authors confirm algebraically that these buffering effects persist in larger autocatalytic cycles coupled to multiple side reactions, showing that side reactions alone are insufficient grounds to reject metabolism-first hypotheses."
+  ],
+  "whyItMatters": [
+    "Metabolism-first models propose that life began as self-sustaining, non-enzymatic chemical cycles before the emergence of genetic polymers. A persistent theoretical obstacle has been the 'side-reaction problem', which posits that non-selective prebiotic chemistry would rapidly bleed catalytic mass into inert by-products until the cycle collapses.",
+    "By demonstrating that realistic thermodynamic reversibility transforms side products from pure sinks into catalytic reservoirs, this work removes a major theoretical objection to the feasibility of non-enzymatic autocatalytic networks."
+  ],
+  "keyFindings": [
+    "Assuming strict reaction irreversibility causes side reactions to invariably harm autocatalytic cycle persistence.",
+    "Assuming realistic chemical reversibility allows side reactions to have harmful, neutral, beneficial, or time-dependent effects on system persistence.",
+    "Side products in reversible systems can serve as chemical reservoirs from which autocatalysts are regenerated.",
+    "Algebraic analysis confirms that the reservoir effect and diverse side-reaction behaviours generalise to larger autocatalytic cycles coupled to multiple side pathways."
+  ],
+  "methods": [
+    "The authors analysed simple autocatalytic systems coupled to side reactions using algebraic analysis and numerical simulations to assess conditions required for system persistence.",
+    "Kinetics were compared between strictly irreversible regimes and reversible regimes with unequal forward and reverse rate constants, followed by algebraic scaling of the results to larger autocatalytic cycles linked to multiple side reactions."
+  ],
+  "kaiGenomicsPerspective": [
+    "In our work on origin of life and computational models of emergent chemistry, we frequently model how catalytic sets can maintain coherence in unguided, prebiotic conditions. A common modelling convenience is to treat reaction steps as irreversible to reduce parameter spaces, but this paper clearly shows how that approximation can systematically distort conclusions about network survival.",
+    "Recognising off-pathway products as kinetic buffers rather than terminal waste fits neatly with our perspective on chemical network resilience. When evaluating candidate prebiotic networks or emergent Markovian chemistries, incorporating reversible reservoir dynamics will be essential for accurately capturing whether self-sustaining states can persist."
+  ],
+  "implications": [
+    "These findings indicate that theoretical and experimental origin-of-life models should account for microscopic reversibility, as complex, 'messy' non-enzymatic reaction mixtures may possess greater intrinsic resilience against side-product degradation than simplified kinetic models predict."
+  ]
+}

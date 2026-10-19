@@ -1,0 +1,58 @@
+{
+  "slug": "ml-optimised-peptide-cit8-shows-rapid-bactericidal-activity-against-carbapenem",
+  "title": "ML-optimised peptide CIT8 shows rapid bactericidal activity against carbapenem-resistant A. baumannii",
+  "date": "2026-10-19",
+  "category": "Antimicrobial Peptides",
+  "excerpt": "CIT8, a 13-residue machine learning-optimised peptide, clears carbapenem-resistant Acinetobacter baumannii within 15 minutes via membrane disruption, displays antibiofilm activity, and synergises with meropenem.",
+  "heroImage": {
+    "src": "/research/images/_defaults/antimicrobial-peptides.jpg",
+    "alt": "Antimicrobial Peptides — illustrative image",
+    "credit": "Kai Genomics"
+  },
+  "tags": [
+    "Antimicrobial peptides",
+    "Acinetobacter baumannii",
+    "Machine learning",
+    "Antibiotic resistance"
+  ],
+  "journal": "Frontiers in Microbiology",
+  "authors": [
+    "Charilaos Dellis",
+    "Biswajit Mishra",
+    "Liyang Zhang",
+    "Anindya Basu",
+    "Lewis Oscar Felix",
+    "Fadi Shehadeh",
+    "Narchonai Ganesan",
+    "Antonios Kolocouris"
+  ],
+  "doi": "10.3389/fmicb.2026.1967486",
+  "sourceUrl": "https://doi.org/10.3389/fmicb.2026.1967486",
+  "summary": [
+    "CIT8 is a 13-residue antimicrobial peptide derived from citropin that was previously engineered via machine learning for activity against methicillin-resistant Staphylococcus aureus (MRSA). In this study, the authors evaluated whether its antibacterial profile extends to multidrug-resistant Gram-negative pathogens, with a primary focus on Acinetobacter baumannii.",
+    "The peptide demonstrated potent activity against A. baumannii, achieving a minimum inhibitory concentration (MIC) of 4 μg/mL across 15 of 16 strains tested, which included multiple carbapenem-resistant (CRAB) clinical isolates. Bactericidal activity was rapid: exposure to 20 μg/mL (5 × MIC) reduced an exponential-phase bacterial population of approximately 5 × 10^7 CFU/mL to below the detection threshold within 15 minutes. Mechanistic assays showed that CIT8 causes rapid, dose-dependent membrane depolarisation, membrane permeabilisation, and intracellular ATP leakage.",
+    "In addition to planktonic killing, CIT8 and its D-enantiomer (CIT8-D) demonstrated strong antibiofilm properties, with CIT8-D exhibiting particularly notable activity. Both forms maintained favourable selectivity profiles against mammalian cells, yielding therapeutic indices greater than 32 for CIT8 in both evaluated lines, and 16.2 (HaCaT) and 18.5 (HKC-8) for CIT8-D. When combined with meropenem, CIT8 potentiated the antibiotic's bactericidal activity against CRAB, demonstrating synergistic clearance in time-kill assays."
+  ],
+  "whyItMatters": [
+    "Carbapenem-resistant Acinetobacter baumannii represents one of the most critical antimicrobial resistance threats worldwide, frequently causing severe hospital-acquired infections with very few remaining clinical treatment options.",
+    "While machine learning has accelerated the identification and design of antimicrobial peptide candidates, experimental validation is required to establish whether computationally designed molecules retain broad activity, overcome complex Gram-negative outer membranes, and avoid mammalian cytotoxicity."
+  ],
+  "keyFindings": [
+    "CIT8 maintained an MIC of 4 μg/mL against 15 of 16 tested A. baumannii strains, including carbapenem-resistant clinical isolates.",
+    "At 20 μg/mL (5 × MIC), CIT8 cleared approximately 5 × 10^7 CFU/mL of exponential-phase A. baumannii to undetectable levels within 15 minutes.",
+    "Bacterial killing occurs via rapid, dose-dependent cytoplasmic membrane depolarisation, permeabilisation, and leakage of intracellular ATP.",
+    "Both CIT8 and its D-enantiomer (CIT8-D) exhibited antibiofilm activity alongside low mammalian toxicity (therapeutic indices >32 for CIT8; 16.2–18.5 for CIT8-D).",
+    "CIT8 restored and potentiated meropenem efficacy against CRAB, showing bactericidal synergy in time-kill assays."
+  ],
+  "methods": [
+    "The authors evaluated the 13-residue peptide CIT8 and its D-enantiomeric form (CIT8-D) against a panel of 16 A. baumannii strains, including multidrug-resistant and carbapenem-resistant clinical isolates, using standard broth microdilution to establish MICs.",
+    "Bactericidal kinetics were profiled via time-kill assays against exponential-phase cultures. Membrane disruption was evaluated using assays measuring membrane depolarisation, permeabilisation, and intracellular ATP leakage. Antibiofilm efficacy was assessed alongside in vitro cytotoxicity testing in HaCaT (keratinocyte) and HKC-8 (renal tubular epithelial) cell lines to determine therapeutic indices. Synergy between CIT8 and meropenem was examined using time-kill kinetics."
+  ],
+  "kaiGenomicsPerspective": [
+    "In our own work on antimicrobial peptide discovery and design, cross-class activity remains a critical hurdle: peptides engineered against Gram-positive models like MRSA often fail against the asymmetric, lipopolysaccharide-rich outer membrane of Gram-negative pathogens. CIT8 is an informative example of an ML-derived scaffold that circumvents this barrier, demonstrating that short, 13-residue cationic peptides can retain enough biophysical versatility to disrupt Gram-negative outer and inner membranes effectively.",
+    "The finding that CIT8-D maintains antibiofilm efficacy and favourable therapeutic indices is also highly relevant to computational pipeline development. Enantiomeric inversion is a standard strategy to prevent proteolytic degradation in vivo, and seeing that the lytic mechanism and selectivity hold across chiral counterparts reinforces the utility of biophysical, membrane-directed design principles over stereospecific receptor targets."
+  ],
+  "implications": [
+    "CIT8 and its D-enantiomer offer viable lead scaffolds for preclinical development against CRAB, both as standalone lytic agents and as adjuvants capable of re-sensitising carbapenem-resistant strains to existing frontline beta-lactams."
+  ]
+}
