@@ -1,0 +1,50 @@
+{
+  "slug": "helix-design-studio-environment-aware-computational-design-of-helical-antimicrobial",
+  "title": "Helix Design Studio: Environment-Aware Computational Design of Helical Antimicrobial Peptides",
+  "date": "2026-10-21",
+  "category": "Antimicrobial Peptides",
+  "excerpt": "Helix Design Studio is an open-source tool that evaluates and designs α-helical AMPs across solvent and membrane interfacial environments using an interpretable scoring framework.",
+  "heroImage": {
+    "src": "/research/images/_defaults/antimicrobial-peptides.jpg",
+    "alt": "Antimicrobial Peptides — illustrative image",
+    "credit": "Kai Genomics"
+  },
+  "tags": [
+    "antimicrobial peptides",
+    "computational peptide design",
+    "membrane biophysics",
+    "peptide modelling"
+  ],
+  "authors": [
+    "Conde-Torres D",
+    "García-Fandiño R",
+    "Piñeiro Á."
+  ],
+  "doi": "10.64898/2026.10.20.760466",
+  "sourceUrl": "https://doi.org/10.64898/2026.10.20.760466",
+  "summary": [
+    "Helix Design Studio is an open-source web application developed to analyse and design antimicrobial peptide (AMP) sequences mapped onto a prescribed α-helical scaffold. Because peptide interactions with lipid bilayers often determine antimicrobial efficacy, sequence modifications that improve affinity for a target membrane environment can unintentionally encourage binding under non-target conditions. The platform addresses this trade-off by incorporating explicit environmental conditions into sequence evaluation and generation.",
+    "The software applies an environmental scoring framework that combines intrinsic helix propensity, residue-pair interactions, electrostatics, and hydrophobic exposure to assess peptides across idealised solvent and interfacial settings. A sequence-dependent alignment rule coordinates amphipathic residue patterning with interfacial geometry during both sequence evaluation and optimisation. Users can inspect individual score contributions, create candidate families, and search for sequences that either maximise performance in a specific environment or balance compatibility across multiple environments.",
+    "Computational demonstrations showed that candidate rankings and sequence selection change substantially depending on environmental assumptions and helix orientation. The consistency of the scoring tool was verified by comparing results against an independent descriptor implementation and an exhaustive enumeration of a tractable sequence space. The authors emphasise that the framework scores model compatibility rather than predicting folding equilibria or directly confirming biological selectivity."
+  ],
+  "whyItMatters": [
+    "The clinical development of α-helical AMPs is frequently hindered by non-specific toxicity or off-target membrane binding. Optimising a peptide solely for strong membrane affinity can increase unwanted interactions in aqueous environments or with host cell membranes. Tools that permit systematic optimisation across contrasting interfacial and solution environments provide a structured way to navigate these biophysical trade-offs."
+  ],
+  "keyFindings": [
+    "Helix Design Studio provides an open-source framework to design and score α-helical peptides across distinct solvent and interfacial environments.",
+    "Peptide candidate ranking and sequence selection vary significantly according to environmental assumptions and helical orientation at the interface.",
+    "A sequence-dependent alignment rule directly couples amphipathic residue arrangements with interfacial geometry during design and scoring.",
+    "The scoring methodology demonstrated computational consistency when benchmarked against an independent descriptor implementation and exhaustive sequence enumeration."
+  ],
+  "methods": [
+    "The application relies on an environmental scoring framework that calculates intrinsic helix propensity, residue-pair interactions, electrostatics, and hydrophobic exposure for sequences constrained to an α-helical backbone. These metrics evaluate the peptide across user-defined solvent and interfacial regimes.",
+    "Amphipathic patterns are coupled to interfacial geometry via a sequence-dependent alignment rule. Computational validation was conducted through comparison with an independent descriptor implementation and complete enumeration across a defined sequence space. All sequence outputs, scores, and calculation parameters are exportable from the web platform."
+  ],
+  "kaiGenomicsPerspective": [
+    "In our own antimicrobial peptide design pipelines, moving beyond simple static sequence descriptors towards multi-environment biophysical modelling is essential for tackling priority pathogens without inducing host toxicity. This tool's capacity to balance compatibility between conflicting environments mirrors how we conceptualise selectivity at the bacterial membrane interface.",
+    "Because the platform explicitly evaluates model compatibility rather than folding equilibria or verified cell selectivity, we see its greatest utility at the early candidate-generation stage. It provides reproducible, parametrised starting libraries that can subsequently be filtered through our conformational ensembles, molecular dynamics simulations, and wet-lab antimicrobial screens."
+  ],
+  "implications": [
+    "Helix Design Studio offers an accessible, transparent starting point for generating α-helical AMP libraries tailored to specific environmental constraints, standardising early-stage candidate generation prior to biophysical simulation and experimental antimicrobial testing."
+  ]
+}
